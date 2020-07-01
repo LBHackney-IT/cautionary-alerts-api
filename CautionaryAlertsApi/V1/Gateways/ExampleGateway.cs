@@ -17,7 +17,7 @@ namespace CautionaryAlertsApi.V1.Gateways
 
         public CautionaryAlert GetEntityById(int id)
         {
-            var result = _databaseContext.DatabaseEntities.Find(id);
+            var result = _databaseContext.PeopleAlerts.Find(id);
 
             return result?.ToDomain();
         }

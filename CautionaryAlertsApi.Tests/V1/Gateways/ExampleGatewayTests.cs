@@ -35,13 +35,13 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var entity = _fixture.Create<CautionaryAlert>();
             var databaseEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
 
-            DatabaseContext.DatabaseEntities.Add(databaseEntity);
+            DatabaseContext.PeopleAlerts.Add(databaseEntity);
             DatabaseContext.SaveChanges();
 
             var response = _classUnderTest.GetEntityById(databaseEntity.Id);
 
             databaseEntity.Id.Should().Be(response.Id);
-            databaseEntity.CreatedAt.Should().BeSameDateAs(response.CreatedAt);
+            databaseEntity.ContactNumber.Should().BeSameDateAs(response.CreatedAt);
         }
 
         //TODO: Add tests here for the get all method.

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace CautionaryAlertsApi.V1.Infrastructure
@@ -5,12 +6,27 @@ namespace CautionaryAlertsApi.V1.Infrastructure
 
     public class DatabaseContext : DbContext
     {
-        //TODO: rename DatabaseContext to reflect the data source it is representing. eg. MosaicContext.
-        //Guidance on the context class can be found here https://github.com/LBHackney-IT/lbh-base-api/wiki/DatabaseContext
         public DatabaseContext(DbContextOptions options) : base(options)
         {
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AlertDescriptionLookup>()
+                .HasKey(lookup => new
+                {
+                    lookup.AlertCode,
+                    lookup.PickType
+                });
+        }
 
-        public DbSet<DatabaseEntity> DatabaseEntities { get; set; }
+        public DbSet<PersonAlert> PeopleAlerts { get; set; }
+
+        public DbSet<AlertDescriptionLookup> AlertDescriptionLookups { get; set; }
+
+        public DbSet<ContactNumberLookup> ContactLinks { get; set; }
+
+        public DbSet<Address> Addresses { get; set; }
+
+        public DbSet<PropertyAlert> PropertyAlerts { get; set; }
     }
 }

@@ -6,19 +6,19 @@ namespace CautionaryAlertsApi.Tests.V1.Helper
 {
     public static class DatabaseEntityHelper
     {
-        public static DatabaseEntity CreateDatabaseEntity()
+        public static PersonAlert CreateDatabaseEntity()
         {
             var entity = new Fixture().Create<CautionaryAlert>();
 
             return CreateDatabaseEntityFrom(entity);
         }
 
-        public static DatabaseEntity CreateDatabaseEntityFrom(CautionaryAlert cautionaryAlert)
+        public static PersonAlert CreateDatabaseEntityFrom(CautionaryAlert cautionaryAlert)
         {
-            return new DatabaseEntity
+            return new PersonAlert
             {
                 Id = cautionaryAlert.Id,
-                CreatedAt = cautionaryAlert.CreatedAt,
+                ContactNumber = cautionaryAlert.CreatedAt,
             };
         }
     }

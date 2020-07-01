@@ -15,7 +15,7 @@ namespace CautionaryAlertsApi.Tests.V1.Infrastructure
             DatabaseContext.Add(databaseEntity);
             DatabaseContext.SaveChanges();
 
-            var result = DatabaseContext.DatabaseEntities.ToList().FirstOrDefault();
+            var result = DatabaseContext.PeopleAlerts.ToList().FirstOrDefault();
 
             Assert.AreEqual(result, databaseEntity);
         }
