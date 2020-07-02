@@ -113,7 +113,7 @@ namespace CautionaryAlertsApi
         {
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 
-            services.AddDbContext<DatabaseContext>(
+            services.AddDbContext<UhContext>(
                 opt => opt.UseNpgsql(connectionString));
         }
 

@@ -18,7 +18,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new ExampleGateway(DatabaseContext);
+            _classUnderTest = new ExampleGateway(UhContext);
         }
 
         [Test]
@@ -33,15 +33,14 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         public void GetEntityByIdReturnsTheEntityIfItExists()
         {
             var entity = _fixture.Create<CautionaryAlert>();
-            var databaseEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
+            var databaseEntity = DatabaseEntityHelper.CreatePeopleAlert();
 
-            DatabaseContext.DatabaseEntities.Add(databaseEntity);
-            DatabaseContext.SaveChanges();
+            UhContext.PeopleAlerts.Add(databaseEntity);
+            UhContext.SaveChanges();
 
             var response = _classUnderTest.GetEntityById(databaseEntity.Id);
 
             databaseEntity.Id.Should().Be(response.Id);
-            databaseEntity.CreatedAt.Should().BeSameDateAs(response.CreatedAt);
         }
 
         //TODO: Add tests here for the get all method.

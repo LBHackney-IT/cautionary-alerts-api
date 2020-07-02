@@ -13,11 +13,10 @@ namespace CautionaryAlertsApi.Tests.V1.Factories
         [Test]
         public void CanMapADatabaseEntityToADomainObject()
         {
-            var databaseEntity = new DatabaseEntity();
+            var databaseEntity = new PersonAlert();
             var entity = databaseEntity.ToDomain();
 
             databaseEntity.Id.Should().Be(entity.Id);
-            databaseEntity.CreatedAt.Should().BeSameDateAs(entity.CreatedAt);
         }
     }
 }
