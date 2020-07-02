@@ -17,7 +17,7 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         public int ContactNumber { get; set; }
 
         [ForeignKey("ContactNumber")]
-        public ContactNumberLookup ContactNumberLookup { get; set; }
+        public ContactLink ContactLink { get; set; }
 
         [Column("alertCode")]
         [Required]

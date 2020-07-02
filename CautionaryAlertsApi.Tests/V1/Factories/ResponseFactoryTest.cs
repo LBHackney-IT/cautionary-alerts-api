@@ -21,7 +21,7 @@ namespace CautionaryAlertsApi.Tests.V1.Factories
             response.ModifiedBy.Should().Be(domain.ModifiedBy);
             response.DateModified.Should().Be(DateTimeToDateString(domain.DateModified));
             response.EndDate.Should().Be(DateTimeToDateString(domain.EndDate.Value));
-            response.StartDate.Should().Be(DateTimeToDateString(domain.StartDate));
+            response.StartDate.Should().Be(DateTimeToDateString(domain.StartDate.Value));
         }
 
         [Test]

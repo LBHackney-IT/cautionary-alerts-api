@@ -16,7 +16,7 @@ namespace CautionaryAlertsApi.V1.Factories
                 DateModified = domain.DateModified.ToString("yyyy-MM-dd"),
                 EndDate = domain.EndDate?.ToString("yyyy-MM-dd"),
                 ModifiedBy = domain.ModifiedBy,
-                StartDate = domain.StartDate.ToString("yyyy-MM-dd"),
+                StartDate = domain.StartDate?.ToString("yyyy-MM-dd"),
             };
         }
 
