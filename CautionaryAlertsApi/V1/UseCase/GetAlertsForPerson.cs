@@ -13,7 +13,7 @@ namespace CautionaryAlertsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public CautionaryAlertPersonResponse Execute(int id)
+        public CautionaryAlertPersonResponse Execute(string tagRef, string personNo)
         {
             return new CautionaryAlertPersonResponse();
         }
