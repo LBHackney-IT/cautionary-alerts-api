@@ -8,8 +8,8 @@ namespace CautionaryAlertsApi.V1.UseCase
     //TODO: Rename class name and interface name to reflect the entity they are representing eg. GetClaimantByIdUseCase
     public class GetByIdUseCase : IGetByIdUseCase
     {
-        private IExampleGateway _gateway;
-        public GetByIdUseCase(IExampleGateway gateway)
+        private IUhGateway _gateway;
+        public GetByIdUseCase(IUhGateway gateway)
         {
             _gateway = gateway;
         }

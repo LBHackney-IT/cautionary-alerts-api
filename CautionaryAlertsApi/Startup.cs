@@ -119,7 +119,7 @@ namespace CautionaryAlertsApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            services.AddScoped<IExampleGateway, ExampleGateway>();
+            services.AddScoped<IUhGateway, UhGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
