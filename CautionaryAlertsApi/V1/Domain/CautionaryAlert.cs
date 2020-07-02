@@ -4,8 +4,16 @@ namespace CautionaryAlertsApi.V1.Domain
 {
     public class CautionaryAlert
     {
-        public int Id { get; set; }
+        public DateTime DateModified { get; set; }
 
-        //TODO: Add fields which you are interested in
+        public string ModifiedBy { get; set; }
+
+        public DateTime StartDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+
+        public string AlertCode { get; set; }
+
+        public string Description { get; set; }
     }
 }

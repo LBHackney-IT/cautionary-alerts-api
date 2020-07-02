@@ -119,12 +119,12 @@ namespace CautionaryAlertsApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            services.AddScoped<IExampleGateway, ExampleGateway>();
+            services.AddScoped<IUhGateway, UhGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-            services.AddScoped<IGetByIdUseCase, GetByIdUseCase>();
+            services.AddScoped<IGetAlertsForPerson, GetAlertsForPerson>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

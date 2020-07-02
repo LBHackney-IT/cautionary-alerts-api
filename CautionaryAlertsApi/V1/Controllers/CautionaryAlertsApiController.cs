@@ -6,17 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 namespace CautionaryAlertsApi.V1.Controllers
 {
     [ApiController]
-    //TODO: Rename to match the APIs endpoint
-    [Route("api/v1/residents")]
+    [Route("api/v1/cautionary-alerts")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
-    //TODO: rename class to match the API name
     public class CautionaryAlertsApiController : BaseController
     {
-        private readonly IGetByIdUseCase _getByIdUseCase;
-        public CautionaryAlertsApiController(IGetByIdUseCase getByIdUseCase)
+        private readonly IGetAlertsForPerson _getAlertsForPerson;
+        public CautionaryAlertsApiController(IGetAlertsForPerson getAlertsForPerson)
         {
-            _getByIdUseCase = getByIdUseCase;
+            _getAlertsForPerson = getAlertsForPerson;
         }
 
         /// <summary>
@@ -26,11 +24,10 @@ namespace CautionaryAlertsApi.V1.Controllers
         /// <response code="404">No ? found for the specified ID</response>
         [ProducesResponseType(typeof(CautionaryAlertResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        //TODO: rename to match the identifier that will be used
-        [Route("{yourId}")]
-        public IActionResult ViewRecord(int yourId)
+        [Route("tag-ref/{tagRef}/person-number/{personNo}")]
+        public IActionResult ViewPersonsCautionaryAlerts(string tagRef, string personNo)
         {
-            return Ok(_getByIdUseCase.Execute(yourId));
+            return Ok(_getAlertsForPerson.Execute(tagRef, personNo));
         }
     }
 }
