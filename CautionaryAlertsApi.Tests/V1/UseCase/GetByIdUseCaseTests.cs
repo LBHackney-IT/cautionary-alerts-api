@@ -8,13 +8,13 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
     public class GetByIdUseCaseTests
     {
         private Mock<IUhGateway> _mockGateway;
-        private GetByIdUseCase _classUnderTest;
+        private GetAlertsForPerson _classUnderTest;
 
         [SetUp]
         public void SetUp()
         {
             _mockGateway = new Mock<IUhGateway>();
-            _classUnderTest = new GetByIdUseCase(_mockGateway.Object);
+            _classUnderTest = new GetAlertsForPerson(_mockGateway.Object);
         }
 
         //TODO: test to check that the use case retrieves the correct record from the database.

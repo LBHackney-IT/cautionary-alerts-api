@@ -10,7 +10,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
     [TestFixture]
     public class UhGatewayTests : DatabaseTests
     {
-        private readonly Fixture _fixture = new Fixture();
         private UhGateway _classUnderTest;
 
         [SetUp]

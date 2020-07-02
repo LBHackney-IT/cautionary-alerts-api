@@ -2,8 +2,8 @@ using CautionaryAlertsApi.V1.Boundary.Response;
 
 namespace CautionaryAlertsApi.V1.UseCase.Interfaces
 {
-    public interface IGetByIdUseCase
+    public interface IGetAlertsForPerson
     {
-        CautionaryAlertResponse Execute(int id);
+        CautionaryAlertPersonResponse Execute(int id);
     }
 }

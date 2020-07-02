@@ -10,7 +10,7 @@ namespace CautionaryAlertsApi.V1.Domain
 
         public DateTime StartDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         public string AlertCode { get; set; }
 

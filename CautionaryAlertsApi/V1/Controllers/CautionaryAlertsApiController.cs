@@ -13,10 +13,10 @@ namespace CautionaryAlertsApi.V1.Controllers
     //TODO: rename class to match the API name
     public class CautionaryAlertsApiController : BaseController
     {
-        private readonly IGetByIdUseCase _getByIdUseCase;
-        public CautionaryAlertsApiController(IGetByIdUseCase getByIdUseCase)
+        private readonly IGetAlertsForPerson _getAlertsForPerson;
+        public CautionaryAlertsApiController(IGetAlertsForPerson getAlertsForPerson)
         {
-            _getByIdUseCase = getByIdUseCase;
+            _getAlertsForPerson = getAlertsForPerson;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         [Route("{yourId}")]
         public IActionResult ViewRecord(int yourId)
         {
-            return Ok(_getByIdUseCase.Execute(yourId));
+            return Ok(_getAlertsForPerson.Execute(yourId));
         }
     }
 }

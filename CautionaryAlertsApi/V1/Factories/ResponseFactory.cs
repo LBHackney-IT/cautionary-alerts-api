@@ -7,11 +7,28 @@ namespace CautionaryAlertsApi.V1.Factories
 {
     public static class ResponseFactory
     {
-        //TODO: Map the fields in the domain object(s) to fields in the response object(s).
-        // More information on this can be found here https://github.com/LBHackney-IT/lbh-base-api/wiki/Factory-object-mappings
         public static CautionaryAlertResponse ToResponse(this CautionaryAlert domain)
         {
-            return new CautionaryAlertResponse();
+            return new CautionaryAlertResponse
+            {
+                Description = domain.Description,
+                AlertCode = domain.AlertCode,
+                DateModified = domain.DateModified.ToString("yyyy-MM-dd"),
+                EndDate = domain.EndDate?.ToString("yyyy-MM-dd"),
+                ModifiedBy = domain.ModifiedBy,
+                StartDate = domain.StartDate.ToString("yyyy-MM-dd"),
+            };
+        }
+
+        public static CautionaryAlertPersonResponse ToResponse(this CautionaryAlertPerson domain)
+        {
+            return new CautionaryAlertPersonResponse
+            {
+                ContactNumber = domain.ContactNumber,
+                PersonNumber = domain.PersonNumber,
+                TagRef = domain.TagRef,
+                Alerts = domain.Alerts.ToResponse()
+            };
         }
 
         public static List<CautionaryAlertResponse> ToResponse(this IEnumerable<CautionaryAlert> domainList)
