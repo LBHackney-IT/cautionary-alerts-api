@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
 
-    public class DatabaseContext : DbContext
+    public class UhContext : DbContext
     {
-        public DatabaseContext(DbContextOptions options) : base(options)
+        public UhContext(DbContextOptions options) : base(options)
         {
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

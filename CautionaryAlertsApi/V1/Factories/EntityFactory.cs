@@ -13,7 +13,6 @@ namespace CautionaryAlertsApi.V1.Factories
             return new CautionaryAlert
             {
                 Id = personAlert.Id,
-                CreatedAt = personAlert.ContactNumber,
             };
         }
     }

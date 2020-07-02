@@ -10,7 +10,7 @@ namespace CautionaryAlertsApi.Tests
     public class IntegrationTests<TStartup> where TStartup : class
     {
         protected HttpClient Client { get; private set; }
-        protected DatabaseContext DatabaseContext { get; private set; }
+        protected UhContext UhContext { get; private set; }
 
         private MockWebApplicationFactory<TStartup> _factory;
         private NpgsqlConnection _connection;
@@ -36,9 +36,9 @@ namespace CautionaryAlertsApi.Tests
         {
             _factory = new MockWebApplicationFactory<TStartup>(_connection);
             Client = _factory.CreateClient();
-            DatabaseContext = new DatabaseContext(_builder.Options);
-            DatabaseContext.Database.EnsureCreated();
-            _transaction = DatabaseContext.Database.BeginTransaction();
+            UhContext = new UhContext(_builder.Options);
+            UhContext.Database.EnsureCreated();
+            _transaction = UhContext.Database.BeginTransaction();
         }
 
         [TearDown]

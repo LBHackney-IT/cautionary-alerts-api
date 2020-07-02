@@ -17,7 +17,6 @@ namespace CautionaryAlertsApi.Tests.V1.Factories
             var entity = databaseEntity.ToDomain();
 
             databaseEntity.Id.Should().Be(entity.Id);
-            databaseEntity.ContactNumber.Should().BeSameDateAs(entity.CreatedAt);
         }
     }
 }

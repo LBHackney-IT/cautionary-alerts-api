@@ -13,7 +13,7 @@ namespace CautionaryAlertsApi.V1.Infrastructure
 
         [Column("key1")]
         [StringLength(20)]
-        //Tag ref or House Ref or something else
+        //Can be a few types of reference including Tag ref and House Ref
         public string Key { get; set; }
 
         [Column("key2")]
