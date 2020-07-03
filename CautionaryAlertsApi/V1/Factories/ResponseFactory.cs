@@ -35,5 +35,10 @@ namespace CautionaryAlertsApi.V1.Factories
         {
             return domainList.Select(domain => domain.ToResponse()).ToList();
         }
+
+        public static List<CautionaryAlertPersonResponse> ToResponse(this IEnumerable<CautionaryAlertPerson> domainList)
+        {
+            return domainList.Select(domain => domain.ToResponse()).ToList();
+        }
     }
 }
