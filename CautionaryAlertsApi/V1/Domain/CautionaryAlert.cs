@@ -8,7 +8,7 @@ namespace CautionaryAlertsApi.V1.Domain
 
         public string ModifiedBy { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
 

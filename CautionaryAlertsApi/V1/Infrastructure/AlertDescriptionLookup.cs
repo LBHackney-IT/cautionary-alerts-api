@@ -13,7 +13,7 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         [Required]
         public string AlertCode { get; set; }
 
-        [Column("DESX")]
+        [Column("DESCX")]
         [MaxLength(100)]
         public string Description { get; set; }
 
