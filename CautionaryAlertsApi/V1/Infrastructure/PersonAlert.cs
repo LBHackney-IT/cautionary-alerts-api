@@ -30,7 +30,7 @@ namespace CautionaryAlertsApi.V1.Infrastructure
 
         [Column("modUser")]
         [Required]
-        [MaxLength(40)]
+        [MaxLength(20)]
         public string ModifiedBy { get; set; }
 
         [Column("modType")]
