@@ -22,7 +22,6 @@ namespace CautionaryAlertsApi.V1.Gateways
                 .Where(c => c.Key == tagRef)
                 .Where(c => c.PersonNumber == personNumber)
                 .ToList();
-            if (!links.Any()) throw new PersonNotFoundException();
 
             return links.Select(link =>
             {
@@ -38,7 +37,7 @@ namespace CautionaryAlertsApi.V1.Gateways
                     Alerts = personsAlerts
                 };
             }).ToList();
-    }
+        }
 
         private List<PersonAlert> GetPersonAlerts(ContactLink link)
         {

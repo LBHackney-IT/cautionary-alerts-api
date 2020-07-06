@@ -74,11 +74,9 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetCautionaryAlertsForAPersonThrowsIfPersonCantBeFound()
+        public void GetCautionaryAlertsForAPersonReturnsEmptyListIfNoPeopleFound()
         {
-            Func<List<CautionaryAlertPerson>> testDelegate = () =>
-                _classUnderTest.GetCautionaryAlertsForAPerson("0101/4", "2686");
-            testDelegate.Should().Throw<PersonNotFoundException>();
+            _classUnderTest.GetCautionaryAlertsForAPerson("0101/4", "2686").Should().BeEmpty();
         }
 
         [Test]

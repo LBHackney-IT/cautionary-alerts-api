@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,7 +17,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         private readonly Fixture _fixture = new Fixture();
 
         [Test]
-        public async Task  CanRetrieveAPersonsCautionaryAlerts()
+        public async Task CanRetrieveAPersonsCautionaryAlerts()
         {
             var link = AddContactLinkToDb();
             var alerts = new List<PersonAlert>
@@ -32,29 +31,51 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
                 return a.ToDomain(desc.Description).ToResponse();
             }).ToList();
 
-            var expectedResponse = new CautionaryAlertPersonResponse
+            var expectedResponse = new ListPersonsCautionaryAlerts
             {
-                ContactNumber = link.ContactNumber.ToString(),
-                PersonNumber = link.PersonNumber,
-                TagRef = link.Key,
-                Alerts = expectedAlertsResponse
+                Contacts = new List<CautionaryAlertPersonResponse>{
+                    new CautionaryAlertPersonResponse
+                    {
+                        ContactNumber = link.ContactNumber.ToString(),
+                        PersonNumber = link.PersonNumber,
+                        TagRef = link.Key,
+                        Alerts = expectedAlertsResponse
+                    }
+                }
             };
 
-            var url = new Uri($"/tag-ref/{link.Key}/person-number/{link.PersonNumber}", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/people?tag-ref={link.Key}&person-number={link.PersonNumber}", UriKind.Relative);
             var response = await Client.GetAsync(url).ConfigureAwait(true);
             response.StatusCode.Should().Be(200);
             var data = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-            var returnedAlerts = JsonConvert.DeserializeObject<CautionaryAlertPersonResponse>(data);
+            var returnedAlerts = JsonConvert.DeserializeObject<ListPersonsCautionaryAlerts>(data);
             returnedAlerts.Should().BeEquivalentTo(expectedResponse);
         }
 
         [Test]
         public async Task IfThePersonCantBeLocatedReturnsA404()
         {
-            var url = new Uri($"/tag-ref/1236735%2F01/person-number/6376c", UriKind.Relative);
+            var url = new Uri("/api/v1/cautionary-alerts/people?tag-ref=1236735/01&person-number=6376c", UriKind.Relative);
             var response = await Client.GetAsync(url).ConfigureAwait(true);
             response.StatusCode.Should().Be(404);
         }
+
+        [Test]
+        public async Task IfTagRefIsNotAQueryParameterReturnsA400()
+        {
+            var url = new Uri("/api/v1/cautionary-alerts/people?person-number=6376c", UriKind.Relative);
+            var response = await Client.GetAsync(url).ConfigureAwait(true);
+            response.StatusCode.Should().Be(400);
+        }
+
+        [Test]
+        public async Task IfPersonNumberIsNotAQueryParameterReturnsA400()
+        {
+            var url = new Uri("/api/v1/cautionary-alerts/people?tag-ref=1236735/01", UriKind.Relative);
+            var response = await Client.GetAsync(url).ConfigureAwait(true);
+            response.StatusCode.Should().Be(400);
+        }
+
         private ContactLink AddContactLinkToDb()
         {
             var contactLink = _fixture.Create<ContactLink>();

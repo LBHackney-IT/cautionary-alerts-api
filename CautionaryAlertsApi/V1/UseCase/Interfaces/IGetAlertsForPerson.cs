@@ -4,6 +4,6 @@ namespace CautionaryAlertsApi.V1.UseCase.Interfaces
 {
     public interface IGetAlertsForPerson
     {
-        CautionaryAlertPersonResponse Execute(string tagRef, string personNo);
+        ListPersonsCautionaryAlerts Execute(string tagRef, string personNo);
     }
 }

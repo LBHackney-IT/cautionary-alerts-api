@@ -19,6 +19,6 @@ namespace CautionaryAlertsApi.V1.Boundary.Response
 
     public class ListPersonsCautionaryAlerts
     {
-        public List<CautionaryAlertPerson> Contacts { get; set; }
+        public List<CautionaryAlertPersonResponse> Contacts { get; set; }
     }
 }
