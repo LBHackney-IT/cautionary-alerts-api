@@ -5,15 +5,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
     [Table("CCAddress")]
-    public class Address
+    public class AddressLink
     {
         [Key]
         [Column("UPRN")]
-        public int Id { get; set; }
+        public int AddressNumber { get; set; }
 
-        [Column("RealUPRN")]
+        [Column("PropertyReference")]
         [MaxLength(12)]
-        public string Uprn { get; set; }
+        public string PropertyReference { get; set; }
 
         [Column("modDate")]
         public DateTime DateModified { get; set; }

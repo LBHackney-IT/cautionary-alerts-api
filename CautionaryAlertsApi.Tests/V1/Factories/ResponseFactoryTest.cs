@@ -41,5 +41,17 @@ namespace CautionaryAlertsApi.Tests.V1.Factories
         {
             return $"{date.Year}-{date.Month:00}-{date.Day:00}";
         }
+
+        [Test]
+        public void CanMapAPropertyCautionaryAlertToAResponse()
+        {
+            var fixture = new Fixture();
+            var domain = fixture.Create<CautionaryAlertsProperty>();
+            var response = domain.ToResponse();
+
+            response.Alerts.Should().BeEquivalentTo(domain.Alerts.ToResponse());
+            response.AddressNumber.Should().Be(domain.AddressNumber);
+            response.PropertyReference.Should().Be(domain.PropertyReference);
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
+    [Table("ccAddressAlert")]
     public class PropertyAlert
     {
         [Column("addressAlertId")]
@@ -12,10 +13,10 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         public int Id { get; set; }
 
         [Column("addressNo")]
-        public int AddressId { get; set; }
+        public int AddressNumber { get; set; }
 
-        [ForeignKey("AddressId")]
-        public Address address { get; set; }
+        [ForeignKey("AddressNumber")]
+        public AddressLink AddressLink{ get; set; }
 
         [Column("alertCode")]
         [MaxLength(40)]
