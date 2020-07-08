@@ -1,8 +1,10 @@
+using System;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace CautionaryAlertsApi.V1.Controllers
 {
@@ -21,16 +23,27 @@ namespace CautionaryAlertsApi.V1.Controllers
         }
 
         /// <summary>
-        /// ...
+        /// Retrieve cautionary alerts for a person
         /// </summary>
-        /// <response code="200">...</response>
-        /// <response code="404">No ? found for the specified ID</response>
-        [ProducesResponseType(typeof(CautionaryAlertResponse), StatusCodes.Status200OK)]
+        /// <param name="tagRef">The Tenancy Reference for the person you are interested in. e.g. 1265372/01</param>
+        /// <param name="personNo">The number of the person you are interested in within a property. person_no in UH. e.g. 01</param>
+        /// <response code="200">Successful. One or more records found for given tag_ref and person_no</response>
+        /// <response code="404">No records found for given tag_ref and person_no</response>
+        [ProducesResponseType(typeof(ListPersonsCautionaryAlerts), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
-        [Route("tag-ref/{tagRef}/person-number/{personNo}")]
-        public IActionResult ViewPersonsCautionaryAlerts(string tagRef, string personNo)
+        [Route("people")]
+        public IActionResult ViewPersonsCautionaryAlerts([FromQuery(Name = "tag-ref"), BindRequired] string tagRef,
+            [FromQuery(Name = "person-number"), BindRequired] string personNo)
         {
-            return Ok(_getAlertsForPerson.Execute(tagRef, personNo));
+            try
+            {
+                return Ok(_getAlertsForPerson.Execute(tagRef, personNo));
+            }
+            catch (PersonNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>

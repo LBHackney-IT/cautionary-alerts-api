@@ -20,8 +20,34 @@ namespace CautionaryAlertsApi.V1.Gateways
 
         public List<CautionaryAlertPerson> GetCautionaryAlertsForAPerson(string tagRef, string personNumber)
         {
-            return new List<CautionaryAlertPerson>();
+            var links = _uhContext.ContactLinks
+                .Where(c => c.Key == tagRef)
+                .Where(c => c.PersonNumber == personNumber)
+                .ToList();
+
+            return links.Select(link =>
+            {
+                var personsAlerts = GetPersonAlerts(link)
+                    .Select(GetDescriptionAndMapToDomain)
+                    .ToList();
+
+                return new CautionaryAlertPerson
+                {
+                    ContactNumber = link.ContactNumber.ToString(),
+                    PersonNumber = link.PersonNumber,
+                    TagRef = link.Key,
+                    Alerts = personsAlerts
+                };
+            }).ToList();
         }
+
+        private List<PersonAlert> GetPersonAlerts(ContactLink link)
+        {
+            return _uhContext.PeopleAlerts
+                .Include(a => a.ContactLink)
+                .Where(a => a.ContactNumber == link.ContactNumber).ToList();
+        }
+            
 
         public CautionaryAlertsProperty GetCautionaryAlertsForAProperty(string propertyReference)
         {

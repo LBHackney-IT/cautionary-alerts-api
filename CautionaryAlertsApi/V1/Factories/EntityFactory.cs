@@ -5,11 +5,17 @@ namespace CautionaryAlertsApi.V1.Factories
 {
     public static class EntityFactory
     {
-        public static void ToDomain(this PersonAlert personAlert)
+        public static CautionaryAlert ToDomain(this PersonAlert alert, string description)
         {
-            //TODO: Map the rest of the fields in the domain object.
-            // More information on this can be found here https://github.com/LBHackney-IT/lbh-base-api/wiki/Factory-object-mappings
-
+            return new CautionaryAlert
+            {
+                Description = description,
+                AlertCode = alert.AlertCode,
+                DateModified = alert.DateModified,
+                EndDate = alert.EndDate,
+                StartDate = alert.StartDate,
+                ModifiedBy = alert.ModifiedBy
+            };
         }
         public static CautionaryAlert ToDomain(this PropertyAlert alert, string description)
         {

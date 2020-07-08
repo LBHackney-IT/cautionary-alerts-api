@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -5,7 +6,7 @@ namespace CautionaryAlertsApi.V1.Infrastructure
 {
 
     [Table("cccontactlink")]
-    public class ContactNumberLookup
+    public class ContactLink
     {
         [Column("contactno")]
         [Key]
@@ -30,5 +31,8 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         [Column("modtype")]
         [MaxLength(1)]
         public string ModifyType { get; set; }
+
+        [Column("moddate")]
+        public DateTime? DateModified { get; set; }
     }
 }

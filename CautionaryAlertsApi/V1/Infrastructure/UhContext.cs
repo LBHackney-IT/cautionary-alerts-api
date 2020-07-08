@@ -23,7 +23,7 @@ namespace CautionaryAlertsApi.V1.Infrastructure
 
         public DbSet<AlertDescriptionLookup> AlertDescriptionLookups { get; set; }
 
-        public DbSet<ContactNumberLookup> ContactLinks { get; set; }
+        public DbSet<ContactLink> ContactLinks { get; set; }
 
         public DbSet<AddressLink> Addresses { get; set; }
 

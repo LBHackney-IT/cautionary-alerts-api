@@ -16,7 +16,7 @@ namespace CautionaryAlertsApi.V1.Factories
                 DateModified = domain.DateModified.ToString("yyyy-MM-dd"),
                 EndDate = domain.EndDate?.ToString("yyyy-MM-dd"),
                 ModifiedBy = domain.ModifiedBy,
-                StartDate = domain.StartDate.ToString("yyyy-MM-dd"),
+                StartDate = domain.StartDate?.ToString("yyyy-MM-dd"),
             };
         }
 
@@ -32,6 +32,11 @@ namespace CautionaryAlertsApi.V1.Factories
         }
 
         public static List<CautionaryAlertResponse> ToResponse(this IEnumerable<CautionaryAlert> domainList)
+        {
+            return domainList.Select(domain => domain.ToResponse()).ToList();
+        }
+
+        public static List<CautionaryAlertPersonResponse> ToResponse(this IEnumerable<CautionaryAlertPerson> domainList)
         {
             return domainList.Select(domain => domain.ToResponse()).ToList();
         }
