@@ -53,15 +53,16 @@ namespace CautionaryAlertsApi.V1.Controllers
         /// <response code="200">Successful. Returns one or more cautionary alerts for a property.</response>
         /// <response code="404">No property cautionary alerts found for this property reference</response>
         [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
-        [Route("propertyReference/{propertyReference}")]
+        [Route("property/{propertyReference}")]
         public IActionResult ViewPropertyCautionaryAlerts(string propertyReference)
         {
             try
             {
                 return Ok(_getCautionaryAlertsForProperty.Execute(propertyReference));
             }
-            catch(PropertyAlertNotFoundException)
+            catch (PropertyAlertNotFoundException)
             {
                 return NotFound($"Property cautionary alert(s) for property reference {propertyReference} not found");
             }

@@ -31,9 +31,12 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         [Test]
         public void CanListAlertsForProperty()
         {
-            var expectedUseCaseResponse = new CautionaryAlertsPropertyResponse() { AddressNumber = "123",
+            var expectedUseCaseResponse = new CautionaryAlertsPropertyResponse()
+            {
+                AddressNumber = "123",
                 PropertyReference = "0012345678",
-               Alerts = new List<CautionaryAlertResponse>()};
+                Alerts = new List<CautionaryAlertResponse>()
+            };
 
             _mockGetAlertsForPropertyUseCase.Setup(x => x.Execute(It.IsAny<string>())).Returns(expectedUseCaseResponse);
 

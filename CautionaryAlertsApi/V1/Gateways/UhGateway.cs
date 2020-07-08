@@ -47,7 +47,14 @@ namespace CautionaryAlertsApi.V1.Gateways
                 .Include(a => a.ContactLink)
                 .Where(a => a.ContactNumber == link.ContactNumber).ToList();
         }
-            
+        private CautionaryAlert GetDescriptionAndMapToDomain(PersonAlert alert)
+        {
+            var description = _uhContext.AlertDescriptionLookups
+                .OrderByDescending(a => a.DateModified)
+                .FirstOrDefault(a => a.AlertCode == alert.AlertCode);
+            return alert.ToDomain(description?.Description);
+        }
+
 
         public CautionaryAlertsProperty GetCautionaryAlertsForAProperty(string propertyReference)
         {
@@ -58,17 +65,19 @@ namespace CautionaryAlertsApi.V1.Gateways
             {
                 return null;
             }
-
-            var propertyAlerts = GetPropertyAlerts(addressLink)
-                    .Select(GetDescriptionOfAlert)
-                    .ToList();
-
-            return new CautionaryAlertsProperty
+            else
             {
-                AddressNumber = addressLink.AddressNumber.ToString(),
-                PropertyReference = propertyReference,
-                Alerts = propertyAlerts
-            };
+                var propertyAlerts = GetPropertyAlerts(addressLink)
+                 .Select(GetDescriptionOfAlert)
+                 .ToList();
+
+                return new CautionaryAlertsProperty
+                {
+                    AddressNumber = addressLink.AddressNumber.ToString(),
+                    PropertyReference = propertyReference,
+                    Alerts = propertyAlerts
+                };
+            }
         }
 
         private List<PropertyAlert> GetPropertyAlerts(AddressLink addressLink)

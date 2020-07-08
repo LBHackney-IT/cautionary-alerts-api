@@ -2,15 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
+using CautionaryAlertsApi.Tests.V1.Helper;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
 using FluentAssertions;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace CautionaryAlertsApi.Tests.V1.Gateways
 {
@@ -176,12 +174,12 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         [Test]
         public void GetCautionaryAlertsForPropertyReturnsAllAlertsAddedAgainstAPropertyAsAList()
         {
-            var addressLink = AddAddressLinkToDb();
+            var addressLink = TestDataHelper.AddAddressLinkToDb(UhContext, _fixture);
             //alert 1
-            var alert = AddAlertToDatabaseForProperty(addressLink.AddressNumber);
+            var alert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
             var descAlertOne = AddDescriptionToDatabase(alert.AlertCode);
             //alert2
-            var secondAlert = AddAlertToDatabaseForProperty(addressLink.AddressNumber);
+            var secondAlert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
             var descAlertTwo = AddDescriptionToDatabase(secondAlert.AlertCode);
 
             var expectedResponse = new CautionaryAlertsProperty() { AddressNumber = addressLink.AddressNumber.ToString(), PropertyReference = addressLink.PropertyReference };
@@ -197,8 +195,8 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         [Test]
         public void GetCautionaryAlertsForPropertyReturnsAlertsWithDescriptions()
         {
-            var addressLink = AddAddressLinkToDb();
-            var alert = AddAlertToDatabaseForProperty(addressLink.AddressNumber);
+            var addressLink = TestDataHelper.AddAddressLinkToDb(UhContext, _fixture);
+            var alert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
             var descAlertOne = AddDescriptionToDatabase(alert.AlertCode);
 
             var response =
@@ -210,8 +208,8 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         [Test]
         public void GetCautionaryAlertsForPropertyReturnsAddressNumberForProperty()
         {
-            var addressLink = AddAddressLinkToDb();
-            var alert = AddAlertToDatabaseForProperty(addressLink.AddressNumber);
+            var addressLink = TestDataHelper.AddAddressLinkToDb(UhContext, _fixture);
+            var alert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
 
             var response =
                 _classUnderTest.GetCautionaryAlertsForAProperty(addressLink.PropertyReference);
@@ -223,8 +221,8 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         [Test]
         public void GetCautionaryAlertsForPropertyReturnsAlertsInformation()
         {
-            var addressLink = AddAddressLinkToDb();
-            var alert = AddAlertToDatabaseForProperty(addressLink.AddressNumber);
+            var addressLink = TestDataHelper.AddAddressLinkToDb(UhContext, _fixture);
+            var alert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
             var response =
                 _classUnderTest.GetCautionaryAlertsForAProperty(addressLink.PropertyReference);
 
@@ -233,39 +231,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             response.Alerts.First().EndDate.Should().BeNull();
             response.Alerts.First().ModifiedBy.Should().BeEquivalentTo(alert.ModifiedBy);
             response.Alerts.First().AlertCode.Should().BeEquivalentTo(alert.AlertCode);
-        }
-
-
-        private AddressLink AddAddressLinkToDb(string propertyReference = null, int? id = null)
-        {
-            var addressLink = _fixture.Create<AddressLink>();
-            addressLink.PropertyReference = propertyReference ?? addressLink.PropertyReference;
-            addressLink.AddressNumber = id ?? addressLink.AddressNumber;
-            addressLink.DateModified =addressLink.DateModified;
-            UhContext.Addresses.Add(addressLink);
-            UhContext.SaveChanges();
-            return addressLink;
-        }
-
-        private PropertyAlert AddAlertToDatabaseForProperty(int addressNumber, DateTime? endDate = null)
-        {
-            var alert = _fixture.Build<PropertyAlert>()
-                .With(x => x.AddressNumber, addressNumber)
-                .With(x => x.EndDate, endDate)
-                .Without(x => x.AddressLink)
-                .Create();
-            UhContext.PropertyAlerts.Add(alert);
-            UhContext.SaveChanges();
-            return alert;
-        }
-        private AlertDescriptionLookup AddDescriptionToDatabase(string code)
-        {
-            var desc = _fixture.Build<AlertDescriptionLookup>()
-                .With(d => d.AlertCode, code).Create();
-
-            UhContext.AlertDescriptionLookups.Add(desc);
-            UhContext.SaveChanges();
-            return desc;
         }
     }
 }

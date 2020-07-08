@@ -16,7 +16,7 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         public int AddressNumber { get; set; }
 
         [ForeignKey("AddressNumber")]
-        public AddressLink AddressLink{ get; set; }
+        public AddressLink AddressLink { get; set; }
 
         [Column("alertCode")]
         [MaxLength(40)]

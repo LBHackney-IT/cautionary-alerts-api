@@ -25,7 +25,7 @@ namespace CautionaryAlertsApi.V1.UseCase
             {
                 throw new PropertyAlertNotFoundException();
             }
-            return ResponseFactory.ToResponse(response);           
+            return ResponseFactory.ToResponse(response);
         }
     }
 }
