@@ -182,8 +182,12 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var secondAlert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
             var descAlertTwo = AddDescriptionToDatabase(secondAlert.AlertCode);
 
-            var expectedResponse = new CautionaryAlertsProperty() { AddressNumber = addressLink.AddressNumber.ToString(), PropertyReference = addressLink.PropertyReference,
-            UPRN = addressLink.UPRN };
+            var expectedResponse = new CautionaryAlertsProperty()
+            {
+                AddressNumber = addressLink.AddressNumber.ToString(),
+                PropertyReference = addressLink.PropertyReference,
+                UPRN = addressLink.UPRN
+            };
             expectedResponse.Alerts = new List<CautionaryAlert>() { alert.ToDomain(descAlertOne.Description), secondAlert.ToDomain(descAlertTwo.Description) };
 
             var response =
