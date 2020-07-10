@@ -52,6 +52,7 @@ namespace CautionaryAlertsApi.Tests.V1.Factories
             response.Alerts.Should().BeEquivalentTo(domain.Alerts.ToResponse());
             response.AddressNumber.Should().Be(domain.AddressNumber);
             response.PropertyReference.Should().Be(domain.PropertyReference);
+            response.UPRN.Should().Be(domain.UPRN);
         }
     }
 }

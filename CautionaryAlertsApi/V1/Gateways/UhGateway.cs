@@ -75,6 +75,7 @@ namespace CautionaryAlertsApi.V1.Gateways
                 {
                     AddressNumber = addressLink.AddressNumber.ToString(),
                     PropertyReference = propertyReference,
+                    UPRN = addressLink.UPRN,
                     Alerts = propertyAlerts
                 };
             }

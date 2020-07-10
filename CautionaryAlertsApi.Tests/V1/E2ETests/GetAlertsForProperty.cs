@@ -32,6 +32,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             {
                 AddressNumber = addressLink.AddressNumber.ToString(),
                 PropertyReference = addressLink.PropertyReference,
+                UPRN = addressLink.UPRN,
                 Alerts = new List<CautionaryAlert>()
                 { alert.ToDomain(descAlertOne.Description), secondAlert.ToDomain(descAlertTwo.Description) }
             });

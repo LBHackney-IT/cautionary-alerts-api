@@ -15,6 +15,10 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         [MaxLength(12)]
         public string PropertyReference { get; set; }
 
+        [Column("RealUPRN")]
+        [MaxLength(12)]
+        public string UPRN { get; set; }
+
         [Column("modDate")]
         public DateTime DateModified { get; set; }
 

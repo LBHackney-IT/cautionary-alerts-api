@@ -47,6 +47,7 @@ namespace CautionaryAlertsApi.V1.Factories
             {
                 AddressNumber = domain.AddressNumber,
                 PropertyReference = domain.PropertyReference,
+                UPRN = domain.UPRN,
                 Alerts = domain.Alerts.ToResponse()
             };
         }

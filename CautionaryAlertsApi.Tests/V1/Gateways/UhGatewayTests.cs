@@ -182,7 +182,8 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var secondAlert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
             var descAlertTwo = AddDescriptionToDatabase(secondAlert.AlertCode);
 
-            var expectedResponse = new CautionaryAlertsProperty() { AddressNumber = addressLink.AddressNumber.ToString(), PropertyReference = addressLink.PropertyReference };
+            var expectedResponse = new CautionaryAlertsProperty() { AddressNumber = addressLink.AddressNumber.ToString(), PropertyReference = addressLink.PropertyReference,
+            UPRN = addressLink.UPRN };
             expectedResponse.Alerts = new List<CautionaryAlert>() { alert.ToDomain(descAlertOne.Description), secondAlert.ToDomain(descAlertTwo.Description) };
 
             var response =
@@ -206,7 +207,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetCautionaryAlertsForPropertyReturnsAddressNumberForProperty()
+        public void GetCautionaryAlertsForPropertyReturnsAddressNumberUPRNAndPropertyReferenceForProperty()
         {
             var addressLink = TestDataHelper.AddAddressLinkToDb(UhContext, _fixture);
             var alert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
@@ -215,6 +216,8 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
                 _classUnderTest.GetCautionaryAlertsForAProperty(addressLink.PropertyReference);
 
             response.AddressNumber.Should().BeEquivalentTo(addressLink.AddressNumber.ToString());
+            response.PropertyReference.Should().BeEquivalentTo(addressLink.PropertyReference.ToString());
+            response.UPRN.Should().BeEquivalentTo(addressLink.UPRN.ToString());
         }
 
 
