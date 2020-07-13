@@ -15,9 +15,11 @@ namespace CautionaryAlertsApi.V1.Controllers
     public class CautionaryAlertsApiController : BaseController
     {
         private readonly IGetAlertsForPerson _getAlertsForPerson;
-        public CautionaryAlertsApiController(IGetAlertsForPerson getAlertsForPerson)
+        private readonly IGetCautionaryAlertsForProperty _getCautionaryAlertsForProperty;
+        public CautionaryAlertsApiController(IGetAlertsForPerson getAlertsForPerson, IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty)
         {
             _getAlertsForPerson = getAlertsForPerson;
+            _getCautionaryAlertsForProperty = getCautionaryAlertsForProperty;
         }
 
         /// <summary>
@@ -41,6 +43,28 @@ namespace CautionaryAlertsApi.V1.Controllers
             catch (PersonNotFoundException)
             {
                 return NotFound();
+            }
+        }
+
+        /// <summary>
+        /// Returns a list of cautionary alerts for a property based on property reference
+        /// </summary>
+        /// <param name="propertyReference">The housing property reference of a property</param>
+        /// <response code="200">Successful. Returns one or more cautionary alerts for a property.</response>
+        /// <response code="404">No property cautionary alerts found for this property reference</response>
+        [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet]
+        [Route("property/{propertyReference}")]
+        public IActionResult ViewPropertyCautionaryAlerts(string propertyReference)
+        {
+            try
+            {
+                return Ok(_getCautionaryAlertsForProperty.Execute(propertyReference));
+            }
+            catch (PropertyAlertNotFoundException)
+            {
+                return NotFound($"Property cautionary alert(s) for property reference {propertyReference} not found");
             }
         }
     }

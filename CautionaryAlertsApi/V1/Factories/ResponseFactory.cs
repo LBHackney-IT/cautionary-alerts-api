@@ -40,5 +40,16 @@ namespace CautionaryAlertsApi.V1.Factories
         {
             return domainList.Select(domain => domain.ToResponse()).ToList();
         }
+
+        public static CautionaryAlertsPropertyResponse ToResponse(this CautionaryAlertsProperty domain)
+        {
+            return new CautionaryAlertsPropertyResponse
+            {
+                AddressNumber = domain.AddressNumber,
+                PropertyReference = domain.PropertyReference,
+                UPRN = domain.UPRN,
+                Alerts = domain.Alerts.ToResponse()
+            };
+        }
     }
 }

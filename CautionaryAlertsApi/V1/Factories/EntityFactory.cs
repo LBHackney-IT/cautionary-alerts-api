@@ -17,5 +17,17 @@ namespace CautionaryAlertsApi.V1.Factories
                 ModifiedBy = alert.ModifiedBy
             };
         }
+        public static CautionaryAlert ToDomain(this PropertyAlert alert, string description)
+        {
+            return new CautionaryAlert
+            {
+                Description = description,
+                AlertCode = alert.AlertCode,
+                DateModified = alert.DateModified,
+                EndDate = alert.EndDate,
+                StartDate = alert.StartDate,
+                ModifiedBy = alert.ModifiedBy
+            };
+        }
     }
 }

@@ -23,5 +23,17 @@ namespace CautionaryAlertsApi.Tests.V1.Infrastructure
 
             result.Should().BeEquivalentTo(databaseEntity);
         }
+        [Test]
+        public void CanGetADatabaseEntityOfTypePropertyAlert()
+        {
+            var fixture = new Fixture();
+            var databaseEntity = fixture.Create<PropertyAlert>();
+            UhContext.PropertyAlerts.Add(databaseEntity);
+            UhContext.SaveChanges();
+
+            var result = UhContext.PropertyAlerts.ToList().FirstOrDefault();
+
+            result.Should().BeEquivalentTo(databaseEntity);
+        }
     }
 }

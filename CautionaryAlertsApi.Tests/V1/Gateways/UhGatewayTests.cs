@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
+using CautionaryAlertsApi.Tests.V1.Helper;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Gateways;
@@ -160,6 +161,83 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             UhContext.AlertDescriptionLookups.Add(desc);
             UhContext.SaveChanges();
             return desc;
+        }
+
+        [Test]
+        public void GetCautionaryAlertsForAPropertyReturnsEmtpyListIfNoMatchFoundForPropertyReference()
+        {
+            var response = _classUnderTest.GetCautionaryAlertsForAProperty("0010101010");
+
+            response.Should().BeNull();
+        }
+
+        [Test]
+        public void GetCautionaryAlertsForPropertyReturnsAllAlertsAddedAgainstAPropertyAsAList()
+        {
+            var addressLink = TestDataHelper.AddAddressLinkToDb(UhContext, _fixture);
+            //alert 1
+            var alert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
+            var descAlertOne = AddDescriptionToDatabase(alert.AlertCode);
+            //alert2
+            var secondAlert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
+            var descAlertTwo = AddDescriptionToDatabase(secondAlert.AlertCode);
+
+            var expectedResponse = new CautionaryAlertsProperty()
+            {
+                AddressNumber = addressLink.AddressNumber.ToString(),
+                PropertyReference = addressLink.PropertyReference,
+                UPRN = addressLink.UPRN
+            };
+            expectedResponse.Alerts = new List<CautionaryAlert>() { alert.ToDomain(descAlertOne.Description), secondAlert.ToDomain(descAlertTwo.Description) };
+
+            var response =
+                _classUnderTest.GetCautionaryAlertsForAProperty(addressLink.PropertyReference);
+
+            response.Should().BeEquivalentTo(expectedResponse);
+            response.Alerts.Count.Should().Be(2);
+        }
+
+        [Test]
+        public void GetCautionaryAlertsForPropertyReturnsAlertsWithDescriptions()
+        {
+            var addressLink = TestDataHelper.AddAddressLinkToDb(UhContext, _fixture);
+            var alert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
+            var descAlertOne = AddDescriptionToDatabase(alert.AlertCode);
+
+            var response =
+                _classUnderTest.GetCautionaryAlertsForAProperty(addressLink.PropertyReference);
+
+            response.Alerts.First().Description.Should().BeEquivalentTo(descAlertOne.Description);
+        }
+
+        [Test]
+        public void GetCautionaryAlertsForPropertyReturnsAddressNumberUPRNAndPropertyReferenceForProperty()
+        {
+            var addressLink = TestDataHelper.AddAddressLinkToDb(UhContext, _fixture);
+            var alert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
+
+            var response =
+                _classUnderTest.GetCautionaryAlertsForAProperty(addressLink.PropertyReference);
+
+            response.AddressNumber.Should().BeEquivalentTo(addressLink.AddressNumber.ToString());
+            response.PropertyReference.Should().BeEquivalentTo(addressLink.PropertyReference.ToString());
+            response.UPRN.Should().BeEquivalentTo(addressLink.UPRN.ToString());
+        }
+
+
+        [Test]
+        public void GetCautionaryAlertsForPropertyReturnsAlertsInformation()
+        {
+            var addressLink = TestDataHelper.AddAddressLinkToDb(UhContext, _fixture);
+            var alert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
+            var response =
+                _classUnderTest.GetCautionaryAlertsForAProperty(addressLink.PropertyReference);
+
+            response.Alerts.First().StartDate.Should().BeSameDateAs(alert.StartDate);
+            response.Alerts.First().DateModified.Should().BeSameDateAs(alert.DateModified);
+            response.Alerts.First().EndDate.Should().BeNull();
+            response.Alerts.First().ModifiedBy.Should().BeEquivalentTo(alert.ModifiedBy);
+            response.Alerts.First().AlertCode.Should().BeEquivalentTo(alert.AlertCode);
         }
     }
 }

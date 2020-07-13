@@ -9,5 +9,9 @@ namespace CautionaryAlertsApi.Tests.V1.Helper
         {
             return new Fixture().Create<PersonAlert>();
         }
+        public static PropertyAlert CreatePropertyAlert()
+        {
+            return new Fixture().Create<PropertyAlert>();
+        }
     }
 }
