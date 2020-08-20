@@ -21,7 +21,7 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         public string PickType { get; set; }
 
         [Column("MODDATE")]
-        public DateTime DateModified { get; set; }
+        public DateTime? DateModified { get; set; }
 
         [Column("MODUSER")]
         [MaxLength(20)]

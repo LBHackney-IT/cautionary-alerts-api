@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Infrastructure;
@@ -58,8 +56,7 @@ namespace CautionaryAlertsApi.V1.Gateways
 
         public CautionaryAlertsProperty GetCautionaryAlertsForAProperty(string propertyReference)
         {
-            var addressLink = _uhContext.Addresses.
-                Where(x => x.PropertyReference == propertyReference).FirstOrDefault();
+            var addressLink = _uhContext.Addresses.FirstOrDefault(x => x.PropertyReference == propertyReference);
 
             if (addressLink == null)
             {
