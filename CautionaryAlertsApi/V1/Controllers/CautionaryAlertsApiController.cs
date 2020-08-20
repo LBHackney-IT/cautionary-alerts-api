@@ -33,8 +33,8 @@ namespace CautionaryAlertsApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         [Route("people")]
-        public IActionResult ViewPersonsCautionaryAlerts([FromQuery(Name = "tag-ref"), BindRequired] string tagRef,
-            [FromQuery(Name = "person-number"), BindRequired] string personNo)
+        public IActionResult ViewPersonsCautionaryAlerts([FromQuery(Name = "tag_ref"), BindRequired] string tagRef,
+            [FromQuery(Name = "person_number"), BindRequired] string personNo)
         {
             try
             {
