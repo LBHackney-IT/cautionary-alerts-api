@@ -28,16 +28,16 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             var secondAlert = TestDataHelper.AddAlertToDatabaseForProperty(UhContext, _fixture, addressLink.AddressNumber);
             var descAlertTwo = TestDataHelper.AddDescriptionToDatabase(UhContext, _fixture, secondAlert.AlertCode);
 
-            var expectedResponse = ResponseFactory.ToResponse(new CautionaryAlertsProperty()
+            var expectedResponse = new CautionaryAlertsProperty()
             {
                 AddressNumber = addressLink.AddressNumber.ToString(),
                 PropertyReference = addressLink.PropertyReference,
                 UPRN = addressLink.UPRN,
                 Alerts = new List<CautionaryAlert>()
-                { alert.ToDomain(descAlertOne.Description), secondAlert.ToDomain(descAlertTwo.Description) }
-            });
+                    { alert.ToDomain(descAlertOne.Description), secondAlert.ToDomain(descAlertTwo.Description) }
+            }.ToResponse();
 
-            var url = new Uri($"/api/v1/cautionary-alerts/property/{addressLink.PropertyReference}", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/properties/{addressLink.PropertyReference}", UriKind.Relative);
             var response = await Client.GetAsync(url).ConfigureAwait(true);
             response.StatusCode.Should().Be(200);
             var data = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
@@ -48,7 +48,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         [Test]
         public async Task Return404IfPropertyCautionaryAlertsNotFound()
         {
-            var url = new Uri($"/api/v1/cautionary-alerts/property/00123456", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/properties/00123456", UriKind.Relative);
             var response = await Client.GetAsync(url).ConfigureAwait(true);
             var errorMessage = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync().ConfigureAwait(true));
             response.StatusCode.Should().Be(404);
@@ -58,7 +58,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         [Test]
         public async Task Return404IfPropertyReferenceNotSupplied()
         {
-            var url = new Uri($"/api/v1/cautionary-alerts/property/", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/properties", UriKind.Relative);
             var response = await Client.GetAsync(url).ConfigureAwait(true);
             response.StatusCode.Should().Be(404);
         }
