@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
-    [Table("CCContactAlert")]
+    [Table("CCContactAlert", Schema = "dbo")]
     public class PersonAlert
     {
         [Column("contactAlertId")]

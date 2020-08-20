@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
-    [Table("W2CPICKSDCH")]
+    [Table("W2CPICKSDCH", Schema = "dbo")]
     public class AlertDescriptionLookup
     {
         [Column("CODE")]
