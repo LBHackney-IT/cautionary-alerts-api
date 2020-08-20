@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS dbo;
 
-CREATE TABLE dbo.cccontactlink(
+CREATE TABLE dbo."CCContactLink"(
 	ContactNo int NOT NULL,
 	LinkType varchar(40) NOT NULL,
 	GFAreaNo int NULL,

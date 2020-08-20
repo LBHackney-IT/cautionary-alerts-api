@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
 
-    [Table("cccontactlink", Schema = "dbo")]
+    [Table("CCContactLink", Schema = "dbo")]
     public class ContactLink
     {
         [Column("contactno")]
