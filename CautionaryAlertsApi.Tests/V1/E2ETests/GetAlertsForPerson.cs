@@ -38,7 +38,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
                     {
                         ContactNumber = link.ContactNumber.ToString(),
                         PersonNumber = link.PersonNumber,
-                        TagRef = link.Key,
+                        TenancyAgreementReference = link.Key,
                         Alerts = expectedAlertsResponse
                     }
                 }

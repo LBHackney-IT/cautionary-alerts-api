@@ -34,7 +34,7 @@ namespace CautionaryAlertsApi.Tests.V1.Factories
             response.Alerts.Should().BeEquivalentTo(domain.Alerts.ToResponse());
             response.ContactNumber.Should().Be(domain.ContactNumber);
             response.PersonNumber.Should().Be(domain.PersonNumber);
-            response.TagRef.Should().Be(domain.TagRef);
+            response.TenancyAgreementReference.Should().Be(domain.TagRef);
         }
 
         private static string DateTimeToDateString(DateTime date)
