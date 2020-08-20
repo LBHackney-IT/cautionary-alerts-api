@@ -575,10 +575,10 @@ create table dbo."CCContactAlert"(
 );
 
 -- composite Key on CODE and PICKTYPE
-create table dbo."W2CPICKSDCH"(
-    "CODE"     varchar(40) not null,
-    "DESCX"    varchar(100),
-    "PICKTYPE" varchar(100) not null,
+create table dbo."W2CPickS"(
+    "code"     varchar(40) not null,
+    "descx"    varchar(100),
+    "PickType" varchar(100) not null,
     "MODDATE"  timestamp not null,
     "MODUSER"  varchar(20) not null,
     "MODTYPE"  varchar(1) default 'I' not null
