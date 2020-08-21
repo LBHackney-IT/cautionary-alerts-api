@@ -115,6 +115,30 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             });
         }
 
+        [Test]
+        public void GetCautionaryAlertsForAPersonWontDuplicateAlertsWhenContactLinkExistsForHouseAndTenancyRef()
+        {
+            var link = AddContactLinkToDb();
+            var duplicateLink = new ContactLink
+            {
+                Key = link.Key.Remove(0, 2),
+                ContactNumber = link.ContactNumber,
+                DateModified = link.DateModified,
+                LinkNumber = link.LinkNumber + 1,
+                LinkType = "Current Tenancy",
+                ModifyType = "I",
+                PersonNumber = link.PersonNumber
+            };
+            UhContext.ContactLinks.Add(duplicateLink);
+            var alert = AddAlertToDatabaseForContactNumber(link.ContactNumber);
+            AddDescriptionToDatabase(alert.AlertCode);
+
+            var response =
+                _classUnderTest.GetCautionaryAlertsForAPerson(link.Key, link.PersonNumber);
+
+            response.First().Alerts.Count.Should().Be(1);
+        }
+
         private static CautionaryAlertPerson CompileExpectedResponse(ContactLink link, PersonAlert alert, AlertDescriptionLookup description)
         {
             return new CautionaryAlertPerson
@@ -144,7 +168,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         {
             var alert = _fixture.Build<PersonAlert>()
                 .With(a => a.ContactNumber, contactNumber)
-                .Without(a => a.ContactLink)
                 .Create();
             UhContext.PeopleAlerts.Add(alert);
             UhContext.SaveChanges();

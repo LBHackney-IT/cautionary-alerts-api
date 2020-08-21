@@ -38,13 +38,13 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
                     {
                         ContactNumber = link.ContactNumber.ToString(),
                         PersonNumber = link.PersonNumber,
-                        TagRef = link.Key,
+                        TenancyAgreementReference = link.Key,
                         Alerts = expectedAlertsResponse
                     }
                 }
             };
 
-            var url = new Uri($"/api/v1/cautionary-alerts/people?tag-ref={link.Key}&person-number={link.PersonNumber}", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/people?tag_ref={link.Key}&person_number={link.PersonNumber}", UriKind.Relative);
             var response = await Client.GetAsync(url).ConfigureAwait(true);
             response.StatusCode.Should().Be(200);
             var data = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
@@ -55,7 +55,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         [Test]
         public async Task IfThePersonCantBeLocatedReturnsA404()
         {
-            var url = new Uri("/api/v1/cautionary-alerts/people?tag-ref=1236735/01&person-number=6376c", UriKind.Relative);
+            var url = new Uri("/api/v1/cautionary-alerts/people?tag_ref=1236735/01&person_number=6376c", UriKind.Relative);
             var response = await Client.GetAsync(url).ConfigureAwait(true);
             response.StatusCode.Should().Be(404);
         }
@@ -63,7 +63,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         [Test]
         public async Task IfTagRefIsNotAQueryParameterReturnsA400()
         {
-            var url = new Uri("/api/v1/cautionary-alerts/people?person-number=6376c", UriKind.Relative);
+            var url = new Uri("/api/v1/cautionary-alerts/people?person_number=6376c", UriKind.Relative);
             var response = await Client.GetAsync(url).ConfigureAwait(true);
             response.StatusCode.Should().Be(400);
         }
@@ -71,7 +71,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         [Test]
         public async Task IfPersonNumberIsNotAQueryParameterReturnsA400()
         {
-            var url = new Uri("/api/v1/cautionary-alerts/people?tag-ref=1236735/01", UriKind.Relative);
+            var url = new Uri("/api/v1/cautionary-alerts/people?tag_ref=1236735/01", UriKind.Relative);
             var response = await Client.GetAsync(url).ConfigureAwait(true);
             response.StatusCode.Should().Be(400);
         }
@@ -88,7 +88,6 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         {
             var alert = _fixture.Build<PersonAlert>()
                 .With(a => a.ContactNumber, contactNumber)
-                .Without(a => a.ContactLink)
                 .Create();
             UhContext.PeopleAlerts.Add(alert);
             UhContext.SaveChanges();

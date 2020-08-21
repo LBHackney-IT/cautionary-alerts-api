@@ -26,7 +26,7 @@ namespace CautionaryAlertsApi.V1.Factories
             {
                 ContactNumber = domain.ContactNumber,
                 PersonNumber = domain.PersonNumber,
-                TagRef = domain.TagRef,
+                TenancyAgreementReference = domain.TagRef,
                 Alerts = domain.Alerts.ToResponse()
             };
         }

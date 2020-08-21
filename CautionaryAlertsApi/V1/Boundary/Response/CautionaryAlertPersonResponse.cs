@@ -7,7 +7,7 @@ namespace CautionaryAlertsApi.V1.Boundary.Response
     {
         /// <example>7498659/01</example>
         /// <summary>Tenancy Reference</summary>
-        public string TagRef { get; set; }
+        public string TenancyAgreementReference { get; set; }
         /// <example>02</example>
         /// <summary>Specific person number within the tenancy</summary>
         public string PersonNumber { get; set; }

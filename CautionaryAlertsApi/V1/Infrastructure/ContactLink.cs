@@ -5,34 +5,34 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
 
-    [Table("cccontactlink", Schema = "dbo")]
+    [Table("CCContactLink", Schema = "dbo")]
     public class ContactLink
     {
-        [Column("contactno")]
-        [Key]
+        [Column("ContactNo")]
         public int ContactNumber { get; set; }
 
-        [Column("key1")]
+        [Column("Key1")]
         [StringLength(20)]
         //Can be a few types of reference including Tag ref and House Ref
         public string Key { get; set; }
 
-        [Column("key2")]
+        [Column("Key2")]
         [StringLength(10)]
         public string PersonNumber { get; set; }
 
-        [Column("linktype")]
+        [Column("LinkType")]
         [MaxLength(40)]
         public string LinkType { get; set; }
 
-        [Column("linkno")]
+        [Column("LinkNo")]
+        [Key]
         public int LinkNumber { get; set; }
 
-        [Column("modtype")]
+        [Column("MODTYPE")]
         [MaxLength(1)]
         public string ModifyType { get; set; }
 
-        [Column("moddate")]
+        [Column("MODDATE")]
         public DateTime? DateModified { get; set; }
     }
 }

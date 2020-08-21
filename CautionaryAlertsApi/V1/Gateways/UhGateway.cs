@@ -42,7 +42,6 @@ namespace CautionaryAlertsApi.V1.Gateways
         private List<PersonAlert> GetPersonAlerts(ContactLink link)
         {
             return _uhContext.PeopleAlerts
-                .Include(a => a.ContactLink)
                 .Where(a => a.ContactNumber == link.ContactNumber).ToList();
         }
         private CautionaryAlert GetDescriptionAndMapToDomain(PersonAlert alert)
