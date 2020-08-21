@@ -9,7 +9,6 @@ namespace CautionaryAlertsApi.V1.Infrastructure
     public class ContactLink
     {
         [Column("ContactNo")]
-        [Key]
         public int ContactNumber { get; set; }
 
         [Column("Key1")]
@@ -26,6 +25,7 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         public string LinkType { get; set; }
 
         [Column("LinkNo")]
+        [Key]
         public int LinkNumber { get; set; }
 
         [Column("MODTYPE")]

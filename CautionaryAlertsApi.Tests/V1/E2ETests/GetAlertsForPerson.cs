@@ -88,7 +88,6 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         {
             var alert = _fixture.Build<PersonAlert>()
                 .With(a => a.ContactNumber, contactNumber)
-                .Without(a => a.ContactLink)
                 .Create();
             UhContext.PeopleAlerts.Add(alert);
             UhContext.SaveChanges();
