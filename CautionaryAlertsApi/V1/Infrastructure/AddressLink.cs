@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
-    [Table("CCAddress")]
+    [Table("CCAddress", Schema = "dbo")]
     public class AddressLink
     {
         [Key]

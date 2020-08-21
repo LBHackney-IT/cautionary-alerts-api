@@ -55,7 +55,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
-        [Route("property/{propertyReference}")]
+        [Route("properties/{propertyReference}")]
         public IActionResult ViewPropertyCautionaryAlerts(string propertyReference)
         {
             try

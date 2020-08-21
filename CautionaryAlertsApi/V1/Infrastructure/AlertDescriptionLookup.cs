@@ -5,34 +5,31 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
-    [Table("W2CPICKSDCH")]
+    [Table("W2CPickS", Schema = "dbo")]
     public class AlertDescriptionLookup
     {
-        [Column("CODE")]
+        [Column("code")]
         [MaxLength(40)]
-        [Required]
         public string AlertCode { get; set; }
 
-        [Column("DESCX")]
+        [Column("descx")]
         [MaxLength(100)]
         public string Description { get; set; }
 
-        [Column("PICKTYPE")]
+        [Column("PickType")]
         [MaxLength(10)]
-        [Required]
         public string PickType { get; set; }
 
         [Column("MODDATE")]
-        [Required]
-        public DateTime DateModified { get; set; }
+        public DateTime? DateModified { get; set; }
 
         [Column("MODUSER")]
         [MaxLength(20)]
-        [Required]
         public string ModifiedBy { get; set; }
 
         [Column("MODTYPE")]
         [DefaultValue('I')]
+        [Required]
         public char ModifyType { get; set; }
     }
 }
