@@ -82,7 +82,7 @@ authorizerArn:
     staging: arn:aws:lambda:eu-west-2:715003523189:function:api-auth-token-generator-staging-apiauthverifytoken
     production: arn:aws:lambda:eu-west-2:153306643385:function:api-auth-token-generator-production-apiauthverifytoken
 
-  vpc:
+vpc:
     development:
       securityGroupIds:
         - sg-07aa5b4bfe5431d73
