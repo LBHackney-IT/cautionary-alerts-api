@@ -1,5 +1,8 @@
 # LBH Cautionary Alerts API
 
+Cautionary alerts API returns information about Cautionery Alerts held
+There are two GET endpoints one for retrieving all data and one for a specified ID
+
 ## Stack
 
 - .NET Core as a web framework.
