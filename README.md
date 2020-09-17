@@ -1,6 +1,6 @@
 # LBH Cautionary Alerts API
 
-Cautionary alerts API returns information about Cautionery Alerts held
+The Cautionary alerts API for accessing cautionary alerts attached to a person or property
 There are two GET endpoints one for retrieving all data and one for a specified ID
 
 ## Stack
