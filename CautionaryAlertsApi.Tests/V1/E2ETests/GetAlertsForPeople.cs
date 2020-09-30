@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
+using Bogus;
 using CautionaryAlertsApi.V1.Boundary.Response;
+using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Infrastructure;
 using FluentAssertions;
@@ -12,7 +14,7 @@ using NUnit.Framework;
 
 namespace CautionaryAlertsApi.Tests.V1.E2ETests
 {
-    public class GetAlertsForPerson : IntegrationTests<Startup>
+    public class GetAlertsForPeople : IntegrationTests<Startup>
     {
         private readonly Fixture _fixture = new Fixture();
 
@@ -67,18 +69,53 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             var response = await Client.GetAsync(url).ConfigureAwait(true);
             response.StatusCode.Should().Be(400);
         }
-
         [Test]
-        public async Task IfPersonNumberIsNotAQueryParameterReturnsA400()
+        public async Task CanRetrieveCautionaryAlertsForAllPeopleInATenancy()
         {
-            var url = new Uri("/api/v1/cautionary-alerts/people?tag_ref=1236735/01", UriKind.Relative);
+            var linkOne = AddContactLinkToDb();
+            var linkTwo = AddContactLinkToDb(linkOne.Key);
+
+
+            var linkOneAlert = AddAlertToDatabaseForContactNumber(linkOne.ContactNumber);
+            var alertOneDesc = AddDescriptionToDatabase(linkOneAlert.AlertCode);
+
+            var linkTwoAlert = AddAlertToDatabaseForContactNumber(linkTwo.ContactNumber);
+            var alertTwoDesc = AddDescriptionToDatabase(linkTwoAlert.AlertCode);
+
+            var expectedResponse = new ListPersonsCautionaryAlerts
+            {
+                Contacts = new List<CautionaryAlertPersonResponse>{
+                    new CautionaryAlertPersonResponse
+                    {
+                        ContactNumber = linkOne.ContactNumber.ToString(),
+                        PersonNumber = linkOne.PersonNumber,
+                        TenancyAgreementReference = linkOne.Key,
+                        Alerts = new List<CautionaryAlertResponse> { linkOneAlert.ToDomain(alertOneDesc.Description).ToResponse()}
+
+                    },
+                new CautionaryAlertPersonResponse
+                {
+                    ContactNumber = linkTwo.ContactNumber.ToString(),
+                    PersonNumber = linkTwo.PersonNumber,
+                    TenancyAgreementReference = linkTwo.Key,
+                    Alerts = new List<CautionaryAlertResponse> { linkTwoAlert.ToDomain(alertTwoDesc.Description).ToResponse() }
+                }
+            }
+            };
+
+            var url = new Uri($"/api/v1/cautionary-alerts/people?tag_ref={linkOne.Key}", UriKind.Relative);
             var response = await Client.GetAsync(url).ConfigureAwait(true);
-            response.StatusCode.Should().Be(400);
+            response.StatusCode.Should().Be(200);
+            var data = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+            var returnedAlerts = JsonConvert.DeserializeObject<ListPersonsCautionaryAlerts>(data);
+            returnedAlerts.Should().BeEquivalentTo(expectedResponse);
         }
 
-        private ContactLink AddContactLinkToDb()
+        private ContactLink AddContactLinkToDb(string tagRef = null)
         {
             var contactLink = _fixture.Create<ContactLink>();
+            contactLink.Key = tagRef ?? contactLink.Key;
+
             UhContext.ContactLinks.Add(contactLink);
             UhContext.SaveChanges();
             return contactLink;

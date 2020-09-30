@@ -14,11 +14,11 @@ namespace CautionaryAlertsApi.V1.Controllers
     [ApiVersion("1.0")]
     public class CautionaryAlertsApiController : BaseController
     {
-        private readonly IGetAlertsForPerson _getAlertsForPerson;
+        private readonly IGetAlertsForPeople _getAlertsForPeople;
         private readonly IGetCautionaryAlertsForProperty _getCautionaryAlertsForProperty;
-        public CautionaryAlertsApiController(IGetAlertsForPerson getAlertsForPerson, IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty)
+        public CautionaryAlertsApiController(IGetAlertsForPeople getAlertsForPeople, IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty)
         {
-            _getAlertsForPerson = getAlertsForPerson;
+            _getAlertsForPeople = getAlertsForPeople;
             _getCautionaryAlertsForProperty = getCautionaryAlertsForProperty;
         }
 
@@ -33,12 +33,12 @@ namespace CautionaryAlertsApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         [Route("people")]
-        public IActionResult ViewPersonsCautionaryAlerts([FromQuery(Name = "tag_ref"), BindRequired] string tagRef,
-            [FromQuery(Name = "person_number"), BindRequired] string personNo)
+        public IActionResult ViewPeopleCautionaryAlerts([FromQuery(Name = "tag_ref"), BindRequired] string tagRef,
+            [FromQuery(Name = "person_number")] string personNo)
         {
             try
             {
-                return Ok(_getAlertsForPerson.Execute(tagRef, personNo));
+                return Ok(_getAlertsForPeople.Execute(tagRef, personNo));
             }
             catch (PersonNotFoundException)
             {
