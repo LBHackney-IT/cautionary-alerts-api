@@ -48,7 +48,7 @@ CREATE TABLE dbo."CCContactLink"(
 );
 
 
-CREATE TABLE dbo.CCEmailAddress(
+CREATE TABLE dbo."CCEmailAddress"(
 	"ContactNo" int NOT NULL,
 	"Email" varchar(50) NOT NULL,
 	"EmailType" varchar(5) NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE dbo.CCEmailAddress(
 );
 
 
-CREATE TABLE dbo.CCPhone(
+CREATE TABLE dbo."CCPhone"(
 	"ContactNo" int NOT NULL,
 	"PhoneNo" varchar(20) NOT NULL,
 	"PhoneType" varchar(1) NULL,

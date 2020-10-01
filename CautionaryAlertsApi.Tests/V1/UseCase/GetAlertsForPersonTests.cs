@@ -16,14 +16,14 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
     public class GetAlertsForPersonTests
     {
         private Mock<IUhGateway> _mockGateway;
-        private GetAlertsForPerson _classUnderTest;
+        private GetAlertsForPeople _classUnderTest;
         private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
         {
             _mockGateway = new Mock<IUhGateway>();
-            _classUnderTest = new GetAlertsForPerson(_mockGateway.Object);
+            _classUnderTest = new GetAlertsForPeople(_mockGateway.Object);
         }
 
         [Test]
@@ -32,7 +32,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             var tagRef = _fixture.Create<string>();
             var personNo = _fixture.Create<string>();
             var gatewayResponse = _fixture.CreateMany<CautionaryAlertPerson>().ToList();
-            _mockGateway.Setup(x => x.GetCautionaryAlertsForAPerson(tagRef, personNo))
+            _mockGateway.Setup(x => x.GetCautionaryAlertsForPeople(tagRef, personNo))
                 .Returns(gatewayResponse);
 
             _classUnderTest.Execute(tagRef, personNo).Contacts.Should().BeEquivalentTo(gatewayResponse.ToResponse());
@@ -42,7 +42,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
         public void IfTheGatewayReturnsEmptyListThrowPersonNotFound()
         {
             _mockGateway.Setup(x =>
-                    x.GetCautionaryAlertsForAPerson("tagRef", "personNo"))
+                    x.GetCautionaryAlertsForPeople("tagRef", "personNo"))
                 .Returns(new List<CautionaryAlertPerson>());
 
             Func<ListPersonsCautionaryAlerts> testDelegate = () => _classUnderTest.Execute("tagRef", "personNo");

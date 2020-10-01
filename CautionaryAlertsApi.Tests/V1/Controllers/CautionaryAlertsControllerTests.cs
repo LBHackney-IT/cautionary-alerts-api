@@ -17,13 +17,13 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
     public class CautionaryAlertsControllerTests
     {
         private CautionaryAlertsApiController _classUnderTest;
-        private Mock<IGetAlertsForPerson> _mockGetAlertsForPersonUseCase;
+        private Mock<IGetAlertsForPeople> _mockGetAlertsForPersonUseCase;
         private Mock<IGetCautionaryAlertsForProperty> _mockGetAlertsForPropertyUseCase;
 
         [SetUp]
         public void SetUp()
         {
-            _mockGetAlertsForPersonUseCase = new Mock<IGetAlertsForPerson>();
+            _mockGetAlertsForPersonUseCase = new Mock<IGetAlertsForPeople>();
             _mockGetAlertsForPropertyUseCase = new Mock<IGetCautionaryAlertsForProperty>();
             _classUnderTest = new CautionaryAlertsApiController(_mockGetAlertsForPersonUseCase.Object, _mockGetAlertsForPropertyUseCase.Object);
         }

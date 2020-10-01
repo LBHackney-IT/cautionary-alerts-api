@@ -10,17 +10,16 @@ namespace CautionaryAlertsApi.V1.Gateways
     public class UhGateway : IUhGateway
     {
         private readonly UhContext _uhContext;
-
         public UhGateway(UhContext uhContext)
         {
             _uhContext = uhContext;
         }
 
-        public List<CautionaryAlertPerson> GetCautionaryAlertsForAPerson(string tagRef, string personNumber)
+        public List<CautionaryAlertPerson> GetCautionaryAlertsForPeople(string tagRef, string personNumber)
         {
             var links = _uhContext.ContactLinks
                 .Where(c => c.Key == tagRef)
-                .Where(c => c.PersonNumber == personNumber)
+                .Where(c => string.IsNullOrEmpty(personNumber) || c.PersonNumber == personNumber)
                 .ToList();
 
             return links.Select(link =>

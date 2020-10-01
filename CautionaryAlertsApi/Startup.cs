@@ -124,7 +124,7 @@ namespace CautionaryAlertsApi
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-            services.AddScoped<IGetAlertsForPerson, GetAlertsForPerson>();
+            services.AddScoped<IGetAlertsForPeople, GetAlertsForPeople>();
             services.AddScoped<IGetCautionaryAlertsForProperty, GetCautionaryAlertsForProperty>();
 
         }

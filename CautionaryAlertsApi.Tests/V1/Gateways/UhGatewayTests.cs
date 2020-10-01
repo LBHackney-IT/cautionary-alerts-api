@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
+using Bogus;
 using CautionaryAlertsApi.Tests.V1.Helper;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
@@ -17,6 +18,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
     {
         private UhGateway _classUnderTest;
         private Fixture _fixture;
+        private readonly Faker _faker = new Faker();
 
         [SetUp]
         public void Setup()
@@ -26,11 +28,11 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetCautionaryAlertsForAPersonReturnsAnEmptyAlertsListIfNoneExistAgainstThePerson()
+        public void GetCautionaryAlertsForPeopleReturnsAnEmptyAlertsListIfNoneExistAgainstThePerson()
         {
             var link = AddContactLinkToDb();
             var response =
-                _classUnderTest.GetCautionaryAlertsForAPerson(link.Key, link.PersonNumber).First();
+                _classUnderTest.GetCautionaryAlertsForPeople(link.Key, link.PersonNumber).First();
             response.ContactNumber.Should().Be(link.ContactNumber.ToString());
             response.PersonNumber.Should().Be(link.PersonNumber);
             response.TagRef.Should().Be(link.Key);
@@ -38,20 +40,20 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetCautionaryAlertsForAPersonWillReturnASingleAlert()
+        public void GetCautionaryAlertsForPeopleWillReturnASingleAlert()
         {
             var link = AddContactLinkToDb();
             var alert = AddAlertToDatabaseForContactNumber(link.ContactNumber);
             var desc = AddDescriptionToDatabase(alert.AlertCode);
 
             var response =
-                _classUnderTest.GetCautionaryAlertsForAPerson(link.Key, link.PersonNumber).First();
+                _classUnderTest.GetCautionaryAlertsForPeople(link.Key, link.PersonNumber).First();
 
             response.Should().BeEquivalentTo(CompileExpectedResponse(link, alert, desc));
         }
 
         [Test]
-        public void GetCautionaryAlertsForAPersonWillReturnAMultipleAlerts()
+        public void GetCautionaryAlertsForPeopleWillReturnAMultipleAlerts()
         {
             var link = AddContactLinkToDb();
             var expectedAlerts = new List<CautionaryAlert>();
@@ -63,7 +65,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             }
 
             var response =
-                _classUnderTest.GetCautionaryAlertsForAPerson(link.Key, link.PersonNumber).First();
+                _classUnderTest.GetCautionaryAlertsForPeople(link.Key, link.PersonNumber).First();
 
             response.Should().BeEquivalentTo(new CautionaryAlertPerson
             {
@@ -75,13 +77,13 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetCautionaryAlertsForAPersonReturnsEmptyListIfNoPeopleFound()
+        public void GetCautionaryAlertsForPeopleReturnsEmptyListIfNoPeopleFound()
         {
-            _classUnderTest.GetCautionaryAlertsForAPerson("0101/4", "2686").Should().BeEmpty();
+            _classUnderTest.GetCautionaryAlertsForPeople("0101/4", "2686").Should().BeEmpty();
         }
 
         [Test]
-        public void GetCautionaryAlertsForAPersonUsesTheMostRecentlyModifiedDescription()
+        public void GetCautionaryAlertsForPeopleUsesTheMostRecentlyModifiedDescription()
         {
             var link = AddContactLinkToDb();
             var alert = AddAlertToDatabaseForContactNumber(link.ContactNumber);
@@ -89,13 +91,13 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var newerDescription = AddDescriptionToDatabase(alert.AlertCode, DateTime.Now.AddMonths(-2));
 
             var response =
-                _classUnderTest.GetCautionaryAlertsForAPerson(link.Key, link.PersonNumber).First();
+                _classUnderTest.GetCautionaryAlertsForPeople(link.Key, link.PersonNumber).First();
 
             response.Should().BeEquivalentTo(CompileExpectedResponse(link, alert, newerDescription));
         }
 
         [Test]
-        public void GetCautionaryAlertsForAPersonReturnsAlertsAgainstAnyMatchingContactLinkRecord()
+        public void GetCautionaryAlertsForPeopleReturnsAlertsAgainstAnyMatchingContactLinkRecord()
         {
             var olderLink = AddContactLinkToDb(dateModified: DateTime.Now.AddMonths(-11));
             var olderAlert = AddAlertToDatabaseForContactNumber(olderLink.ContactNumber);
@@ -107,7 +109,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
 
             var response =
-                _classUnderTest.GetCautionaryAlertsForAPerson(newerLink.Key, newerLink.PersonNumber);
+                _classUnderTest.GetCautionaryAlertsForPeople(newerLink.Key, newerLink.PersonNumber);
 
             response.Should().BeEquivalentTo(new List<CautionaryAlertPerson>{
                     CompileExpectedResponse(newerLink, newerAlert, newerDesc),
@@ -116,7 +118,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
-        public void GetCautionaryAlertsForAPersonWontDuplicateAlertsWhenContactLinkExistsForHouseAndTenancyRef()
+        public void GetCautionaryAlertsForPeopleWontDuplicateAlertsWhenContactLinkExistsForHouseAndTenancyRef()
         {
             var link = AddContactLinkToDb();
             var duplicateLink = new ContactLink
@@ -134,8 +136,105 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             AddDescriptionToDatabase(alert.AlertCode);
 
             var response =
-                _classUnderTest.GetCautionaryAlertsForAPerson(link.Key, link.PersonNumber);
+                _classUnderTest.GetCautionaryAlertsForPeople(link.Key, link.PersonNumber);
 
+            response.First().Alerts.Count.Should().Be(1);
+        }
+
+        [Test]
+        public void GetCautionaryAlertsForAllPeopleInATenancy()
+        {
+            var tenancyRef = _faker.Random.AlphaNumeric(10);
+            var expectedAlerts = new List<CautionaryAlert>();
+            var linkOne = AddContactLinkToDb(tenancyRef, "1");
+            var linkTwo = AddContactLinkToDb(tenancyRef, "2");
+
+            var alertForLinkOne = AddAlertToDatabaseForContactNumber(linkOne.ContactNumber);
+            var alertOneDesc = AddDescriptionToDatabase(alertForLinkOne.AlertCode);
+            expectedAlerts.Add(alertForLinkOne.ToDomain(alertOneDesc.Description));
+
+            var secondAlertForLinkOne = AddAlertToDatabaseForContactNumber(linkOne.ContactNumber);
+            var secondAlertDesc = AddDescriptionToDatabase(secondAlertForLinkOne.AlertCode);
+            expectedAlerts.Add(secondAlertForLinkOne.ToDomain(secondAlertDesc.Description));
+
+
+            var alertForLinkTwo = AddAlertToDatabaseForContactNumber(linkTwo.ContactNumber);
+            var thirdAlertDesc = AddDescriptionToDatabase(alertForLinkTwo.AlertCode);
+
+            var response =
+              _classUnderTest.GetCautionaryAlertsForPeople(tenancyRef, "");
+
+            response.Should().BeEquivalentTo(new List<CautionaryAlertPerson>{
+                    new CautionaryAlertPerson
+                    {
+                        ContactNumber = linkOne.ContactNumber.ToString(),
+                        PersonNumber = linkOne.PersonNumber,
+                        TagRef = linkOne.Key,
+                        Alerts = expectedAlerts
+                    }, new CautionaryAlertPerson
+                    {
+                        ContactNumber = linkTwo.ContactNumber.ToString(),
+                        PersonNumber = linkTwo.PersonNumber,
+                        TagRef = linkTwo.Key,
+                        Alerts = new List<CautionaryAlert>
+                        {
+                            alertForLinkTwo.ToDomain(thirdAlertDesc.Description)
+                        }
+                    }
+            });
+        }
+        [Test]
+        public void GetCautionaryAlertsForPeopleInTenancyReturnsBothContactsEvenIfOneDoesNotHaveAlerts()
+        {
+            var tenancyRef = _faker.Random.AlphaNumeric(10);
+            var expectedAlerts = new List<CautionaryAlert>();
+            var linkOne = AddContactLinkToDb(tenancyRef, "1");
+            var linkTwo = AddContactLinkToDb(tenancyRef, "2");
+
+            var alertForLinkOne = AddAlertToDatabaseForContactNumber(linkOne.ContactNumber);
+            var alertOneDesc = AddDescriptionToDatabase(alertForLinkOne.AlertCode);
+            expectedAlerts.Add(alertForLinkOne.ToDomain(alertOneDesc.Description));
+
+            var secondAlertForLinkOne = AddAlertToDatabaseForContactNumber(linkOne.ContactNumber);
+            var secondAlertDesc = AddDescriptionToDatabase(secondAlertForLinkOne.AlertCode);
+            expectedAlerts.Add(secondAlertForLinkOne.ToDomain(secondAlertDesc.Description));
+
+            var response =
+              _classUnderTest.GetCautionaryAlertsForPeople(tenancyRef, "");
+
+            response.Should().BeEquivalentTo(new List<CautionaryAlertPerson>{
+                    new CautionaryAlertPerson
+                    {
+                        ContactNumber = linkOne.ContactNumber.ToString(),
+                        PersonNumber = linkOne.PersonNumber,
+                        TagRef = linkOne.Key,
+                        Alerts = expectedAlerts
+                    }, new CautionaryAlertPerson
+                    {
+                        ContactNumber = linkTwo.ContactNumber.ToString(),
+                        PersonNumber = linkTwo.PersonNumber,
+                        TagRef = linkTwo.Key,
+                        Alerts = new List<CautionaryAlert>()
+                    }
+            });
+        }
+        [Test]
+        public void GetCautionaryAlertsForPeopleWithoutSupplyingPersonNoReturnsCorrectContact()
+        {
+            var tenancyRef = _faker.Random.AlphaNumeric(10);
+            var linkOne = AddContactLinkToDb(tenancyRef, "1");
+            var linkTwo = AddContactLinkToDb();
+
+            var alertForLinkOne = AddAlertToDatabaseForContactNumber(linkOne.ContactNumber);
+            var alertOneDesc = AddDescriptionToDatabase(alertForLinkOne.AlertCode);
+
+            var alertForLinkTwo = AddAlertToDatabaseForContactNumber(linkTwo.ContactNumber);
+            var alertOTwoDesc = AddDescriptionToDatabase(alertForLinkTwo.AlertCode);
+
+            var response =
+              _classUnderTest.GetCautionaryAlertsForPeople(tenancyRef, "");
+
+            response.Count.Should().Be(1);
             response.First().Alerts.Count.Should().Be(1);
         }
 
@@ -152,7 +251,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
                 }
             };
         }
-
         private ContactLink AddContactLinkToDb(string tagRef = null, string personNo = null, DateTime? dateModified = null)
         {
             var contactLink = _fixture.Create<ContactLink>();

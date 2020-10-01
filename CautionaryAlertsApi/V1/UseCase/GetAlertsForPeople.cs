@@ -7,17 +7,17 @@ using CautionaryAlertsApi.V1.UseCase.Interfaces;
 
 namespace CautionaryAlertsApi.V1.UseCase
 {
-    public class GetAlertsForPerson : IGetAlertsForPerson
+    public class GetAlertsForPeople : IGetAlertsForPeople
     {
         private IUhGateway _gateway;
-        public GetAlertsForPerson(IUhGateway gateway)
+        public GetAlertsForPeople(IUhGateway gateway)
         {
             _gateway = gateway;
         }
 
         public ListPersonsCautionaryAlerts Execute(string tagRef, string personNo)
         {
-            var gatewayResponse = _gateway.GetCautionaryAlertsForAPerson(tagRef, personNo);
+            var gatewayResponse = _gateway.GetCautionaryAlertsForPeople(tagRef, personNo);
             if (!gatewayResponse.Any()) throw new PersonNotFoundException();
 
             return new ListPersonsCautionaryAlerts
