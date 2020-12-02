@@ -21,7 +21,7 @@ namespace CautionaryAlertsApi.V1.UseCase
         {
             var response = _gateway.GetCautionaryAlertsForAProperty(propertyReference);
 
-            if (response == null)
+            if (response == null || (!response.Alerts?.Any() ?? true))
             {
                 throw new PropertyAlertNotFoundException();
             }
