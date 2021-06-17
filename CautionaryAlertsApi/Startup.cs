@@ -8,6 +8,9 @@ using CautionaryAlertsApi.V1.Infrastructure;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using CautionaryAlertsApi.Versioning;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Google.Apis.Sheets.v4;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -115,6 +118,11 @@ namespace CautionaryAlertsApi
 
             services.AddDbContext<UhContext>(
                 opt => opt.UseNpgsql(connectionString));
+            services.AddSingleton(s => new SheetsService(new BaseClientService.Initializer
+            {
+                ApplicationName = ApiName,
+                HttpClientInitializer = GoogleCredential.FromJson(Environment.GetEnvironmentVariable("CREDENTIAL_JSON"))
+            }));
         }
 
         private static void RegisterGateways(IServiceCollection services)

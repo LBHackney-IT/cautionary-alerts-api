@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Infrastructure;
 
@@ -27,6 +28,16 @@ namespace CautionaryAlertsApi.V1.Factories
                 EndDate = alert.EndDate,
                 StartDate = alert.StartDate,
                 ModifiedBy = alert.ModifiedBy
+            };
+        }
+
+        public static ExampleModel ToDomain(this List<string> row)
+        {
+            return new ExampleModel
+            {
+                Name = row[0],
+                Number = int.Parse(row[1]),
+                IsHighlighted = bool.Parse(row[2])
             };
         }
     }
