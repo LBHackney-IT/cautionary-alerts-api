@@ -8,6 +8,9 @@ using CautionaryAlertsApi.V1.Infrastructure;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using CautionaryAlertsApi.Versioning;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using Google.Apis.Sheets.v4;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -104,7 +107,9 @@ namespace CautionaryAlertsApi
                 if (File.Exists(xmlPath))
                     c.IncludeXmlComments(xmlPath);
             });
+
             ConfigureDbContext(services);
+            ConfigureGoogleSheetsService(services);
             RegisterGateways(services);
             RegisterUseCases(services);
         }
@@ -117,16 +122,28 @@ namespace CautionaryAlertsApi
                 opt => opt.UseNpgsql(connectionString));
         }
 
+        private static void ConfigureGoogleSheetsService(IServiceCollection services)
+        {
+            var credentialJson = Environment.GetEnvironmentVariable("CREDENTIAL_JSON");
+
+            services.AddSingleton(s => new SheetsService(new BaseClientService.Initializer
+            {
+                ApplicationName = ApiName,
+                HttpClientInitializer = GoogleCredential.FromJson(credentialJson)
+            }));
+        }
+
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<IUhGateway, UhGateway>();
+            services.AddScoped<IGoogleSheetGateway, GoogleSheetGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
         {
             services.AddScoped<IGetAlertsForPeople, GetAlertsForPeople>();
             services.AddScoped<IGetCautionaryAlertsForProperty, GetCautionaryAlertsForProperty>();
-
+            services.AddScoped<IGetGoogleSheetAlertsForProperty, GetGoogleSheetAlertsForProperty>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

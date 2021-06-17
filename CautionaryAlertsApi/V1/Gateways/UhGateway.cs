@@ -76,13 +76,13 @@ namespace CautionaryAlertsApi.V1.Gateways
             }
         }
 
-        private List<PropertyAlert> GetPropertyAlerts(AddressLink addressLink)
+        private List<Infrastructure.PropertyAlert> GetPropertyAlerts(AddressLink addressLink)
         {
             return _uhContext.PropertyAlerts
               .Include(x => x.AddressLink)
               .Where(x => x.AddressNumber == addressLink.AddressNumber).ToList();
         }
-        private CautionaryAlert GetDescriptionOfAlert(PropertyAlert alert)
+        private CautionaryAlert GetDescriptionOfAlert(Infrastructure.PropertyAlert alert)
         {
             var description = _uhContext.AlertDescriptionLookups
                 .OrderByDescending(a => a.DateModified)
