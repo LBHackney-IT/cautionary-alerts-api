@@ -12,6 +12,7 @@
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.11.0" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="Google.Apis.Sheets.v4" Version="1.51.0.2338" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />
@@ -25,6 +26,15 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CautionaryAlertsApi\CautionaryAlertsApi.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="V1\Gateways\sample_sheet.json" />
+    <EmbeddedResource Include="V1\Gateways\sample_sheet.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>
