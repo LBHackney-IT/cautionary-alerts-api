@@ -11,7 +11,6 @@ namespace CautionaryAlertsApi.V1.Gateways
     {
         private static readonly string _spreadsheetId =
             Environment.GetEnvironmentVariable("SPREADSHEET_ID") ?? "testing";
-        // private static readonly string _credentialJson = Environment.GetEnvironmentVariable("CREDENTIAL_JSON");
 
         private readonly SheetsService _sheetsService;
 
