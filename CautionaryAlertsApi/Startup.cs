@@ -120,6 +120,11 @@ namespace CautionaryAlertsApi
 
             services.AddDbContext<UhContext>(
                 opt => opt.UseNpgsql(connectionString));
+            services.AddSingleton(s => new SheetsService(new BaseClientService.Initializer
+            {
+                ApplicationName = ApiName,
+                HttpClientInitializer = GoogleCredential.FromJson(Environment.GetEnvironmentVariable("CREDENTIAL_JSON"))
+            }));
         }
 
         private static void ConfigureGoogleSheetsService(IServiceCollection services)
