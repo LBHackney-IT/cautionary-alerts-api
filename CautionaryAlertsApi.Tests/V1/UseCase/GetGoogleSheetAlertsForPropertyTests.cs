@@ -27,7 +27,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
         public void WillCallGatewayAndRetrieveCautionaryAlertListItem()
         {
             // Arrange
-            var expectedResponse = new List<CautionaryAlertListItem> {_fixture.Create<CautionaryAlertListItem>()};
+            var expectedResponse = new List<CautionaryAlertListItem> { _fixture.Create<CautionaryAlertListItem>() };
             var propertyReference = expectedResponse.First().PropertyReference;
             _gateway
                 .Setup(g => g.GetPropertyAlerts(propertyReference))

@@ -24,7 +24,7 @@ namespace CautionaryAlertsApi.V1.Gateways
             var rowNumber = GetRowIndex(propertyReference);
             var row = GetRow(rowNumber);
 
-            return new List<CautionaryAlertListItem> {row.ToModel()};
+            return new List<CautionaryAlertListItem> { row.ToModel() };
         }
 
         private int GetRowIndex(string propertyReference)
@@ -36,12 +36,12 @@ namespace CautionaryAlertsApi.V1.Gateways
             var pRefs = data.Values.First().Select(value => value.ToString()).ToList();
 
             var goodPRefs = pRefs
-                .Select((value, index) => new {value, index})
+                .Select((value, index) => new { value, index })
                 .Where(p => p.value.Length > 0 && p.value != "Not found" && p.value != "#REF!")
                 .ToList();
 
             var badPRefs = pRefs
-                .Select((value, index) => new {value, index})
+                .Select((value, index) => new { value, index })
                 .Except(goodPRefs);
             Console.WriteLine(
                 $"{badPRefs.Count()} rows contain invalid property references and were excluded from the result.");

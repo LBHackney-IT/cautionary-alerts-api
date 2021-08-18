@@ -68,7 +68,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             }
 
             var clientFactory = new FakeHttpClientFactory(RequestHandler);
-            var baseClientService = new BaseClientService.Initializer {HttpClientFactory = clientFactory};
+            var baseClientService = new BaseClientService.Initializer { HttpClientFactory = clientFactory };
             _sheetService = new SheetsService(baseClientService);
             _classUnderTest = new GoogleSheetGateway(_sheetService);
         }
