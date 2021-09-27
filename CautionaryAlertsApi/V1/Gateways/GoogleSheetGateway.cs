@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CautionaryAlertsApi.V1.Factories;
 using Google.Apis.Sheets.v4;
+using static CautionaryAlertsApi.V1.Helpers.GoogleSheetHelpers;
 using static Google.Apis.Sheets.v4.SpreadsheetsResource.ValuesResource.GetRequest.MajorDimensionEnum;
 
 namespace CautionaryAlertsApi.V1.Gateways
@@ -22,9 +23,11 @@ namespace CautionaryAlertsApi.V1.Gateways
         public IEnumerable<CautionaryAlertListItem> GetPropertyAlerts(string propertyReference)
         {
             var rowNumber = GetRowIndex(propertyReference);
+            if (rowNumber == -1) return new List<CautionaryAlertListItem>();
+
             var row = GetRow(rowNumber);
 
-            return new List<CautionaryAlertListItem> { row.ToModel() };
+            return new List<CautionaryAlertListItem> {row.ToModel()};
         }
 
         private int GetRowIndex(string propertyReference)
@@ -32,26 +35,22 @@ namespace CautionaryAlertsApi.V1.Gateways
             // Only look at the property references column
             var request = _sheetsService.Spreadsheets.Values.Get(_spreadsheetId, "CURRENT LIST!N1:N1000");
             request.MajorDimension = COLUMNS;
-            var data = request.Execute();
-            var pRefs = data.Values.First().Select(value => value.ToString()).ToList();
+            var sheetData = request.Execute();
 
-            var goodPRefs = pRefs
-                .Select((value, index) => new { value, index })
-                .Where(p => p.value.Length > 0 && p.value != "Not found" && p.value != "#REF!")
-                .ToList();
+            var propertyRefs = sheetData
+                .GetAllPropertyRefs()
+                .ExcludeInvalidPropertyRefs();
 
-            var badPRefs = pRefs
-                .Select((value, index) => new { value, index })
-                .Except(goodPRefs);
+            if (propertyRefs is null) return -1;
+
+            var firstMatchingRow = propertyRefs.First(r => r.Value == propertyReference).Index + 1;
+
             Console.WriteLine(
-                $"{badPRefs.Count()} rows contain invalid property references and were excluded from the result.");
+                $"Property reference {propertyReference} {(firstMatchingRow is -1 ? "not found." : $"found on row {firstMatchingRow + 1}.")}");
 
-            var matchedRowIndex = goodPRefs.First(r => r.value == propertyReference).index + 1;
-            Console.WriteLine(
-                $"Property reference {propertyReference} {(matchedRowIndex is -1 ? "not found." : $"found on row {matchedRowIndex + 1}.")}");
-
-            return matchedRowIndex;
+            return firstMatchingRow;
         }
+
 
         private IEnumerable<string> GetRow(int row)
         {
