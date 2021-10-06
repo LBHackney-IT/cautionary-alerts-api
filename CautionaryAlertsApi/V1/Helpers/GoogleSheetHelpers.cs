@@ -30,11 +30,11 @@ namespace CautionaryAlertsApi.V1.Helpers
             return pRefs;
         }
     }
-        public class ValueIndexPair
-        {
-            public ValueIndexPair(string v, int i) { Value = v; Index = i; }
-            public string Value { get; }
-            public int Index { get; }
-        }
+    public class ValueIndexPair
+    {
+        public ValueIndexPair(string v, int i) { Value = v; Index = i; }
+        public string Value { get; }
+        public int Index { get; }
+    }
 
 }

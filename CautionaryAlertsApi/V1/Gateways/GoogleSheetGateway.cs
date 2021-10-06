@@ -27,7 +27,7 @@ namespace CautionaryAlertsApi.V1.Gateways
 
             var row = GetRow(rowNumber);
 
-            return new List<CautionaryAlertListItem> {row.ToModel()};
+            return new List<CautionaryAlertListItem> { row.ToModel() };
         }
 
         private int GetRowIndex(string propertyReference)
