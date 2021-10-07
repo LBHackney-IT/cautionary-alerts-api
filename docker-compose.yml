@@ -15,7 +15,7 @@ services:
   dev-database:
     env_file:
       - database.env
-    image: postgres:latest
+    image: postgres:12
     volumes:
       - ./database:/docker-entrypoint-initdb.d
 
@@ -30,10 +30,6 @@ services:
       - DB_USERNAME=postgres
       - DB_PASSWORD=mypassword
       - DB_DATABASE=testdb
-    links:
-      - test-database
-    depends_on:
-      - test-database
   test-database:
     image: test-database
     build:
