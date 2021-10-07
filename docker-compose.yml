@@ -34,16 +34,12 @@ services:
       - test-database
     depends_on:
       - test-database
-    networks:
-      - db-network
   test-database:
     image: test-database
     build:
       context: .
       dockerfile: database/Dockerfile
     ports:
-      - 5432:5432
+      - "5432:5432"
     env_file:
       - database.env
-    networks:
-      - db-network
