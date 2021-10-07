@@ -15,7 +15,7 @@ services:
   dev-database:
     env_file:
       - database.env
-    image: postgres:12
+    image: postgres:latest
     volumes:
       - ./database:/docker-entrypoint-initdb.d
 
