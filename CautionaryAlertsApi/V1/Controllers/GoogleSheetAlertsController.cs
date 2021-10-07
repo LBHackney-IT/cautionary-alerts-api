@@ -2,10 +2,8 @@ using System;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.UseCase;
-using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace CautionaryAlertsApi.V1.Controllers
 {
@@ -30,6 +28,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         /// <response code="404">No property cautionary alerts found for this property reference</response>
         [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("properties/{propertyReference}")]
         public IActionResult GetAlertsByProperty(string propertyReference)
