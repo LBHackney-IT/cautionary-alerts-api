@@ -7,34 +7,70 @@ namespace CautionaryAlertsApi.V1.Helpers
 {
     public static class GoogleSheetHelpers
     {
-        public static IEnumerable<ValueIndexPair> ExcludeInvalidPropertyRefs(this IReadOnlyCollection<string> pRefs)
+        public static IEnumerable<IEnumerable<T>> PivotRows<T>(this IEnumerable<IEnumerable<T>> source)
         {
-            var goodPropertyRefs = pRefs
-                .Select((value, index) => new ValueIndexPair(value, index))
-                .Where(p => p.Value.Length > 0 && p.Value != "Not found" && p.Value != "#REF!")
-                .ToList();
+            var enumerators = source.Select(e => e.GetEnumerator()).ToArray();
 
-            var badPropertyRefs = pRefs
-                .Select((value, index) => new ValueIndexPair(value, index))
-                .Except(goodPropertyRefs);
-
-            Console.WriteLine(
-                $"{badPropertyRefs.Count()} rows contain invalid property references and were excluded from the result.");
-
-            return goodPropertyRefs;
+            try
+            {
+                while (enumerators.All(e => e.MoveNext()))
+                    yield return enumerators
+                        .Select(e => e.Current)
+                        .ToArray();
+            }
+            finally
+            {
+                Array.ForEach(enumerators, e => e.Dispose());
+            }
         }
 
-        public static List<string> GetAllPropertyRefs(this ValueRange data)
+        public static void PrintSpreadSheet(IEnumerable<IEnumerable<string>> rows)
         {
-            var pRefs = data.Values.First().Select(value => value.ToString()).ToList();
-            return pRefs;
+            var padding = (
+                from row in rows
+                from string cell in row
+                select cell.Length
+            ).Prepend(0).Max();
+
+            foreach (var row in rows.ToArray())
+            {
+                Console.Write("| ");
+                foreach (var cell in row) Console.Write($"{cell} | ");
+                Console.WriteLine();
+            }
+        }
+
+        public static bool IsValid<TEntity>(ICollection<string> headers)
+        {
+            var props = typeof(TEntity)
+                .GetProperties()
+                .Where(prop => prop.Name != "IsHighlighted");
+            return props.All(prop => headers.Contains(prop.Name));
+        }
+
+        private static IEnumerable<IEnumerable<string>> ParseHighlighting(
+            IEnumerable<IEnumerable<string>> rows,
+            IEnumerable<string> highlightedFlags)
+        {
+            var pRows = rows
+                .PivotRows()
+                .Append(highlightedFlags)
+                .PivotRows();
+            return pRows;
+        }
+
+        public static IEnumerable<string> GetHighlightedFlags(IEnumerable<RowData> rowData, Color highlightColor)
+        {
+            var highlightedFlags = rowData
+                .Select(rd => rd.Values
+                    .All(cd => cd.EffectiveFormat != null &&
+                               cd.EffectiveFormat.BackgroundColor.Red.Equals(highlightColor.Red) &&
+                               cd.EffectiveFormat.BackgroundColor.Green.Equals(highlightColor.Green) &&
+                               cd.EffectiveFormat.BackgroundColor.Blue.Equals(highlightColor.Blue)
+                    ).ToString()
+                );
+
+            return highlightedFlags;
         }
     }
-    public class ValueIndexPair
-    {
-        public ValueIndexPair(string v, int i) { Value = v; Index = i; }
-        public string Value { get; }
-        public int Index { get; }
-    }
-
 }
