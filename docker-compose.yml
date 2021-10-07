@@ -32,12 +32,14 @@ services:
       - DB_DATABASE=testdb
     links:
       - test-database
+    depends_on:
+      - test-database
   test-database:
     image: test-database
     build:
       context: .
       dockerfile: database/Dockerfile
     ports:
-      - "5432:5432"
+      - 5432:5432
     env_file:
       - database.env
