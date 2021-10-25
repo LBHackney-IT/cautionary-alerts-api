@@ -1,3 +1,6 @@
+using CautionaryAlertsApi.V1.Boundary.Response;
+using System;
+
 namespace CautionaryAlertsApi.V1.Gateways
 {
     public class CautionaryAlertListItem
@@ -18,5 +21,17 @@ namespace CautionaryAlertsApi.V1.Gateways
         public string PropertyReference { get; set; }
         public string TenancyDates { get; set; }
         public string IncidentBeforeCurrentTenancyDate { get; set; }
+
+        public CautionaryAlertResponse ToResponse()
+        {
+            return new CautionaryAlertResponse
+            {
+                DateModified = DateOfIncident,
+                ModifiedBy = "GoogleSheet",
+                StartDate = DateOfIncident,
+                AlertCode = Code,
+                Description = CautionOnSystem
+            };
+        }
     }
 }
