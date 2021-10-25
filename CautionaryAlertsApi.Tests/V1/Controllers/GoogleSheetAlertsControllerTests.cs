@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using CautionaryAlertsApi.V1.UseCase;
 using AutoFixture;
 using CautionaryAlertsApi.V1.Gateways;
+using CautionaryAlertsApi.V1.Boundary.Response;
 
 namespace CautionaryAlertsApi.Tests.V1.Controllers
 {
@@ -31,7 +32,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             const string propertyReference = "0012345678";
             _fixture.Customize<CautionaryAlertListItem>(c => c.With(li => li.PropertyReference, propertyReference));
 
-            var expectedUseCaseResponse = _fixture.Create<List<CautionaryAlertListItem>>();
+            var expectedUseCaseResponse = _fixture.Create<CautionaryAlertsPropertyResponse>();
             _getAlertsMock.Setup(x => x.Execute(propertyReference)).Returns(expectedUseCaseResponse);
 
             var response = _classUnderTest.GetAlertsByProperty(propertyReference) as OkObjectResult;
