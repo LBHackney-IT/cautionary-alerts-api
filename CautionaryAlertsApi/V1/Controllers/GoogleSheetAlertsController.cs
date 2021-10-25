@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CautionaryAlertsApi.V1.Controllers
 {
     [ApiController]
-    [Route("api/v1/sheet/cautionary-alerts")]
+    [Route("api/v1/sheets/cautionary-alerts")]
     [Produces("application/json")]
     [ApiVersion("1.0")]
     public class GoogleSheetAlertsController : BaseController
