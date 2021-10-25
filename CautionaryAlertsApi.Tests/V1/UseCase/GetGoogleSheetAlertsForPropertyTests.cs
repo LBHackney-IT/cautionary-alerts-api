@@ -38,7 +38,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
 
             // Assert
             _gateway.Verify(g => g.GetPropertyAlerts(propertyReference), Times.Once);
-            result.Should().BeEquivalentTo(expectedResponse);
+            result.Alerts.Should().BeEquivalentTo(expectedResponse.Select(l => l.ToResponse()));
         }
     }
 }
