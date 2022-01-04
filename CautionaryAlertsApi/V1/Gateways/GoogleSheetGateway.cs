@@ -43,7 +43,11 @@ namespace CautionaryAlertsApi.V1.Gateways
 
             if (propertyRefs is null) return -1;
 
-            var firstMatchingRow = propertyRefs.First(r => r.Value == propertyReference).Index + 1;
+            var firstprop = propertyRefs.FirstOrDefault(r => r.Value == propertyReference);
+
+            if (firstprop is null) return -1;
+
+            var firstMatchingRow = firstprop.Index + 1;
 
             Console.WriteLine(
                 $"Property reference {propertyReference} {(firstMatchingRow is -1 ? "not found." : $"found on row {firstMatchingRow + 1}.")}");
