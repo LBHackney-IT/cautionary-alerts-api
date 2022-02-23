@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
+using System.Collections.Generic;
+using System.Linq;
 using PropertyAlert = CautionaryAlertsApi.V1.Infrastructure.PropertyAlert;
 
 namespace CautionaryAlertsApi.V1.Factories
@@ -37,25 +37,34 @@ namespace CautionaryAlertsApi.V1.Factories
         public static CautionaryAlertListItem ToModel(this IEnumerable<string> row)
         {
             var rowArray = row.ToArray();
+
             return new CautionaryAlertListItem
             {
-                Name = rowArray[0],
-                DoorNumber = rowArray[1],
-                Address = rowArray[2],
-                Neighbourhood = rowArray[3],
-                DateOfIncident = rowArray[4],
-                NumberOfDaysOutstanding = rowArray[5],
-                Code = rowArray[6],
-                LetterSent = rowArray[7],
-                OnCivica = rowArray[8],
-                Outcome = rowArray[9],
-                CautionOnSystem = rowArray[10],
-                ActionOnAssure = rowArray[11],
-                Lookup = rowArray[12],
-                PropertyReference = rowArray[13],
-                TenancyDates = rowArray[14],
-                IncidentBeforeCurrentTenancyDate = rowArray[15]
+                Name = ReadColumn(rowArray, 0),
+                DoorNumber = ReadColumn(rowArray, 1),
+                Address = ReadColumn(rowArray, 2),
+                Neighbourhood = ReadColumn(rowArray, 3),
+                DateOfIncident = ReadColumn(rowArray, 4),
+                NumberOfDaysOutstanding = ReadColumn(rowArray, 5),
+                Code = ReadColumn(rowArray, 6),
+                LetterSent = ReadColumn(rowArray, 7),
+                OnCivica = ReadColumn(rowArray, 8),
+                Outcome = ReadColumn(rowArray, 9),
+                CautionOnSystem = ReadColumn(rowArray, 10),
+                ActionOnAssure = ReadColumn(rowArray, 11),
+                Lookup = ReadColumn(rowArray, 12),
+                PropertyReference = ReadColumn(rowArray, 13),
+                TenancyDates = ReadColumn(rowArray, 14),
+                IncidentBeforeCurrentTenancyDate = ReadColumn(rowArray, 15)
             };
+        }
+
+        private static string ReadColumn(string[] rowArray, int index)
+        {
+            // prevent IndexOutOfRangeException
+            if (rowArray.Length < index + 1) return null;
+
+            return rowArray[index];
         }
     }
 }
