@@ -22,48 +22,71 @@ namespace CautionaryAlertsApi.V1.Gateways
 
         public IEnumerable<CautionaryAlertListItem> GetPropertyAlerts(string propertyReference)
         {
-            var rowNumber = GetRowIndex(propertyReference);
-            if (rowNumber == -1) return new List<CautionaryAlertListItem>();
+            var rowIndices = FindRowIndices(propertyReference, "N");
 
-            var row = GetRow(rowNumber);
+            if (rowIndices.Any())
+            {
+                var row = GetSingleRow(rowIndices.First());
+                return new List<CautionaryAlertListItem> { row.ToModel() };
+            }
 
-            return new List<CautionaryAlertListItem> { row.ToModel() };
+            return new List<CautionaryAlertListItem>();
         }
 
-        private int GetRowIndex(string propertyReference)
+        public IEnumerable<CautionaryAlertListItem> GetPersonAlerts(string personId)
         {
-            // Only look at the property references column
-            var request = _sheetsService.Spreadsheets.Values.Get(_spreadsheetId, "CURRENT LIST!N1:N1000");
+            var rowIndices = FindRowIndices(personId, "AH").Where(rowIndex => rowIndex != -1);
+            var matchingRows = GetRows(rowIndices);
+
+            return matchingRows
+                .Select(row => row.ToModel())
+                .ToList();
+        }
+
+        private IList<int> FindRowIndices(string value, string column)
+        {
+            var request = _sheetsService.Spreadsheets.Values.Get(_spreadsheetId, $"CURRENT LIST!{column}1:{column}1000");
             request.MajorDimension = COLUMNS;
+
             var sheetData = request.Execute();
+            var cellValues = sheetData
+                .GetCellValues()
+                .ExcludeInvalidCellValues();
 
-            var propertyRefs = sheetData
-                .GetAllPropertyRefs()
-                .ExcludeInvalidPropertyRefs();
+            var matchingRowIndices = cellValues?
+                .Where(cell => cell.Value == value)
+                .Select(cell => cell.Index + 1)
+                .ToList();
 
-            if (propertyRefs is null) return -1;
-
-            var firstprop = propertyRefs.FirstOrDefault(r => r.Value == propertyReference);
-
-            if (firstprop is null) return -1;
-
-            var firstMatchingRow = firstprop.Index + 1;
-
-            Console.WriteLine(
-                $"Property reference {propertyReference} {(firstMatchingRow is -1 ? "not found." : $"found on row {firstMatchingRow + 1}.")}");
-
-            return firstMatchingRow;
+            return (matchingRowIndices != null && matchingRowIndices.Any())
+                ? matchingRowIndices
+                : new List<int>();
         }
 
-
-        private IEnumerable<string> GetRow(int row)
+        private IEnumerable<string> GetSingleRow(int rowIndex)
         {
-            var request = _sheetsService.Spreadsheets.Values.Get(_spreadsheetId, $"CURRENT LIST!A{row}:P{row}");
+            var request = _sheetsService.Spreadsheets.Values.Get(_spreadsheetId, $"CURRENT LIST!A{rowIndex}:P{rowIndex}");
             var response = request.Execute();
             var data = response.Values.First()
                 .Select(cd => cd.ToString());
 
             return data;
+        }
+
+        private IEnumerable<IEnumerable<string>> GetRows(IEnumerable<int> rowIndices)
+        {
+            var request = _sheetsService.Spreadsheets.Values.BatchGet(_spreadsheetId);
+
+            request.Ranges = rowIndices
+                .Select(rowIndex => $"CURRENT LIST!A{rowIndex}:P{rowIndex}")
+                .ToList();
+
+            var response = request.Execute();
+
+            return response.ValueRanges
+                .Select(range =>
+                    range.Values.FirstOrDefault()?
+                        .Select(cell => cell.ToString()));
         }
     }
 }

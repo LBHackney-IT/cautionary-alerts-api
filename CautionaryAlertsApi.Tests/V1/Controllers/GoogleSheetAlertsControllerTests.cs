@@ -15,14 +15,16 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
     public class GoogleSheetAlertsControllerTests
     {
         private GoogleSheetAlertsController _classUnderTest;
-        private Mock<IGetGoogleSheetAlertsForProperty> _getAlertsMock;
+        private Mock<IGetGoogleSheetAlertsForProperty> _getPropertyAlertsMock;
+        private Mock<IGetGoogleSheetAlertsForPerson> _getPersonAlertsMock;
         private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
         {
-            _getAlertsMock = new Mock<IGetGoogleSheetAlertsForProperty>();
-            _classUnderTest = new GoogleSheetAlertsController(_getAlertsMock.Object);
+            _getPropertyAlertsMock = new Mock<IGetGoogleSheetAlertsForProperty>();
+            _getPersonAlertsMock = new Mock<IGetGoogleSheetAlertsForPerson>();
+            _classUnderTest = new GoogleSheetAlertsController(_getPropertyAlertsMock.Object, _getPersonAlertsMock.Object);
         }
 
         [Test]
@@ -33,7 +35,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             _fixture.Customize<CautionaryAlertListItem>(c => c.With(li => li.PropertyReference, propertyReference));
 
             var expectedUseCaseResponse = _fixture.Create<CautionaryAlertsPropertyResponse>();
-            _getAlertsMock.Setup(x => x.Execute(propertyReference)).Returns(expectedUseCaseResponse);
+            _getPropertyAlertsMock.Setup(x => x.Execute(propertyReference)).Returns(expectedUseCaseResponse);
 
             var response = _classUnderTest.GetAlertsByProperty(propertyReference) as OkObjectResult;
 
@@ -46,7 +48,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         public void ReturnsNotFoundWhenPropertyAlertNotFoundException()
         {
             const string propertyReference = "0012345678";
-            _getAlertsMock.Setup(x => x.Execute(propertyReference)).Throws<PropertyAlertNotFoundException>();
+            _getPropertyAlertsMock.Setup(x => x.Execute(propertyReference)).Throws<PropertyAlertNotFoundException>();
 
             var response = _classUnderTest.GetAlertsByProperty(propertyReference) as ObjectResult;
 

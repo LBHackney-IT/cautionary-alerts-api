@@ -14,10 +14,14 @@ namespace CautionaryAlertsApi.V1.Controllers
     public class GoogleSheetAlertsController : BaseController
     {
         private readonly IGetGoogleSheetAlertsForProperty _getAlertsForProperty;
+        private readonly IGetGoogleSheetAlertsForPerson _getAlertsForPerson;
 
-        public GoogleSheetAlertsController(IGetGoogleSheetAlertsForProperty getAlertsForProperty)
+        public GoogleSheetAlertsController(
+            IGetGoogleSheetAlertsForProperty getAlertsForProperty,
+            IGetGoogleSheetAlertsForPerson getAlertsForPerson)
         {
             _getAlertsForProperty = getAlertsForProperty;
+            _getAlertsForPerson = getAlertsForPerson;
         }
 
         /// <summary>
@@ -40,6 +44,29 @@ namespace CautionaryAlertsApi.V1.Controllers
             catch (PropertyAlertNotFoundException)
             {
                 return NotFound($"Cautionary alert(s) for property reference {propertyReference} not found");
+            }
+        }
+
+        /// <summary>
+        /// Returns a list of Google Sheet cautionary alerts for a person with the given <paramref name="personId"/>
+        /// </summary>
+        /// <param name="personId">An unique identifier of a person to get cautinary alerts for.</param>
+        /// <response code="200">Successful. Returns one or more cautionary alerts for a person.</response>
+        /// <response code="404">No cautionary alerts found for this person ID</response>
+        [ProducesResponseType(typeof(DiscretionAlertsPersonResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpGet]
+        [Route("persons/{personId}")]
+        public IActionResult GetAlertsByPerson(string personId)
+        {
+            try
+            {
+                return Ok(_getAlertsForPerson.Execute(personId));
+            }
+            catch (PropertyAlertNotFoundException)
+            {
+                return NotFound($"Cautionary alert(s) for person ID {personId} not found");
             }
         }
     }

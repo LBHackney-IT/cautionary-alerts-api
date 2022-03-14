@@ -56,6 +56,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </EmbeddedResource>
+    <Content Remove="V1\Gateways\cc_sample_columns_person-ids.json" />
+    <EmbeddedResource Include="V1\Gateways\cc_sample_columns_person-ids.json" />
+    <Content Remove="V1\Gateways\cc_sample_A3P3_A6P6.json" />
+    <EmbeddedResource Include="V1\Gateways\cc_sample_A3P3_A6P6.json" />
   </ItemGroup>
 
 </Project>

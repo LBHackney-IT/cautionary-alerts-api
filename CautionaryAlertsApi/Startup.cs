@@ -144,6 +144,7 @@ namespace CautionaryAlertsApi
             services.AddScoped<IGetAlertsForPeople, GetAlertsForPeople>();
             services.AddScoped<IGetCautionaryAlertsForProperty, GetCautionaryAlertsForProperty>();
             services.AddScoped<IGetGoogleSheetAlertsForProperty, GetGoogleSheetAlertsForProperty>();
+            services.AddScoped<IGetGoogleSheetAlertsForPerson, GetGoogleSheetAlertsForPerson>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
