@@ -76,7 +76,7 @@ namespace CautionaryAlertsApi.V1.Gateways
         private IEnumerable<IEnumerable<string>> GetRows(IEnumerable<int> rowIndices)
         {
             var request = _sheetsService.Spreadsheets.Values.BatchGet(_spreadsheetId);
-
+            
             request.Ranges = rowIndices
                 .Select(rowIndex => $"CURRENT LIST!A{rowIndex}:P{rowIndex}")
                 .ToList();

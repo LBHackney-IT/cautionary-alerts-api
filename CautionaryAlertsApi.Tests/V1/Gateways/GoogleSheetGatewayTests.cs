@@ -1,9 +1,5 @@
 using System;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Reflection;
 using NUnit.Framework;
 using CautionaryAlertsApi.V1.Gateways;
 using FluentAssertions;
@@ -11,6 +7,7 @@ using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 using System.Resources;
 using CautionaryAlertsApi.Tests.V1.Factories;
+using CautionaryAlertsApi.Tests.V1.Helper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -24,77 +21,15 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         private SheetsService _sheetService;
         private GoogleSheetGateway _classUnderTest;
 
-        private static string _dummyRows;
-        private static string _dummyColumns;
-        private static string _dummyPropRefColumn;
-        private static string _dummyPersonIdColumn;
-        private static string _dummyA3P3;
-        private static string _dummyA3P3_A6P6;
-
-        private readonly Assembly _assembly = Assembly.GetExecutingAssembly();
-
-        public GoogleSheetGatewayTests()
-        {
-            _dummyRows = ReadFile("cc_sample.json");
-            _dummyColumns = ReadFile("cc_sample_columns.json");
-            _dummyPropRefColumn = ReadFile("cc_sample_columns_prop-refs.json");
-            _dummyPersonIdColumn = ReadFile("cc_sample_columns_person-ids.json");
-            _dummyA3P3 = ReadFile("cc_sample_A3P3.json");
-            _dummyA3P3_A6P6 = ReadFile("cc_sample_A3P3_A6P6.json");
-
-            string ReadFile(string fileName)
-            {
-                var resourceName = _assembly.GetManifestResourceNames().Single(str => str.EndsWith(fileName, StringComparison.CurrentCulture));
-                using var stream = _assembly.GetManifestResourceStream(resourceName);
-                using var reader = new StreamReader(stream ?? throw new InvalidOperationException("JSON file missing"));
-
-                return reader.ReadToEnd();
-            }
-        }
         [SetUp]
         public void SetUp()
         {
-            static HttpResponseMessage RequestHandler(HttpRequestMessage request)
-            {
-                TestContext.Out.WriteLine(request.RequestUri.PathAndQuery);
-                TestContext.Out.WriteLine(request.RequestUri.Query);
-
-                if (request.RequestUri.Query.Contains("ROWS", StringComparison.CurrentCulture))
-                    return new HttpResponseMessage { Content = new StringContent(_dummyRows), StatusCode = HttpStatusCode.OK };
-
-                if (request.RequestUri.PathAndQuery.Contains("CURRENT%20LIST%21N1%3AN1000", StringComparison.CurrentCulture))
-                    return new HttpResponseMessage { Content = new StringContent(_dummyPropRefColumn) };
-
-                if (request.RequestUri.PathAndQuery.Contains("CURRENT%20LIST%21AH1%3AAH1000", StringComparison.CurrentCulture))
-                    return new HttpResponseMessage { Content = new StringContent(_dummyPersonIdColumn) };
-
-                if (request.RequestUri.PathAndQuery.Contains("ranges=CURRENT%20LIST%21A3%3AP3&ranges=CURRENT%20LIST%21A6%3AP6", StringComparison.CurrentCulture))
-                    return new HttpResponseMessage { Content = new StringContent(_dummyA3P3_A6P6) };
-
-                if (request.RequestUri.PathAndQuery.Contains("CURRENT%20LIST%21A3%3AP3", StringComparison.CurrentCulture))
-                    return new HttpResponseMessage { Content = new StringContent(_dummyA3P3) };
-
-                return new HttpResponseMessage
-                { Content = new StringContent(_dummyColumns), StatusCode = HttpStatusCode.OK };
-            }
-
-            var clientFactory = new FakeHttpClientFactory(RequestHandler);
+            var clientFactory = new FakeHttpClientFactory(new TestSpreadsheetHandler("test_cautionary_data.csv").RequestHandler);
             var baseClientService = new BaseClientService.Initializer { HttpClientFactory = clientFactory };
+
             _sheetService = new SheetsService(baseClientService);
             _classUnderTest = new GoogleSheetGateway(_sheetService);
         }
-
-        // [Test]
-        // public void ListsAllCautionaryAlertListItems()
-        // {
-        //     // Act
-        //     var result = _classUnderTest.ListPropertyAlerts();
-        //     TestContext.Out.Write(JsonConvert.SerializeObject(result, Formatting.Indented, new StringEnumConverter()) +
-        //                   Environment.NewLine);
-        //
-        //     //Assert
-        //     result.Count().Should().Be(2);
-        // }
 
         [Test]
         public void GetsCautionaryAlertListItemForPropertyReference()
@@ -126,8 +61,8 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
                 Environment.NewLine);
 
             // Assert
-            result.Should().ContainSingle(alert => alert.CautionOnSystem == "Test Caution Type 1" && alert.Outcome == "Test Caution Description 1");
-            result.Should().ContainSingle(alert => alert.CautionOnSystem == "Test Caution Type 2" && alert.Outcome == "Test Caution Description 2");
+            result.Should().ContainSingle(alert => alert.CautionOnSystem == "Caution Type 2" && alert.Outcome == "Caution Description 2");
+            result.Should().ContainSingle(alert => alert.CautionOnSystem == "Caution Type 5" && alert.Outcome == "Caution Description 5");
         }
     }
 }
