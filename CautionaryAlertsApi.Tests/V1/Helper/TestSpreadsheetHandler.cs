@@ -34,8 +34,8 @@ namespace CautionaryAlertsApi.Tests.V1.Helper
             }
             else if (request.RequestUri.LocalPath.Contains("/values:batch", StringComparison.InvariantCultureIgnoreCase))
             {
-                // batch request accepts multiple ranges and wrap results into a wrapper object with spreadsheetID
-                // separate value range is create for each requested range.
+                // batch request accepts multiple ranges and wrap results into a wrapper with spreadsheetID
+                // separate value range is created for each requested range.
                 var ranges = queryParams["ranges"].Split(",");
                 var valueRanges = ranges.Select(range => CreateValueRangeResponse(range, majorDimension));
 
@@ -95,7 +95,9 @@ namespace CautionaryAlertsApi.Tests.V1.Helper
 
         private IEnumerable<string[]> ReadRowsRange(string startColumn, string endColumn, int startIndex, int endIndex)
         {
-            for (var rowIndex = startIndex - 1; rowIndex <= Math.Min(endIndex, _columnValues.First().Value.Count) - 1; rowIndex++)
+            var maxIndex = Math.Min(endIndex, _columnValues.First().Value.Count) - 1;
+
+            for (var rowIndex = startIndex - 1; rowIndex <= maxIndex; rowIndex++)
             {
                 var rowData = new List<string>();
 
@@ -128,7 +130,8 @@ namespace CautionaryAlertsApi.Tests.V1.Helper
 
         private static bool IsColumnInRange(string column, string start, string end)
         {
-            return start.Length == column.Length &&
+            return start.Length <= column.Length &&
+                   column.Length <= end.Length &&
                    String.Compare(start, column, StringComparison.OrdinalIgnoreCase) <= 0 &&
                    String.Compare(column, end, StringComparison.OrdinalIgnoreCase) <= 0;
         }
