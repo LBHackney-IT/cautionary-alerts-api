@@ -16,15 +16,15 @@ namespace CautionaryAlertsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public DiscretionAlertsPersonResponse Execute(string personId)
+        public CautionaryAlertsGoogleSheetPersonResponse Execute(string personId)
         {
             var result = _gateway.GetPersonAlerts(personId).ToList();
             if (result.Count == 0) throw new PersonNotFoundException();
 
-            return new DiscretionAlertsPersonResponse
+            return new CautionaryAlertsGoogleSheetPersonResponse
             {
                 PersonId = personId,
-                Alerts = result.Select(alert => alert.ToDiscretionAlertResponse()).ToList()
+                Alerts = result.Select(alert => alert.ToCautionaryAlertGoogleSheetResponse()).ToList()
             };
         }
     }

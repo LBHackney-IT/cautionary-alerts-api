@@ -4,6 +4,6 @@ namespace CautionaryAlertsApi.V1.UseCase
 {
     public interface IGetGoogleSheetAlertsForPerson
     {
-        DiscretionAlertsPersonResponse Execute(string personId);
+        CautionaryAlertsGoogleSheetPersonResponse Execute(string personId);
     }
 }

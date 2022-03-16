@@ -53,9 +53,9 @@ namespace CautionaryAlertsApi.V1.Factories
             };
         }
 
-        public static DiscretionAlertResponse ToDiscretionAlertResponse(this CautionaryAlertListItem domain)
+        public static CautionaryAlertGoogleSheetResponse ToCautionaryAlertGoogleSheetResponse(this CautionaryAlertListItem domain)
         {
-            return new DiscretionAlertResponse
+            return new CautionaryAlertGoogleSheetResponse
             {
                 Code = domain.Code,
                 Type = domain.CautionOnSystem,

@@ -48,12 +48,12 @@ namespace CautionaryAlertsApi.V1.Controllers
         }
 
         /// <summary>
-        /// Returns a list of discretion alerts for a person with the given <paramref name="personId"/> from a Google Sheet
+        /// Returns a list of cautionary alerts for a person with the given <paramref name="personId"/> from a Google Sheet
         /// </summary>
-        /// <param name="personId">A unique identifier of a person to get discretion alerts for.</param>
-        /// <response code="200">Successful. Returns one or more discretion alerts for a person.</response>
-        /// <response code="404">No discretion alerts found for this person ID</response>
-        [ProducesResponseType(typeof(DiscretionAlertsPersonResponse), StatusCodes.Status200OK)]
+        /// <param name="personId">A unique identifier of a person to get cautionary alerts for.</param>
+        /// <response code="200">Successful. Returns one or more cautionary alerts for a person.</response>
+        /// <response code="404">No cautionary alerts found for this person ID</response>
+        [ProducesResponseType(typeof(CautionaryAlertsGoogleSheetPersonResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
@@ -66,7 +66,7 @@ namespace CautionaryAlertsApi.V1.Controllers
             }
             catch (PropertyAlertNotFoundException)
             {
-                return NotFound($"Discretion alert(s) for person ID {personId} not found");
+                return NotFound($"Cautionary alert(s) for person ID {personId} not found");
             }
         }
     }

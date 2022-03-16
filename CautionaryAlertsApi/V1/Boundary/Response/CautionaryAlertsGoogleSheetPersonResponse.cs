@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace CautionaryAlertsApi.V1.Boundary.Response
 {
-    public class DiscretionAlertsPersonResponse
+    public class CautionaryAlertsGoogleSheetPersonResponse
     {
         /// <summary>
         /// A unique MMH identifier (GUID) of a person
@@ -10,8 +10,8 @@ namespace CautionaryAlertsApi.V1.Boundary.Response
         public string PersonId { get; set; }
 
         /// <summary>
-        /// A list of discretion alerts for a person with <see cref="PersonId"/>
+        /// A list of cautionary alerts for a person with <see cref="PersonId"/>
         /// </summary>
-        public List<DiscretionAlertResponse> Alerts { get; set; }
+        public List<CautionaryAlertGoogleSheetResponse> Alerts { get; set; }
     }
 }
