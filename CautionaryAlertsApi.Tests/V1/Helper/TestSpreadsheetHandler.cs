@@ -88,7 +88,7 @@ namespace CautionaryAlertsApi.Tests.V1.Helper
             return new
             {
                 range = $"CURRENT SHEET!{match.Groups["range"]}",
-                majorDimension = "COLUMNS",
+                majorDimension = majorDimension,
                 values = values.ToArray()
             };
         }
