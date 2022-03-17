@@ -22,20 +22,17 @@ namespace CautionaryAlertsApi.V1.Gateways
 
         public IEnumerable<CautionaryAlertListItem> GetPropertyAlerts(string propertyReference)
         {
-            var rowIndices = FindRowIndices(propertyReference, "N");
-
-            if (rowIndices.Any())
-            {
-                var row = GetSingleRow(rowIndices.First());
-                return new List<CautionaryAlertListItem> { row.ToModel() };
-            }
-
-            return new List<CautionaryAlertListItem>();
+            return FindAlerts(propertyReference, "N");
         }
 
         public IEnumerable<CautionaryAlertListItem> GetPersonAlerts(string personId)
         {
-            var rowIndices = FindRowIndices(personId, "AH").Where(rowIndex => rowIndex != -1);
+            return FindAlerts(personId, "AH");
+        }
+
+        private IEnumerable<CautionaryAlertListItem> FindAlerts(string query, string column)
+        {
+            var rowIndices = FindRowIndices(query, column);
             var matchingRows = GetRows(rowIndices);
 
             return matchingRows
@@ -61,16 +58,6 @@ namespace CautionaryAlertsApi.V1.Gateways
             return (matchingRowIndices != null && matchingRowIndices.Any())
                 ? matchingRowIndices
                 : new List<int>();
-        }
-
-        private IEnumerable<string> GetSingleRow(int rowIndex)
-        {
-            var request = _sheetsService.Spreadsheets.Values.Get(_spreadsheetId, $"CURRENT LIST!A{rowIndex}:P{rowIndex}");
-            var response = request.Execute();
-            var data = response.Values.First()
-                .Select(cd => cd.ToString());
-
-            return data;
         }
 
         private IEnumerable<IEnumerable<string>> GetRows(IEnumerable<int> rowIndices)

@@ -38,13 +38,16 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             const string propertyReference = "00999998";
 
             // Act
-            var result = _classUnderTest.GetPropertyAlerts(propertyReference);
+            var result = _classUnderTest.GetPropertyAlerts(propertyReference).ToList();
             TestContext.Out.Write(
                 JsonConvert.SerializeObject(result, Formatting.Indented, new StringEnumConverter()) +
                 Environment.NewLine);
 
             // Assert
-            result.First().PropertyReference.Should().Be(propertyReference);
+            result.Count.Should().Be(2);
+            result.Should().ContainSingle(alert => alert.Address == "Fake Place 4");
+            result.Should().ContainSingle(alert => alert.Address == "Fake Place 5");
+            result.Should().OnlyContain(alert => alert.PropertyReference == propertyReference);
         }
 
         [Test]
