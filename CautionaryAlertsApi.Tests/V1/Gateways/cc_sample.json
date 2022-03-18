@@ -1,9 +1,0 @@
-{
-  "range": "CURRENT SHEET!A1:P3",
-  "majorDimension": "COLUMNS",
-  "values": [
-      [ "Name", "DOOR NUMBER", "ADDRESS", "NEIGHBOURHOOD ", "DATE OF INCIDENT", "NUMBER                 OF DAYS OUTSTANDING", "CODE", "Letter Sent ", "On Civica ", "OUTCOME / Reason to close ( in red ) to remain on list black", "Caution on System ", "Action on Assure", "Lookup", "Property Reference", "Tenancy dates", "Incident before current tenancy date" ],
-      [ "Ms Fake Person", "99", "Fake Place", "Central", "11/2/2011", "3785", "CAL", "No", "Yes", "Contact Estate Safety", "No Lone Visits", "", "99 Fake Place", "", "Ms Fake Person", "Yes" ],
-      [ "Mr Fake Person", "98", "Another Fake Place", "Central", "11/2/2011", "9283", "CAL", "No", "Yes", "Contact Estate Safety", "No Lone Visits", "", "33 Unreal Place", "00999998", "Mr Fake Person", "Yes" ]
-    ]
-}

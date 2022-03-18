@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.V1.Gateways;
 
 namespace CautionaryAlertsApi.V1.Factories
 {
@@ -49,6 +50,16 @@ namespace CautionaryAlertsApi.V1.Factories
                 PropertyReference = domain.PropertyReference,
                 UPRN = domain.UPRN,
                 Alerts = domain.Alerts.ToResponse()
+            };
+        }
+
+        public static CautionaryAlertGoogleSheetResponse ToCautionaryAlertGoogleSheetResponse(this CautionaryAlertListItem domain)
+        {
+            return new CautionaryAlertGoogleSheetResponse
+            {
+                Code = domain.Code,
+                Type = domain.CautionOnSystem,
+                Description = domain.Outcome
             };
         }
     }

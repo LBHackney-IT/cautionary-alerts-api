@@ -7,27 +7,20 @@ namespace CautionaryAlertsApi.V1.Helpers
 {
     public static class GoogleSheetHelpers
     {
-        public static IEnumerable<ValueIndexPair> ExcludeInvalidPropertyRefs(this IReadOnlyCollection<string> pRefs)
+        public static IEnumerable<ValueIndexPair> ExcludeInvalidCellValues(this IReadOnlyCollection<string> cellValues)
         {
-            var goodPropertyRefs = pRefs
+            return cellValues
                 .Select((value, index) => new ValueIndexPair(value, index))
                 .Where(p => p.Value.Length > 0 && p.Value != "Not found" && p.Value != "#REF!")
                 .ToList();
-
-            var badPropertyRefs = pRefs
-                .Select((value, index) => new ValueIndexPair(value, index))
-                .Except(goodPropertyRefs);
-
-            Console.WriteLine(
-                $"{badPropertyRefs.Count()} rows contain invalid property references and were excluded from the result.");
-
-            return goodPropertyRefs;
         }
 
-        public static List<string> GetAllPropertyRefs(this ValueRange data)
+        public static List<string> GetCellValues(this ValueRange data)
         {
-            var pRefs = data.Values.First().Select(value => value.ToString()).ToList();
-            return pRefs;
+            // valueRange contains list of columns, for now assume that it always contains just single column
+            return data.Values
+                .First()
+                .Select(value => value.ToString()).ToList();
         }
     }
     public class ValueIndexPair
