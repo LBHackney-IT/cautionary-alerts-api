@@ -632,7 +632,9 @@ create table dbo."PropertyAlertNew"(
 	"code" varchar(3),
 	"caution_on_system" varchar(50),
 	"property_reference" varchar(12),
-	"uprn" varchar(12)
+	"uprn" varchar(12),
+	"person_name" varchar(100),
+	"mmh_id" varchar(36)
 );
 
 
