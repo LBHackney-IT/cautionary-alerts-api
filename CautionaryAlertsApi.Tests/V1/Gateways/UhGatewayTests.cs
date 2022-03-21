@@ -365,7 +365,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
-        public async Task GetCautionaryContactsWhenNoneExistReturnsEmptyList()
+        public async Task GetPropertyAlertsWhenNoneExistReturnsEmptyList()
         {
             // Arrange
             var propertyReference = "00001234";
@@ -379,7 +379,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
-        public async Task GetCautionaryContactsWhenCalledReturnsMany()
+        public async Task GetPropertyAlertsWhenCalledReturnsMany()
         {
             // Arrange
             var propertyReference = "00001234";
@@ -389,7 +389,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
                 .With(x => x.PropertyReference, propertyReference)
                 .CreateMany(numberOfResults);
 
-            await SaveCautionaryContactsToDb(results).ConfigureAwait(false);
+            await SavePropertyContactsToDb(results).ConfigureAwait(false);
 
             // Act
             var result = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
@@ -399,7 +399,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             result.Should().HaveCount(numberOfResults);
         }
 
-        private async Task SaveCautionaryContactsToDb(IEnumerable<PropertyAlertsNew> results)
+        private async Task SavePropertyContactsToDb(IEnumerable<PropertyAlertsNew> results)
         {
             UhContext.PropertyAlertsNew.AddRange(results);
             await UhContext.SaveChangesAsync().ConfigureAwait(false);

@@ -10,7 +10,7 @@ using NUnit.Framework;
 
 namespace CautionaryAlertsApi.Tests.V1.E2ETests
 {
-    public class GetCautionaryContactAlertsE2ETests : IntegrationTests<Startup>
+    public class GetPropertyAlertsNewE2ETests : IntegrationTests<Startup>
     {
         private readonly Fixture _fixture = new Fixture();
         private readonly Random _random = new Random();
@@ -26,7 +26,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
                 .With(x => x.PropertyReference, propertyReference)
                 .CreateMany(numberOfResults);
 
-            await SaveCautionaryContactsToDb(results).ConfigureAwait(false);
+            await SavePropertyAlertsToDb(results).ConfigureAwait(false);
 
             // Act
             var response = await GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
@@ -60,7 +60,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             returnedAlerts.Alerts.Should().BeEmpty();
         }
 
-        private async Task SaveCautionaryContactsToDb(IEnumerable<PropertyAlertsNew> results)
+        private async Task SavePropertyAlertsToDb(IEnumerable<PropertyAlertsNew> results)
         {
             UhContext.PropertyAlertsNew.AddRange(results);
             await UhContext.SaveChangesAsync().ConfigureAwait(false);

@@ -71,7 +71,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         }
 
         [Test]
-        public async Task GetCautionaryContactAlertsWhenCalledReturnsAlerts()
+        public async Task GetPropertyAlertsWhenCalledReturnsAlerts()
         {
             // Arrange
             var propertyReference = "0012345678";
