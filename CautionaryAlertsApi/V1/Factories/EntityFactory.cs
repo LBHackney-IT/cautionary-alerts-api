@@ -59,6 +59,20 @@ namespace CautionaryAlertsApi.V1.Factories
             };
         }
 
+        public static CautionaryAlertListItem ToDomain(this CautionaryContact entity)
+        {
+            return new CautionaryAlertListItem
+            {
+                DoorNumber = entity.DoorNumber,
+                Address = entity.Address,
+                Neighbourhood = entity.Neighbourhood,
+                DateOfIncident = entity.DateOfIncident,
+                Code = entity.Code,
+                CautionOnSystem = entity.CautionOnSystem,
+                PropertyReference = entity.PropertyReference,
+            };
+        }
+
         private static string ReadColumn(string[] rowArray, int index)
         {
             // prevent IndexOutOfRangeException

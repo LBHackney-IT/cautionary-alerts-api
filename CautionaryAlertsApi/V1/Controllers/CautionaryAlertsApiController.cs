@@ -1,6 +1,8 @@
 using System;
+using System.Threading.Tasks;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +18,13 @@ namespace CautionaryAlertsApi.V1.Controllers
     {
         private readonly IGetAlertsForPeople _getAlertsForPeople;
         private readonly IGetCautionaryAlertsForProperty _getCautionaryAlertsForProperty;
-        public CautionaryAlertsApiController(IGetAlertsForPeople getAlertsForPeople, IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty)
+        private readonly IGetCautionaryContactAlertsUseCase _getCautionaryContactAlertsUseCase;
+
+        public CautionaryAlertsApiController(IGetAlertsForPeople getAlertsForPeople, IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty, IGetCautionaryContactAlertsUseCase getCautionaryContactAlertsUseCase)
         {
             _getAlertsForPeople = getAlertsForPeople;
             _getCautionaryAlertsForProperty = getCautionaryAlertsForProperty;
+            _getCautionaryContactAlertsUseCase = getCautionaryContactAlertsUseCase;
         }
 
         /// <summary>
@@ -66,6 +71,21 @@ namespace CautionaryAlertsApi.V1.Controllers
             {
                 return NotFound($"Property cautionary alert(s) for property reference {propertyReference} not found");
             }
+        }
+
+        /// <summary>
+        /// Returns a list of cautionary alerts for a property based on property reference
+        /// </summary>
+        /// <param name="propertyReference">The housing property reference of a property</param>
+        /// <response code="200">Successful. Returns one or more cautionary alerts for a property.</response>
+        [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("properties-new/{propertyReference}")]
+        public async Task<IActionResult> GetCautionaryContactAlerts(string propertyReference)
+        {
+            var result = await _getCautionaryContactAlertsUseCase.ExecuteAsync(propertyReference).ConfigureAwait(false);
+
+            return Ok(result);
         }
     }
 }

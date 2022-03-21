@@ -1,15 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using CautionaryAlert = CautionaryAlertsApi.V1.Domain.CautionaryAlert;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {
     public class UhGateway : IUhGateway
     {
         private readonly UhContext _uhContext;
+
         public UhGateway(UhContext uhContext)
         {
             _uhContext = uhContext;
@@ -43,6 +46,7 @@ namespace CautionaryAlertsApi.V1.Gateways
             return _uhContext.PeopleAlerts
                 .Where(a => a.ContactNumber == link.ContactNumber).ToList();
         }
+
         private CautionaryAlert GetDescriptionAndMapToDomain(PersonAlert alert)
         {
             var description = _uhContext.AlertDescriptionLookups
@@ -50,7 +54,6 @@ namespace CautionaryAlertsApi.V1.Gateways
                 .FirstOrDefault(a => a.AlertCode == alert.AlertCode);
             return alert.ToDomain(description?.Description);
         }
-
 
         public CautionaryAlertsProperty GetCautionaryAlertsForAProperty(string propertyReference)
         {
@@ -82,12 +85,22 @@ namespace CautionaryAlertsApi.V1.Gateways
               .Include(x => x.AddressLink)
               .Where(x => x.AddressNumber == addressLink.AddressNumber).ToList();
         }
+
         private CautionaryAlert GetDescriptionOfAlert(Infrastructure.PropertyAlert alert)
         {
             var description = _uhContext.AlertDescriptionLookups
                 .OrderByDescending(a => a.DateModified)
                 .FirstOrDefault(a => a.AlertCode == alert.AlertCode);
             return alert.ToDomain(description?.Description);
+        }
+
+        public async Task<IEnumerable<CautionaryAlertListItem>> GetCautionaryContacts(string propertyReference)
+        {
+            var alerts = await _uhContext.CautionaryContacts
+                .Where(x => x.PropertyReference == propertyReference)
+                .ToListAsync().ConfigureAwait(false);
+
+            return alerts.Select(x => x.ToDomain());
         }
     }
 }
