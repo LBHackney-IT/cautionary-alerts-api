@@ -21,7 +21,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         private CautionaryAlertsApiController _classUnderTest;
         private Mock<IGetAlertsForPeople> _mockGetAlertsForPersonUseCase;
         private Mock<IGetCautionaryAlertsForProperty> _mockGetAlertsForPropertyUseCase;
-        private Mock<IGetCautionaryContactAlertsUseCase> _mockGetCautionaryContactAlertsUseCase;
+        private Mock<IPropertyAlertsNewUseCase> _mockGetPropertyAlertsNewUseCase;
 
         private readonly Fixture _fixture = new Fixture();
 
@@ -30,12 +30,12 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         {
             _mockGetAlertsForPersonUseCase = new Mock<IGetAlertsForPeople>();
             _mockGetAlertsForPropertyUseCase = new Mock<IGetCautionaryAlertsForProperty>();
-            _mockGetCautionaryContactAlertsUseCase = new Mock<IGetCautionaryContactAlertsUseCase>();
+            _mockGetPropertyAlertsNewUseCase = new Mock<IPropertyAlertsNewUseCase>();
 
             _classUnderTest = new CautionaryAlertsApiController(
                 _mockGetAlertsForPersonUseCase.Object,
                 _mockGetAlertsForPropertyUseCase.Object,
-                _mockGetCautionaryContactAlertsUseCase.Object);
+                _mockGetPropertyAlertsNewUseCase.Object);
         }
 
         [Test]
@@ -78,12 +78,12 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
 
             var usecaseResponse = _fixture.Create<CautionaryAlertsPropertyResponse>();
 
-            _mockGetCautionaryContactAlertsUseCase
+            _mockGetPropertyAlertsNewUseCase
                 .Setup(x => x.ExecuteAsync(It.IsAny<string>()))
                 .ReturnsAsync(usecaseResponse);
 
             // Act
-            var response = await _classUnderTest.GetCautionaryContactAlerts(propertyReference).ConfigureAwait(false) as OkObjectResult;
+            var response = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false) as OkObjectResult;
 
             // Assert
             response.Should().NotBeNull();

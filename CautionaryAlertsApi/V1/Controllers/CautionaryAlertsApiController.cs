@@ -18,13 +18,13 @@ namespace CautionaryAlertsApi.V1.Controllers
     {
         private readonly IGetAlertsForPeople _getAlertsForPeople;
         private readonly IGetCautionaryAlertsForProperty _getCautionaryAlertsForProperty;
-        private readonly IGetCautionaryContactAlertsUseCase _getCautionaryContactAlertsUseCase;
+        private readonly IPropertyAlertsNewUseCase _getPropertyAlertsNewUseCase;
 
-        public CautionaryAlertsApiController(IGetAlertsForPeople getAlertsForPeople, IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty, IGetCautionaryContactAlertsUseCase getCautionaryContactAlertsUseCase)
+        public CautionaryAlertsApiController(IGetAlertsForPeople getAlertsForPeople, IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty, IPropertyAlertsNewUseCase getCautionaryContactAlertsUseCase)
         {
             _getAlertsForPeople = getAlertsForPeople;
             _getCautionaryAlertsForProperty = getCautionaryAlertsForProperty;
-            _getCautionaryContactAlertsUseCase = getCautionaryContactAlertsUseCase;
+            _getPropertyAlertsNewUseCase = getCautionaryContactAlertsUseCase;
         }
 
         /// <summary>
@@ -74,16 +74,17 @@ namespace CautionaryAlertsApi.V1.Controllers
         }
 
         /// <summary>
-        /// Returns a list of cautionary alerts for a property based on property reference
+        /// Returns a list of cautionary alerts for a property based on property reference.
+        /// Reads from new table in database to mitigate GS performance issues
         /// </summary>
         /// <param name="propertyReference">The housing property reference of a property</param>
         /// <response code="200">Successful. Returns one or more cautionary alerts for a property.</response>
         [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("properties-new/{propertyReference}")]
-        public async Task<IActionResult> GetCautionaryContactAlerts(string propertyReference)
+        public async Task<IActionResult> GetPropertyAlertsNew(string propertyReference)
         {
-            var result = await _getCautionaryContactAlertsUseCase.ExecuteAsync(propertyReference).ConfigureAwait(false);
+            var result = await _getPropertyAlertsNewUseCase.ExecuteAsync(propertyReference).ConfigureAwait(false);
 
             return Ok(result);
         }

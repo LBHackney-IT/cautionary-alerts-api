@@ -59,7 +59,7 @@ namespace CautionaryAlertsApi.V1.Factories
             };
         }
 
-        public static CautionaryAlertListItem ToDomain(this CautionaryContact entity)
+        public static CautionaryAlertListItem ToDomain(this PropertyAlertsNew entity)
         {
             return new CautionaryAlertListItem
             {

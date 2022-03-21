@@ -29,6 +29,6 @@ namespace CautionaryAlertsApi.V1.Infrastructure
 
         public DbSet<PropertyAlert> PropertyAlerts { get; set; }
 
-        public DbSet<CautionaryContact> CautionaryContacts { get; set; }
+        public DbSet<PropertyAlertsNew> PropertyAlertsNew { get; set; }
     }
 }

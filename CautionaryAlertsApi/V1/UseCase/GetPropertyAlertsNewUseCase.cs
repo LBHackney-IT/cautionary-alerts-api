@@ -5,18 +5,18 @@ using CautionaryAlertsApi.V1.Gateways;
 
 namespace CautionaryAlertsApi.V1.UseCase
 {
-    public class GetCautionaryContactAlertsUseCase : IGetCautionaryContactAlertsUseCase
+    public class GetPropertyAlertsNewUseCase : IPropertyAlertsNewUseCase
     {
         private readonly IUhGateway _gateway;
 
-        public GetCautionaryContactAlertsUseCase(IUhGateway gateway)
+        public GetPropertyAlertsNewUseCase(IUhGateway gateway)
         {
             _gateway = gateway;
         }
 
         public async Task<CautionaryAlertsPropertyResponse> ExecuteAsync(string propertyReference)
         {
-            var result = await _gateway.GetCautionaryContacts(propertyReference).ConfigureAwait(false);
+            var result = await _gateway.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
 
             return new CautionaryAlertsPropertyResponse
             {

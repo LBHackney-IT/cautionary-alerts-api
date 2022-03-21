@@ -94,9 +94,9 @@ namespace CautionaryAlertsApi.V1.Gateways
             return alert.ToDomain(description?.Description);
         }
 
-        public async Task<IEnumerable<CautionaryAlertListItem>> GetCautionaryContacts(string propertyReference)
+        public async Task<IEnumerable<CautionaryAlertListItem>> GetPropertyAlertsNew(string propertyReference)
         {
-            var alerts = await _uhContext.CautionaryContacts
+            var alerts = await _uhContext.PropertyAlertsNew
                 .Where(x => x.PropertyReference == propertyReference)
                 .ToListAsync().ConfigureAwait(false);
 

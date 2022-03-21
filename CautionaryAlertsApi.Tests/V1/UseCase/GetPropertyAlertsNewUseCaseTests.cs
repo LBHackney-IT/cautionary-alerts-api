@@ -10,19 +10,19 @@ using System.Threading.Tasks;
 
 namespace CautionaryAlertsApi.Tests.V1.UseCase
 {
-    public class GetCautionaryContactAlertsUseCaseTests
+    public class GetPropertyAlertsNewUseCaseTests
     {
-        private readonly GetCautionaryContactAlertsUseCase _classUnderTest;
+        private readonly GetPropertyAlertsNewUseCase _classUnderTest;
         private readonly Mock<IUhGateway> _mockGateway;
 
         private readonly Fixture _fixture = new Fixture();
         private readonly Random _random = new Random();
 
-        public GetCautionaryContactAlertsUseCaseTests()
+        public GetPropertyAlertsNewUseCaseTests()
         {
             _mockGateway = new Mock<IUhGateway>();
 
-            _classUnderTest = new GetCautionaryContactAlertsUseCase(_mockGateway.Object);
+            _classUnderTest = new GetPropertyAlertsNewUseCase(_mockGateway.Object);
         }
 
         [Test]
@@ -32,7 +32,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             var propertyReference = "00001234";
 
             _mockGateway
-                .Setup(x => x.GetCautionaryContacts(It.IsAny<string>()))
+                .Setup(x => x.GetPropertyAlertsNew(It.IsAny<string>()))
                 .ReturnsAsync(new List<CautionaryAlertListItem>());
 
             // Act
@@ -54,7 +54,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             var alerts = _fixture.CreateMany<CautionaryAlertListItem>(numberOfResults);
 
             _mockGateway
-                .Setup(x => x.GetCautionaryContacts(It.IsAny<string>()))
+                .Setup(x => x.GetPropertyAlertsNew(It.IsAny<string>()))
                 .ReturnsAsync(alerts);
 
             // Act

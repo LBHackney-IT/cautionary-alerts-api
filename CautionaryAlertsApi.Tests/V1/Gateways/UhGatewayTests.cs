@@ -371,7 +371,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var propertyReference = "00001234";
 
             // Act
-            var result = await _classUnderTest.GetCautionaryContacts(propertyReference).ConfigureAwait(false);
+            var result = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
@@ -385,23 +385,23 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var propertyReference = "00001234";
             var numberOfResults = _random.Next(2, 5);
 
-            var results = _fixture.Build<CautionaryContact>()
+            var results = _fixture.Build<PropertyAlertsNew>()
                 .With(x => x.PropertyReference, propertyReference)
                 .CreateMany(numberOfResults);
 
             await SaveCautionaryContactsToDb(results).ConfigureAwait(false);
 
             // Act
-            var result = await _classUnderTest.GetCautionaryContacts(propertyReference).ConfigureAwait(false);
+            var result = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
 
             // Assert
             result.Should().NotBeNull();
             result.Should().HaveCount(numberOfResults);
         }
 
-        private async Task SaveCautionaryContactsToDb(IEnumerable<CautionaryContact> results)
+        private async Task SaveCautionaryContactsToDb(IEnumerable<PropertyAlertsNew> results)
         {
-            UhContext.CautionaryContacts.AddRange(results);
+            UhContext.PropertyAlertsNew.AddRange(results);
             await UhContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }

@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
-    [Table("cautionary_contacts", Schema = "dbo")]
-    public class CautionaryContact
+    [Table("property_alerts_new", Schema = "dbo")]
+    public class PropertyAlertsNew
     {
         [Key]
         [Column("id")]

@@ -10,7 +10,7 @@ namespace CautionaryAlertsApi.V1.Gateways
 
         CautionaryAlertsProperty GetCautionaryAlertsForAProperty(string propertyReference);
 
-        Task<IEnumerable<CautionaryAlertListItem>> GetCautionaryContacts(string propertyReference);
+        Task<IEnumerable<CautionaryAlertListItem>> GetPropertyAlertsNew(string propertyReference);
 
     }
 }

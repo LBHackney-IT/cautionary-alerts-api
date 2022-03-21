@@ -16,22 +16,20 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         private readonly Random _random = new Random();
 
         [Test]
-        public async Task CanGetCautionaryContactAlerts()
+        public async Task GetPropertyAlertsNewReturnsAlerts()
         {
             // Arrange
             var propertyReference = "00001234";
             var numberOfResults = _random.Next(2, 5);
 
-            var results = _fixture.Build<CautionaryContact>()
+            var results = _fixture.Build<PropertyAlertsNew>()
                 .With(x => x.PropertyReference, propertyReference)
                 .CreateMany(numberOfResults);
 
             await SaveCautionaryContactsToDb(results).ConfigureAwait(false);
 
-            var url = new Uri($"/api/v1/cautionary-alerts/properties-new/{propertyReference}", UriKind.Relative);
-
             // Act
-            var response = await Client.GetAsync(url).ConfigureAwait(true);
+            var response = await GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
 
             // Assert
             response.StatusCode.Should().Be(200);
@@ -43,10 +41,36 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             returnedAlerts.Alerts.Should().HaveCount(numberOfResults);
         }
 
-        private async Task SaveCautionaryContactsToDb(IEnumerable<CautionaryContact> results)
+        [Test]
+        public async Task GetPropertyAlertsNewWhenNoneExistReturnsEmptyList()
         {
-            UhContext.CautionaryContacts.AddRange(results);
+            // Arrange
+            var propertyReference = "00001234";
+
+            // Act
+            var response = await GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
+
+            // Assert
+            response.StatusCode.Should().Be(200);
+
+            var data = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+            var returnedAlerts = JsonConvert.DeserializeObject<CautionaryAlertsPropertyResponse>(data);
+
+            returnedAlerts.PropertyReference.Should().Be(propertyReference);
+            returnedAlerts.Alerts.Should().BeEmpty();
+        }
+
+        private async Task SaveCautionaryContactsToDb(IEnumerable<PropertyAlertsNew> results)
+        {
+            UhContext.PropertyAlertsNew.AddRange(results);
             await UhContext.SaveChangesAsync().ConfigureAwait(false);
+        }
+
+        private async Task<System.Net.Http.HttpResponseMessage> GetPropertyAlertsNew(string propertyReference)
+        {
+            var url = new Uri($"/api/v1/cautionary-alerts/properties-new/{propertyReference}", UriKind.Relative);
+
+            return await Client.GetAsync(url).ConfigureAwait(true);
         }
     }
 }
