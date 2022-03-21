@@ -41,7 +41,7 @@ namespace CautionaryAlertsApi.Tests.V1.Helper
             return desc;
         }
 
-        public static async Task SavePropertyAlertsToDb(UhContext context, IEnumerable<PropertyAlertsNew> results)
+        public static async Task SavePropertyAlertsToDb(UhContext context, IEnumerable<PropertyAlertNew> results)
         {
             context.PropertyAlertsNew.AddRange(results);
 

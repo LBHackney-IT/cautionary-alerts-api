@@ -385,7 +385,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var propertyReference = "00001234";
             var numberOfResults = _random.Next(2, 5);
 
-            var results = _fixture.Build<PropertyAlertsNew>()
+            var results = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.PropertyReference, propertyReference)
                 .CreateMany(numberOfResults);
 
