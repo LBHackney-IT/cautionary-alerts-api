@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
+using CautionaryAlertsApi.Tests.V1.Helper;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Infrastructure;
 using FluentAssertions;
@@ -26,7 +27,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
                 .With(x => x.PropertyReference, propertyReference)
                 .CreateMany(numberOfResults);
 
-            await SavePropertyAlertsToDb(results).ConfigureAwait(false);
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
 
             // Act
             var response = await GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
@@ -58,12 +59,6 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             returnedAlerts.PropertyReference.Should().Be(propertyReference);
             returnedAlerts.Alerts.Should().BeEmpty();
-        }
-
-        private async Task SavePropertyAlertsToDb(IEnumerable<PropertyAlertsNew> results)
-        {
-            UhContext.PropertyAlertsNew.AddRange(results);
-            await UhContext.SaveChangesAsync().ConfigureAwait(false);
         }
 
         private async Task<System.Net.Http.HttpResponseMessage> GetPropertyAlertsNew(string propertyReference)

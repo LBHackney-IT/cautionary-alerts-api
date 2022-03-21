@@ -389,7 +389,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
                 .With(x => x.PropertyReference, propertyReference)
                 .CreateMany(numberOfResults);
 
-            await SavePropertyContactsToDb(results).ConfigureAwait(false);
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
 
             // Act
             var result = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
@@ -397,12 +397,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             // Assert
             result.Should().NotBeNull();
             result.Should().HaveCount(numberOfResults);
-        }
-
-        private async Task SavePropertyContactsToDb(IEnumerable<PropertyAlertsNew> results)
-        {
-            UhContext.PropertyAlertsNew.AddRange(results);
-            await UhContext.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }
