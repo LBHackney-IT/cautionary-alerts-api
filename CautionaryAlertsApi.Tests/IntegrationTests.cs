@@ -38,9 +38,8 @@ namespace CautionaryAlertsApi.Tests
             Client = _factory.CreateClient();
             UhContext = new UhContext(_builder.Options);
 
-            UhContext.Database.EnsureDeleted();
             UhContext.Database.EnsureCreated();
-            
+
             _transaction = UhContext.Database.BeginTransaction();
         }
 
