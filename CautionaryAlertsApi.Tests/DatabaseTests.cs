@@ -21,7 +21,6 @@ namespace CautionaryAlertsApi.Tests
             builder.UseNpgsql(connectionString);
             UhContext = new UhContext(builder.Options);
 
-            UhContext.Database.EnsureDeleted();
             UhContext.Database.EnsureCreated();
 
             _transaction = UhContext.Database.BeginTransaction();
