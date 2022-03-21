@@ -39,7 +39,6 @@ namespace CautionaryAlertsApi.Tests
                 var serviceProvider = services.BuildServiceProvider();
                 var dbContext = serviceProvider.GetRequiredService<UhContext>();
 
-                dbContext.Database.EnsureDeleted();
                 dbContext.Database.EnsureCreated();
             });
 
