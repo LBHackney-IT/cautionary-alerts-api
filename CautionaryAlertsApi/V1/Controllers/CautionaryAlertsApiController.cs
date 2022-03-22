@@ -29,13 +29,20 @@ namespace CautionaryAlertsApi.V1.Controllers
         /// <param name="personNo">The number of the person you are interested in within a property. person_no in UH. e.g. 01</param>
         /// <response code="200">Successful. One or more records found for given tag_ref and person_no</response>
         /// <response code="404">No records found for given tag_ref and person_no</response>
+        /// <response code="400">Bad request - tag_ref cannot be null or whitespace</response>
         [ProducesResponseType(typeof(ListPersonsCautionaryAlerts), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpGet]
         [Route("people")]
         public IActionResult ViewPeopleCautionaryAlerts([FromQuery(Name = "tag_ref"), BindRequired] string tagRef,
             [FromQuery(Name = "person_number")] string personNo)
         {
+            if (string.IsNullOrWhiteSpace(tagRef))
+            {
+                return BadRequest($"Parameter {nameof(tagRef)} cannot be null or whitespace");
+            }
+
             try
             {
                 return Ok(_getAlertsForPeople.Execute(tagRef, personNo));
