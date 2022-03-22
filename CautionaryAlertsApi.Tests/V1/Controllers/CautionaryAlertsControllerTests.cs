@@ -59,5 +59,19 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             response.Value.Should().Be($"Property cautionary alert(s) for property reference {propertyReference} not found");
             response.StatusCode.Should().Be(404);
         }
+
+        [TestCase("")]
+        [TestCase(" ")]
+        [TestCase(null)]
+        public void ViewPropertyCautionaryAlertsWhenTagRefIsNullOrWhiteSpaceReturnsBadRequest(string tagRef)
+        {
+            // Arrange
+
+            // Act
+            var response = _classUnderTest.ViewPeopleCautionaryAlerts(tagRef, string.Empty) as BadRequestObjectResult;
+
+            // Assert
+            response.StatusCode.Should().Be(400);
+        }
     }
 }
