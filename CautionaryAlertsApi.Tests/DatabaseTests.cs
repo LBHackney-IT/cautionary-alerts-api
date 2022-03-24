@@ -15,10 +15,14 @@ namespace CautionaryAlertsApi.Tests
         public void RunBeforeAnyTests()
         {
             var builder = new DbContextOptionsBuilder();
-            builder.UseNpgsql(ConnectionString.TestDatabase());
+
+            var connectionString = ConnectionString.TestDatabase();
+
+            builder.UseNpgsql(connectionString);
             UhContext = new UhContext(builder.Options);
 
             UhContext.Database.EnsureCreated();
+
             _transaction = UhContext.Database.BeginTransaction();
         }
 
