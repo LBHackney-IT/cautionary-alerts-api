@@ -1,7 +1,9 @@
+using AutoFixture;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Controllers;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Infrastructure;
+using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
@@ -19,13 +21,21 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         private CautionaryAlertsApiController _classUnderTest;
         private Mock<IGetAlertsForPeople> _mockGetAlertsForPersonUseCase;
         private Mock<IGetCautionaryAlertsForProperty> _mockGetAlertsForPropertyUseCase;
+        private Mock<IPropertyAlertsNewUseCase> _mockGetPropertyAlertsNewUseCase;
+
+        private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
         {
             _mockGetAlertsForPersonUseCase = new Mock<IGetAlertsForPeople>();
             _mockGetAlertsForPropertyUseCase = new Mock<IGetCautionaryAlertsForProperty>();
-            _classUnderTest = new CautionaryAlertsApiController(_mockGetAlertsForPersonUseCase.Object, _mockGetAlertsForPropertyUseCase.Object);
+            _mockGetPropertyAlertsNewUseCase = new Mock<IPropertyAlertsNewUseCase>();
+
+            _classUnderTest = new CautionaryAlertsApiController(
+                _mockGetAlertsForPersonUseCase.Object,
+                _mockGetAlertsForPropertyUseCase.Object,
+                _mockGetPropertyAlertsNewUseCase.Object);
         }
 
         [Test]
@@ -58,6 +68,28 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             response.Should().NotBeNull();
             response.Value.Should().Be($"Property cautionary alert(s) for property reference {propertyReference} not found");
             response.StatusCode.Should().Be(404);
+        }
+
+        [Test]
+        public async Task GetPropertyAlertsWhenCalledReturnsAlerts()
+        {
+            // Arrange
+            var propertyReference = "0012345678";
+
+            var usecaseResponse = _fixture.Create<CautionaryAlertsPropertyResponse>();
+
+            _mockGetPropertyAlertsNewUseCase
+                .Setup(x => x.ExecuteAsync(It.IsAny<string>()))
+                .ReturnsAsync(usecaseResponse);
+
+            // Act
+            var response = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false) as OkObjectResult;
+
+            // Assert
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(usecaseResponse);
+
         }
     }
 }

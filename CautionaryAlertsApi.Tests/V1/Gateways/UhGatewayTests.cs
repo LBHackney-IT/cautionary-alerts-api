@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
 using CautionaryAlertsApi.Tests.V1.Helper;
@@ -17,7 +18,9 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
     public class UhGatewayTests : DatabaseTests
     {
         private UhGateway _classUnderTest;
+
         private Fixture _fixture;
+        private readonly Random _random = new Random();
         private readonly Faker _faker = new Faker();
 
         [SetUp]
@@ -359,6 +362,41 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             response.Alerts.First().EndDate.Should().BeNull();
             response.Alerts.First().ModifiedBy.Should().BeEquivalentTo(alert.ModifiedBy);
             response.Alerts.First().AlertCode.Should().BeEquivalentTo(alert.AlertCode);
+        }
+
+        [Test]
+        public async Task GetPropertyAlertsWhenNoneExistReturnsEmptyList()
+        {
+            // Arrange
+            var propertyReference = "00001234";
+
+            // Act
+            var result = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task GetPropertyAlertsWhenCalledReturnsMany()
+        {
+            // Arrange
+            var propertyReference = "00001234";
+            var numberOfResults = _random.Next(2, 5);
+
+            var results = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.PropertyReference, propertyReference)
+                .CreateMany(numberOfResults);
+
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
+
+            // Act
+            var result = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().HaveCount(numberOfResults);
         }
     }
 }

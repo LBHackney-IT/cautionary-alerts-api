@@ -28,5 +28,7 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         public DbSet<AddressLink> Addresses { get; set; }
 
         public DbSet<PropertyAlert> PropertyAlerts { get; set; }
+
+        public DbSet<PropertyAlertNew> PropertyAlertsNew { get; set; }
     }
 }

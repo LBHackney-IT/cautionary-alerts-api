@@ -37,7 +37,9 @@ namespace CautionaryAlertsApi.Tests
             _factory = new MockWebApplicationFactory<TStartup>(_connection);
             Client = _factory.CreateClient();
             UhContext = new UhContext(_builder.Options);
+
             UhContext.Database.EnsureCreated();
+
             _transaction = UhContext.Database.BeginTransaction();
         }
 
