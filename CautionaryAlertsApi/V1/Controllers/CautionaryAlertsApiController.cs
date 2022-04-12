@@ -19,12 +19,17 @@ namespace CautionaryAlertsApi.V1.Controllers
         private readonly IGetAlertsForPeople _getAlertsForPeople;
         private readonly IGetCautionaryAlertsForProperty _getCautionaryAlertsForProperty;
         private readonly IPropertyAlertsNewUseCase _getPropertyAlertsNewUseCase;
+        private readonly IGetCautionaryAlertsByPersonId _getCautionaryAlertsByPersonId;
 
-        public CautionaryAlertsApiController(IGetAlertsForPeople getAlertsForPeople, IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty, IPropertyAlertsNewUseCase getCautionaryContactAlertsUseCase)
+        public CautionaryAlertsApiController(IGetAlertsForPeople getAlertsForPeople,
+                                             IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty,
+                                             IPropertyAlertsNewUseCase getCautionaryContactAlertsUseCase,
+                                             IGetCautionaryAlertsByPersonId getCautionaryAlertsByPersonId)
         {
             _getAlertsForPeople = getAlertsForPeople;
             _getCautionaryAlertsForProperty = getCautionaryAlertsForProperty;
             _getPropertyAlertsNewUseCase = getCautionaryContactAlertsUseCase;
+            _getCautionaryAlertsByPersonId = getCautionaryAlertsByPersonId;
         }
 
         /// <summary>
@@ -85,6 +90,22 @@ namespace CautionaryAlertsApi.V1.Controllers
         public async Task<IActionResult> GetPropertyAlertsNew(string propertyReference)
         {
             var result = await _getPropertyAlertsNewUseCase.ExecuteAsync(propertyReference).ConfigureAwait(false);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Returns a list of cautionary alerts based on person ID.
+        /// Reads from new table in database to mitigate GS performance issues
+        /// </summary>
+        /// <param name="personId">A unique MMH identifier (GUID) of a person.</param>
+        /// <response code="200">Successful. Returns a list of cautionary alerts for a person.</response>
+        [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("persons/{personId}")]
+        public async Task<IActionResult> GetAlertsByPersonId([FromRoute] Guid personId)
+        {
+            var result = await _getCautionaryAlertsByPersonId.ExecuteAsync(personId).ConfigureAwait(false);
 
             return Ok(result);
         }

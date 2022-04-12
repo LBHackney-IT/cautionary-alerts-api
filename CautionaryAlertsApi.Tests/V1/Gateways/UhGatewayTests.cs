@@ -398,5 +398,39 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             result.Should().NotBeNull();
             result.Should().HaveCount(numberOfResults);
         }
+
+        [Test]
+        public async Task GetCautionaryAlertsByPersonIdReturnsEmptyList()
+        {
+            // Arrange
+            var personId = Guid.NewGuid();
+
+            // Act
+            var result = await _classUnderTest.GetCautionaryAlertsByMMHPersonId(personId).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task GetGetCautionaryAlertsByPersonIdReturnsMany()
+        {
+            // Arrange
+            var personId = Guid.NewGuid();
+            var results = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.MMHID, personId.ToString())
+                .CreateMany();
+
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
+
+            // Act
+            var result = await _classUnderTest.GetCautionaryAlertsByMMHPersonId(personId).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().HaveSameCount(results);
+        }
+
     }
 }

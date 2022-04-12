@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -98,6 +99,15 @@ namespace CautionaryAlertsApi.V1.Gateways
         {
             var alerts = await _uhContext.PropertyAlertsNew
                 .Where(x => x.PropertyReference == propertyReference)
+                .ToListAsync().ConfigureAwait(false);
+
+            return alerts.Select(x => x.ToDomain());
+        }
+
+        public async Task<IEnumerable<CautionaryAlertListItem>> GetCautionaryAlertsByMMHPersonId(Guid personId)
+        {
+            var alerts = await _uhContext.PropertyAlertsNew
+                .Where(x => x.MMHID == personId.ToString())
                 .ToListAsync().ConfigureAwait(false);
 
             return alerts.Select(x => x.ToDomain());

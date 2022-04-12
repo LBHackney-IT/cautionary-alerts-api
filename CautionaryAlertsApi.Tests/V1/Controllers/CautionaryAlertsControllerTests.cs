@@ -22,6 +22,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         private Mock<IGetAlertsForPeople> _mockGetAlertsForPersonUseCase;
         private Mock<IGetCautionaryAlertsForProperty> _mockGetAlertsForPropertyUseCase;
         private Mock<IPropertyAlertsNewUseCase> _mockGetPropertyAlertsNewUseCase;
+        private Mock<IGetCautionaryAlertsByPersonId> _mockGetCautionaryAlertsByPersonIdUseCase;
 
         private readonly Fixture _fixture = new Fixture();
 
@@ -31,11 +32,13 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             _mockGetAlertsForPersonUseCase = new Mock<IGetAlertsForPeople>();
             _mockGetAlertsForPropertyUseCase = new Mock<IGetCautionaryAlertsForProperty>();
             _mockGetPropertyAlertsNewUseCase = new Mock<IPropertyAlertsNewUseCase>();
+            _mockGetCautionaryAlertsByPersonIdUseCase = new Mock<IGetCautionaryAlertsByPersonId>();
 
             _classUnderTest = new CautionaryAlertsApiController(
                 _mockGetAlertsForPersonUseCase.Object,
                 _mockGetAlertsForPropertyUseCase.Object,
-                _mockGetPropertyAlertsNewUseCase.Object);
+                _mockGetPropertyAlertsNewUseCase.Object,
+                _mockGetCautionaryAlertsByPersonIdUseCase.Object);
         }
 
         [Test]
@@ -89,7 +92,28 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
             response.Value.Should().BeEquivalentTo(usecaseResponse);
+        }
 
+        [Test]
+        public async Task GetAlertsByPersonIdReturnsAlertsFromUseCase()
+        {
+            // Arrange
+            var personId = Guid.NewGuid();
+
+            var usecaseResponse = _fixture.Create<CautionaryAlertsMMHPersonResponse>();
+
+            _mockGetCautionaryAlertsByPersonIdUseCase
+                .Setup(x => x.ExecuteAsync(personId))
+                .ReturnsAsync(usecaseResponse);
+
+            // Act
+            var response = await _classUnderTest.GetAlertsByPersonId(personId).ConfigureAwait(false) as OkObjectResult;
+
+            // Assert
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(usecaseResponse);
+            _mockGetCautionaryAlertsByPersonIdUseCase.Verify(x => x.ExecuteAsync(personId), Times.Once);
         }
     }
 }
