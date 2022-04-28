@@ -51,5 +51,8 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         [MaxLength(36)]
         public string MMHID { get; set; }
 
+        [Column("reason")]
+        [MaxLength(100)]
+        public string Reason { get; set; }
     }
 }

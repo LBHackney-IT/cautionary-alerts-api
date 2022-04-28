@@ -17,7 +17,7 @@ namespace CautionaryAlertsApi.V1.Factories
                 DateModified = domain.DateModified.ToString("yyyy-MM-dd"),
                 EndDate = domain.EndDate?.ToString("yyyy-MM-dd"),
                 ModifiedBy = domain.ModifiedBy,
-                StartDate = domain.StartDate?.ToString("yyyy-MM-dd"),
+                StartDate = domain.StartDate?.ToString("yyyy-MM-dd")
             };
         }
 
@@ -60,6 +60,19 @@ namespace CautionaryAlertsApi.V1.Factories
                 Code = domain.Code,
                 Type = domain.CautionOnSystem,
                 Description = domain.Outcome
+            };
+        }
+
+        public static CautionaryAlertResponse ToResponse(this CautionaryAlertListItem domain)
+        {
+            return new CautionaryAlertResponse
+            {
+                DateModified = domain.DateOfIncident,
+                ModifiedBy = "GoogleSheet",
+                StartDate = domain.DateOfIncident,
+                AlertCode = domain.Code,
+                Description = domain.CautionOnSystem,
+                Reason = domain.Reason
             };
         }
     }
