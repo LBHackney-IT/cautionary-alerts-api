@@ -34,5 +34,9 @@ namespace CautionaryAlertsApi.V1.Boundary.Response
         /// </summary>
         /// <example>Verbal abuse or threat of</example>
         public string Description { get; set; }
+        /// <summary>
+        /// Detailed description or reason behind the cautionary alert
+        /// </summary>
+        public string Reason { get; set; }
     }
 }

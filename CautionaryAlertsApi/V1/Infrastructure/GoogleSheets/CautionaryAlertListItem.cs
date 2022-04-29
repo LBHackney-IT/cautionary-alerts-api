@@ -21,17 +21,6 @@ namespace CautionaryAlertsApi.V1.Gateways
         public string PropertyReference { get; set; }
         public string TenancyDates { get; set; }
         public string IncidentBeforeCurrentTenancyDate { get; set; }
-
-        public CautionaryAlertResponse ToResponse()
-        {
-            return new CautionaryAlertResponse
-            {
-                DateModified = DateOfIncident,
-                ModifiedBy = "GoogleSheet",
-                StartDate = DateOfIncident,
-                AlertCode = Code,
-                Description = CautionOnSystem
-            };
-        }
+        public string Reason { get; set; }
     }
 }

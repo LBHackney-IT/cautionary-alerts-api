@@ -634,7 +634,8 @@ create table dbo."PropertyAlertNew"(
 	"property_reference" varchar(12),
 	"uprn" varchar(12),
 	"person_name" varchar(100),
-	"mmh_id" varchar(36)
+	"mmh_id" varchar(36),
+	"outcome" varchar(100)
 );
 
 
