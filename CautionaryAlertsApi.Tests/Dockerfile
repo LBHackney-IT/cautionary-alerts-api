@@ -5,6 +5,8 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT='true'
 
 WORKDIR /app
 
+RUN dotnet tool install --global dotnet-sonarscanner --version 5.6.0
+
 # Copy csproj and restore as distinct layers
 COPY ./CautionaryAlertsApi.sln ./
 COPY ./CautionaryAlertsApi/CautionaryAlertsApi.csproj ./CautionaryAlertsApi/
