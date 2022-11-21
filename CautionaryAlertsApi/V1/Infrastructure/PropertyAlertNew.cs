@@ -62,5 +62,9 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         [Column("modified_by")]
         [MaxLength(12)]
         public string ModifiedBy { get; set; }
+
+        [Column("assure_reference")]
+        [MaxLength(12)]
+        public string AssureReference { get; set; }
     }
 }
