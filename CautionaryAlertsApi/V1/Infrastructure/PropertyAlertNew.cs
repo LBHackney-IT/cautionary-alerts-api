@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
     [Table("PropertyAlertNew", Schema = "dbo")]
-    public class PropertyAlertNew
+    public class PropertyAlertNew : IAuditable
     {
         [Key]
         [Column("id")]
@@ -54,5 +54,13 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         [Column("outcome")]
         [MaxLength(100)]
         public string Reason { get; set; }
+
+        [Column("date_modified")]
+        [MaxLength(12)]
+        public DateTime DateModified { get ; set; }
+
+        [Column("modified_by")]
+        [MaxLength(12)]
+        public string ModifiedBy { get; set; }
     }
 }

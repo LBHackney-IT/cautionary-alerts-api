@@ -1,3 +1,5 @@
+using CautionaryAlertsApi.V1.Boundary.Request;
+using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
@@ -72,6 +74,21 @@ namespace CautionaryAlertsApi.V1.Factories
                 PropertyReference = entity.PropertyReference,
                 Name = entity.PersonName,
                 Reason = entity.Reason
+            };
+        }
+
+        public static PropertyAlertNew ToDatabase(this CreateCautionaryAlert entity)
+        {
+            return new PropertyAlertNew()
+            {
+                Address = entity.AssetDetails.FullAddress,
+                UPRN = entity.AssetDetails.UPRN,
+                MMHID = entity.PersonDetails.Id.ToString(),
+                PersonName = entity.PersonDetails.Name,
+                Code = entity.Alert.Code,
+                DateOfIncident = entity.IncidentDate.ToString(),
+                
+                //TODO: map other properties
             };
         }
 

@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CautionaryAlertsApi.V1.Boundary.Request;
+using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Core.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using CautionaryAlert = CautionaryAlertsApi.V1.Domain.CautionaryAlert;
 
 namespace CautionaryAlertsApi.V1.Gateways
@@ -13,10 +17,11 @@ namespace CautionaryAlertsApi.V1.Gateways
     public class UhGateway : IUhGateway
     {
         private readonly UhContext _uhContext;
-
-        public UhGateway(UhContext uhContext)
+        private readonly ILogger<UhContext> _logger;
+        public UhGateway(UhContext uhContext, ILogger<UhContext> logger)
         {
             _uhContext = uhContext;
+            _logger = logger;
         }
 
         public List<CautionaryAlertPerson> GetCautionaryAlertsForPeople(string tagRef, string personNumber)
@@ -111,6 +116,18 @@ namespace CautionaryAlertsApi.V1.Gateways
                 .ToListAsync().ConfigureAwait(false);
 
             return alerts.Select(x => x.ToDomain());
+        }
+
+        [LogCall]
+        public async Task<CautionaryAlertListItem> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert)
+        {
+            _logger.LogDebug($"Calling IDynamoDBContext.SaveAsync");
+            var alertDbEntity = cautionaryAlert.ToDatabase();
+
+            _uhContext.PropertyAlertsNew.Add(alertDbEntity);
+            await _uhContext.SaveChangesAsync().ConfigureAwait(false);
+
+            return alertDbEntity.ToDomain();
         }
     }
 }
