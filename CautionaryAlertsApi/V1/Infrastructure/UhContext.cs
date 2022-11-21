@@ -66,8 +66,8 @@ namespace CautionaryAlertsApi.V1.Infrastructure
             {
                 if (entry.Entity is IAuditable auditable && entry.State == EntityState.Added)
                 {
-                    auditable.DateModified = auditable.DateModified = TimestampProvider();
-                    auditable.ModifiedBy = auditable.ModifiedBy = UserProvider;
+                    auditable.DateModified = TimestampProvider();
+                    auditable.ModifiedBy = UserProvider;
                 }
             }
         }

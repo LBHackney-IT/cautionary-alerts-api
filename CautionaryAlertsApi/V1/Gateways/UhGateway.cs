@@ -121,7 +121,7 @@ namespace CautionaryAlertsApi.V1.Gateways
         [LogCall]
         public async Task<CautionaryAlertListItem> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert)
         {
-            _logger.LogDebug($"Calling IDynamoDBContext.SaveAsync");
+            _logger.LogDebug($"Calling Postgress.SaveAsync");
             var alertDbEntity = cautionaryAlert.ToDatabase();
 
             _uhContext.PropertyAlertsNew.Add(alertDbEntity);
