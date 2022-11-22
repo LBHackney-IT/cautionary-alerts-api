@@ -6,7 +6,9 @@ using CautionaryAlertsApi.V1.Infrastructure;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
+using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -23,7 +25,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         private Mock<IGetCautionaryAlertsForProperty> _mockGetAlertsForPropertyUseCase;
         private Mock<IPropertyAlertsNewUseCase> _mockGetPropertyAlertsNewUseCase;
         private Mock<IGetCautionaryAlertsByPersonId> _mockGetCautionaryAlertsByPersonIdUseCase;
-
+        private Mock<IPostNewCautionaryAlertUseCase> _mockPostNewCautionaryAlertUseCase;
         private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
@@ -33,12 +35,14 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             _mockGetAlertsForPropertyUseCase = new Mock<IGetCautionaryAlertsForProperty>();
             _mockGetPropertyAlertsNewUseCase = new Mock<IPropertyAlertsNewUseCase>();
             _mockGetCautionaryAlertsByPersonIdUseCase = new Mock<IGetCautionaryAlertsByPersonId>();
+            _mockPostNewCautionaryAlertUseCase = new Mock<IPostNewCautionaryAlertUseCase>();
 
             _classUnderTest = new CautionaryAlertsApiController(
                 _mockGetAlertsForPersonUseCase.Object,
                 _mockGetAlertsForPropertyUseCase.Object,
                 _mockGetPropertyAlertsNewUseCase.Object,
-                _mockGetCautionaryAlertsByPersonIdUseCase.Object);
+                _mockGetCautionaryAlertsByPersonIdUseCase.Object,
+                _mockPostNewCautionaryAlertUseCase.Object);
         }
 
         [Test]

@@ -17,8 +17,8 @@ namespace CautionaryAlertsApi.V1.Gateways
     public class UhGateway : IUhGateway
     {
         private readonly UhContext _uhContext;
-        private readonly ILogger<UhContext> _logger;
-        public UhGateway(UhContext uhContext, ILogger<UhContext> logger)
+        private readonly ILogger<UhGateway> _logger;
+        public UhGateway(UhContext uhContext, ILogger<UhGateway> logger)
         {
             _uhContext = uhContext;
             _logger = logger;
