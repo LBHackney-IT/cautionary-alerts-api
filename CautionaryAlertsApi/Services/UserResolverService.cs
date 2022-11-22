@@ -14,7 +14,7 @@ namespace CautionaryAlertsApi.Services
         }
         public string GetUserName()
         {
-            return _context.HttpContext?.User.FindFirst(JwtRegisteredClaimNames.Sub).Value;
+            return _context.HttpContext?.User.FindFirst(JwtRegisteredClaimNames.Email).Value;
         }
     }
 }
