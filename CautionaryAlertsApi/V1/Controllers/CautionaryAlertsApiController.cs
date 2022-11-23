@@ -123,8 +123,16 @@ namespace CautionaryAlertsApi.V1.Controllers
         [LogCall(LogLevel.Information)]
         public async Task<IActionResult> CreateNewCautionaryAlert([FromBody] CreateCautionaryAlert cautionaryAlert)
         {
-            var result = await _postNewCautionaryAlertUseCase.Execute(cautionaryAlert).ConfigureAwait(false);
-            return Ok(result);
+            try
+            {
+                var result = await _postNewCautionaryAlertUseCase.Execute(cautionaryAlert).ConfigureAwait(false);
+                return Ok(result);
+            }
+            catch (CautionaryAlertCreateException)
+            {
+                return BadRequest("Cautionary alert cannot be created");
+            }
+
         }
     }
 }
