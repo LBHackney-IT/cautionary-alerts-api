@@ -121,7 +121,6 @@ namespace CautionaryAlertsApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [LogCall(LogLevel.Information)]
-        [Route("{create}")]
         public async Task<IActionResult> CreateNewCautionaryAlert([FromBody] CreateCautionaryAlert cautionaryAlert)
         {
             var result = await _postNewCautionaryAlertUseCase.Execute(cautionaryAlert).ConfigureAwait(false);
