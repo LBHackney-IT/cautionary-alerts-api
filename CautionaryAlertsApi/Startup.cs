@@ -8,6 +8,7 @@ using CautionaryAlertsApi.V1.Infrastructure;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using CautionaryAlertsApi.Versioning;
+using FluentValidation.AspNetCore;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
@@ -47,6 +48,7 @@ namespace CautionaryAlertsApi
             services.AddCors();
             services
                 .AddMvc()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddApiVersioning(o =>
             {

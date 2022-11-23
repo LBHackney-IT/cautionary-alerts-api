@@ -1,3 +1,4 @@
+using CautionaryAlertsApi.V1.Infrastructure;
 using FluentValidation;
 
 namespace CautionaryAlertsApi.V1.Boundary.Request.Validation
@@ -6,7 +7,9 @@ namespace CautionaryAlertsApi.V1.Boundary.Request.Validation
     {
         public AlertValidator()
         {
-            RuleFor(x => x.Code).NotNull().NotEmpty();
+            RuleFor(x => x.Code).NotNull().NotEmpty()
+                .Must(x => x.Length <= CreateCautionaryAlertConstants.ALERTCODELENGTH);
+
         }
     }
 }

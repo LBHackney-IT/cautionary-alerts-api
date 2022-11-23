@@ -1,3 +1,4 @@
+using CautionaryAlertsApi.V1.Infrastructure;
 using FluentValidation;
 using Hackney.Core.Validation;
 using Microsoft.AspNetCore.Http;
@@ -9,10 +10,11 @@ namespace CautionaryAlertsApi.V1.Boundary.Request.Validation
     {
         public CreateCautionaryAlertValidator()
         {
-            RuleFor(x => x.IncidentDescription).NotXssString()
-                .When(x => !string.IsNullOrEmpty(x.IncidentDescription));
-
-            RuleFor(x => x.IncidentDescription).NotEmpty().NotNull();
+            RuleFor(x => x.IncidentDescription)
+                .NotEmpty().NotNull()
+                .NotXssString()
+                .When(x => !string.IsNullOrEmpty(x.IncidentDescription))
+                .Must(x => x.Length <= CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH);
 
             RuleFor(x => x.IncidentDate).NotEmpty().NotNull()
                 .Must(date => date < DateTime.UtcNow)
