@@ -89,7 +89,7 @@ namespace CautionaryAlertsApi.V1.Factories
                 PersonName = entity.PersonDetails.Name,
                 Code = entity.Alert.Code,
                 CautionOnSystem = entity.Alert.Description,
-                DateOfIncident = entity.IncidentDate.ToString(),
+                DateOfIncident = entity.IncidentDate.ToShortDateString(),
                 Reason = entity.IncidentDescription
             };
         }
