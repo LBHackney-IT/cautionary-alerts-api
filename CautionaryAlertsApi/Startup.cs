@@ -116,8 +116,12 @@ namespace CautionaryAlertsApi
                     c.IncludeXmlComments(xmlPath);
             });
 
+            services.AddTokenFactory();
+            services.AddLogCallAspect();
+
             ConfigureDbContext(services);
             ConfigureGoogleSheetsService(services);
+
             RegisterGateways(services);
             RegisterUseCases(services);
         }
@@ -149,8 +153,6 @@ namespace CautionaryAlertsApi
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-            services.AddTokenFactory();
-
             services.AddScoped<IGetAlertsForPeople, GetAlertsForPeople>();
             services.AddScoped<IGetCautionaryAlertsForProperty, GetCautionaryAlertsForProperty>();
             services.AddScoped<IGetGoogleSheetAlertsForProperty, GetGoogleSheetAlertsForProperty>();
@@ -158,8 +160,6 @@ namespace CautionaryAlertsApi
             services.AddScoped<IPropertyAlertsNewUseCase, GetPropertyAlertsNewUseCase>();
             services.AddScoped<IGetCautionaryAlertsByPersonId, GetCautionaryAlertsByPersonIdUseCase>();
             services.AddScoped<IPostNewCautionaryAlertUseCase, PostNewCautionaryAlertUseCase>();
-
-            services.AddLogCallAspect();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -183,6 +183,7 @@ namespace CautionaryAlertsApi
                 .WithExposedHeaders("x-correlation-id"));
 
             app.UseLoggingScope();
+            app.UseCustomExceptionHandler(logger);
             app.UseLogCall();
             //Get All ApiVersions,
             var api = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
