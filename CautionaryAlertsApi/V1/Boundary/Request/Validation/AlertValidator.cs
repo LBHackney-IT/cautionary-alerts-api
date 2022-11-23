@@ -9,7 +9,6 @@ namespace CautionaryAlertsApi.V1.Boundary.Request.Validation
         {
             RuleFor(x => x.Code).NotNull().NotEmpty()
                 .Must(x => x.Length <= CreateCautionaryAlertConstants.ALERTCODELENGTH);
-
         }
     }
 }

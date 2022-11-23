@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CautionaryAlertsApi.V1.Boundary.Request;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using Hackney.Core.Logging;
@@ -116,7 +117,7 @@ namespace CautionaryAlertsApi.V1.Controllers
             return Ok(result);
         }
 
-        [ProducesResponseType(typeof(CautionaryAlertResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(CautionaryAlertListItem), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
