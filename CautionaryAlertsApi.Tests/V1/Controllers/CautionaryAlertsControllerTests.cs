@@ -37,6 +37,8 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             _mockGetCautionaryAlertsByPersonIdUseCase = new Mock<IGetCautionaryAlertsByPersonId>();
             _mockPostNewCautionaryAlertUseCase = new Mock<IPostNewCautionaryAlertUseCase>();
 
+            new LogCallAspectFixture().RunBeforeTests();
+
             _classUnderTest = new CautionaryAlertsApiController(
                 _mockGetAlertsForPersonUseCase.Object,
                 _mockGetAlertsForPropertyUseCase.Object,

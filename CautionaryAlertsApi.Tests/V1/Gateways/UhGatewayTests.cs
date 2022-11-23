@@ -31,6 +31,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         [SetUp]
         public void Setup()
         {
+            new LogCallAspectFixture().RunBeforeTests();
             _mockedLogger = new Mock<ILogger<UhGateway>>();
             _classUnderTest = new UhGateway(UhContext, _mockedLogger.Object);
             _fixture = new Fixture();
