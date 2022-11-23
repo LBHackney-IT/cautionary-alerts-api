@@ -638,5 +638,3 @@ create table dbo."PropertyAlertNew"(
 	"outcome" varchar(100),
 	"assure_reference" varchar(12)
 );
-
-

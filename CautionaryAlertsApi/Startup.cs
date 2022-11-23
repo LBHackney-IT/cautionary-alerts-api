@@ -11,7 +11,10 @@ using CautionaryAlertsApi.Versioning;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
+using Hackney.Core.JWT;
+using Hackney.Core.Logging;
 using Hackney.Core.Middleware.Exception;
+using Hackney.Core.Middleware.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -144,6 +147,8 @@ namespace CautionaryAlertsApi
 
         private static void RegisterUseCases(IServiceCollection services)
         {
+            services.AddTokenFactory();
+
             services.AddScoped<IGetAlertsForPeople, GetAlertsForPeople>();
             services.AddScoped<IGetCautionaryAlertsForProperty, GetCautionaryAlertsForProperty>();
             services.AddScoped<IGetGoogleSheetAlertsForProperty, GetGoogleSheetAlertsForProperty>();
@@ -151,6 +156,8 @@ namespace CautionaryAlertsApi
             services.AddScoped<IPropertyAlertsNewUseCase, GetPropertyAlertsNewUseCase>();
             services.AddScoped<IGetCautionaryAlertsByPersonId, GetCautionaryAlertsByPersonIdUseCase>();
             services.AddScoped<IPostNewCautionaryAlertUseCase, PostNewCautionaryAlertUseCase>();
+
+            services.AddLogCallAspect();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -159,6 +166,8 @@ namespace CautionaryAlertsApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
             else
             {
@@ -170,6 +179,9 @@ namespace CautionaryAlertsApi
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .WithExposedHeaders("x-correlation-id"));
+
+            app.UseLoggingScope();
+            app.UseLogCall();
             //Get All ApiVersions,
             var api = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
             _apiVersions = api.ApiVersionDescriptions.ToList();
@@ -184,7 +196,7 @@ namespace CautionaryAlertsApi
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
-            app.UseSwagger();
+
             app.UseRouting();
             app.UseCustomExceptionHandler(logger);
             app.UseEndpoints(endpoints =>
