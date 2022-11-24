@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using CautionaryAlertsApi.V1.Boundary.Request;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Domain.CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Infrastructure;
 using Hackney.Core.Logging;
