@@ -6,10 +6,12 @@ using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
+using Hackney.Core.Authorization;
 using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CautionaryAlertsApi.V1.Controllers
@@ -122,6 +124,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [LogCall(LogLevel.Information)]
+        [AuthorizeEndpointByGroups("mmh-project-team")]
         public async Task<IActionResult> CreateNewCautionaryAlert([FromBody] CreateCautionaryAlert cautionaryAlert)
         {
             try
@@ -129,11 +132,10 @@ namespace CautionaryAlertsApi.V1.Controllers
                 var result = await _postNewCautionaryAlertUseCase.Execute(cautionaryAlert).ConfigureAwait(false);
                 return Ok(result);
             }
-            catch (CautionaryAlertCreateException)
+            catch (DbUpdateException)
             {
                 return BadRequest("Cautionary alert cannot be created");
             }
-
         }
     }
 }
