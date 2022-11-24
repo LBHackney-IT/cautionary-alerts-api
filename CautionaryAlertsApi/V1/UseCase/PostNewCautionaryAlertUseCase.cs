@@ -15,7 +15,7 @@ namespace CautionaryAlertsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task<CautionaryAlertListItem> Execute(CreateCautionaryAlert cautionaryAlert)
+        public async Task<CautionaryAlertListItem> ExecuteAsync(CreateCautionaryAlert cautionaryAlert)
         {
             var result = await _gateway.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false);
             return result;

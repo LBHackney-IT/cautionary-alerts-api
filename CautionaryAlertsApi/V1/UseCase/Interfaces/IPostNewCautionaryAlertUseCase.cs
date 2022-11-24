@@ -7,6 +7,6 @@ namespace CautionaryAlertsApi.V1.UseCase.Interfaces
 {
     public interface IPostNewCautionaryAlertUseCase
     {
-        Task<CautionaryAlertListItem> Execute(CreateCautionaryAlert cautionaryAlert);
+        Task<CautionaryAlertListItem> ExecuteAsync(CreateCautionaryAlert cautionaryAlert);
     }
 }

@@ -124,12 +124,12 @@ namespace CautionaryAlertsApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [LogCall(LogLevel.Information)]
-        [AuthorizeEndpointByGroups("mmh-project-team")]
+        [AuthorizeEndpointByGroups("REQUIRED_GOOGL_GROUPS")]
         public async Task<IActionResult> CreateNewCautionaryAlert([FromBody] CreateCautionaryAlert cautionaryAlert)
         {
             try
             {
-                var result = await _postNewCautionaryAlertUseCase.Execute(cautionaryAlert).ConfigureAwait(false);
+                var result = await _postNewCautionaryAlertUseCase.ExecuteAsync(cautionaryAlert).ConfigureAwait(false);
                 return Ok(result);
             }
             catch (DbUpdateException)
