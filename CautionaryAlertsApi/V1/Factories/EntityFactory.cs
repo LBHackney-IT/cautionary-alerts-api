@@ -4,6 +4,7 @@ using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using PropertyAlert = CautionaryAlertsApi.V1.Infrastructure.PropertyAlert;
 
@@ -89,7 +90,7 @@ namespace CautionaryAlertsApi.V1.Factories
                 PersonName = entity.PersonDetails.Name,
                 Code = entity.Alert.Code,
                 CautionOnSystem = entity.Alert.Description,
-                DateOfIncident = entity.IncidentDate.ToShortDateString(),
+                DateOfIncident = entity.IncidentDate.ToString("d", CultureInfo.InvariantCulture),
                 Reason = entity.IncidentDescription
             };
         }
