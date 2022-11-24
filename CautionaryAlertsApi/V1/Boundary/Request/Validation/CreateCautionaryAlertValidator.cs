@@ -20,6 +20,11 @@ namespace CautionaryAlertsApi.V1.Boundary.Request.Validation
                 .Must(date => date < DateTime.UtcNow)
                 .NotEqual(DateTime.MinValue);
 
+            RuleFor(x => x.AssureReference)
+                .NotEmpty().NotNull()
+                .NotXssString()
+                .Must(x => x.Length <= CreateCautionaryAlertConstants.ASSUREREFERENCELENGTH);
+
             RuleFor(x => x.Alert).SetValidator(new AlertValidator());
 
             RuleFor(x => x.AssetDetails).SetValidator(new AssetDetailsValidator());
