@@ -159,7 +159,11 @@ workflows:
   check-and-deploy-development:
     jobs:
       - check-code-formatting
+          context: api-nuget-token-context      
       - build-and-test
+          context:
+            - api-nuget-token-context
+            - SonarCloud      
       - assume-role-development:
           context: api-assume-role-development-context
           requires:
@@ -176,6 +180,9 @@ workflows:
   check-and-deploy-staging-and-production:
     jobs:
        - build-and-test:
+          context:
+            - api-nuget-token-context
+            - SonarCloud       
            filters:
              branches:
                only: master
