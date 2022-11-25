@@ -124,7 +124,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [LogCall(LogLevel.Information)]
-        [AuthorizeEndpointByGroups("CREATE_ALERT_GROUP")]
+        [AuthorizeEndpointByGroups("CREATE_CAUTIONARY_ALERT_ALLOWED_GROUPS")]
         public async Task<IActionResult> CreateNewCautionaryAlert([FromBody] CreateCautionaryAlert cautionaryAlert)
         {
             try
