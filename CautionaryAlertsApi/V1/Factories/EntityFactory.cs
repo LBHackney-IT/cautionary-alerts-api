@@ -74,7 +74,8 @@ namespace CautionaryAlertsApi.V1.Factories
                 CautionOnSystem = entity.CautionOnSystem,
                 PropertyReference = entity.PropertyReference,
                 Name = entity.PersonName,
-                Reason = entity.Reason
+                Reason = entity.Reason,
+                AssureReference = entity.AssureReference
             };
         }
 
