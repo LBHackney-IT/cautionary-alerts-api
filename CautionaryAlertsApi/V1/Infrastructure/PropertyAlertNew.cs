@@ -54,5 +54,9 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         [Column("outcome")]
         [MaxLength(100)]
         public string Reason { get; set; }
+
+        [Column("assure_reference")]
+        [MaxLength(12)]
+        public string AssureReference { get; set; }
     }
 }

@@ -1,12 +1,18 @@
 using AutoFixture;
+using CautionaryAlertsApi.V1.Boundary.Request;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Controllers;
 using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
+using Hackney.Core.Logging;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -23,7 +29,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         private Mock<IGetCautionaryAlertsForProperty> _mockGetAlertsForPropertyUseCase;
         private Mock<IPropertyAlertsNewUseCase> _mockGetPropertyAlertsNewUseCase;
         private Mock<IGetCautionaryAlertsByPersonId> _mockGetCautionaryAlertsByPersonIdUseCase;
-
+        private Mock<IPostNewCautionaryAlertUseCase> _mockPostNewCautionaryAlertUseCase;
         private readonly Fixture _fixture = new Fixture();
 
         [SetUp]
@@ -33,12 +39,16 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             _mockGetAlertsForPropertyUseCase = new Mock<IGetCautionaryAlertsForProperty>();
             _mockGetPropertyAlertsNewUseCase = new Mock<IPropertyAlertsNewUseCase>();
             _mockGetCautionaryAlertsByPersonIdUseCase = new Mock<IGetCautionaryAlertsByPersonId>();
+            _mockPostNewCautionaryAlertUseCase = new Mock<IPostNewCautionaryAlertUseCase>();
+
+            new LogCallAspectFixture().RunBeforeTests();
 
             _classUnderTest = new CautionaryAlertsApiController(
                 _mockGetAlertsForPersonUseCase.Object,
                 _mockGetAlertsForPropertyUseCase.Object,
                 _mockGetPropertyAlertsNewUseCase.Object,
-                _mockGetCautionaryAlertsByPersonIdUseCase.Object);
+                _mockGetCautionaryAlertsByPersonIdUseCase.Object,
+                _mockPostNewCautionaryAlertUseCase.Object);
         }
 
         [Test]
@@ -114,6 +124,26 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(200);
             response.Value.Should().BeEquivalentTo(usecaseResponse);
             _mockGetCautionaryAlertsByPersonIdUseCase.Verify(x => x.ExecuteAsync(personId), Times.Once);
+        }
+
+        [Test]
+        public async Task CreateNewCautionaryAlertReturnsOkIfSuccessful()
+        {
+            // Arrange
+            var createAlertResponse = _fixture.Create<CautionaryAlertListItem>();
+            var createAlertRequest = _fixture.Create<CreateCautionaryAlert>();
+            _mockPostNewCautionaryAlertUseCase
+                .Setup(x => x.ExecuteAsync(createAlertRequest))
+                .ReturnsAsync(createAlertResponse);
+
+            // Act
+            var response = await _classUnderTest.CreateNewCautionaryAlert(createAlertRequest).ConfigureAwait(false) as OkObjectResult;
+
+            // Assert
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(StatusCodes.Status200OK);
+            response.Value.Should().BeEquivalentTo(createAlertResponse);
+            _mockPostNewCautionaryAlertUseCase.Verify(x => x.ExecuteAsync(createAlertRequest), Times.Once);
         }
     }
 }

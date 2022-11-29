@@ -8,9 +8,14 @@ using CautionaryAlertsApi.V1.Infrastructure;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using CautionaryAlertsApi.Versioning;
+using FluentValidation.AspNetCore;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
+using Hackney.Core.JWT;
+using Hackney.Core.Logging;
+using Hackney.Core.Middleware.Exception;
+using Hackney.Core.Middleware.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +25,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -42,6 +48,7 @@ namespace CautionaryAlertsApi
             services.AddCors();
             services
                 .AddMvc()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddApiVersioning(o =>
             {
@@ -109,8 +116,12 @@ namespace CautionaryAlertsApi
                     c.IncludeXmlComments(xmlPath);
             });
 
+            services.AddTokenFactory();
+            services.AddLogCallAspect();
+
             ConfigureDbContext(services);
             ConfigureGoogleSheetsService(services);
+
             RegisterGateways(services);
             RegisterUseCases(services);
         }
@@ -148,14 +159,17 @@ namespace CautionaryAlertsApi
             services.AddScoped<IGetGoogleSheetAlertsForPerson, GetGoogleSheetAlertsForPerson>();
             services.AddScoped<IPropertyAlertsNewUseCase, GetPropertyAlertsNewUseCase>();
             services.AddScoped<IGetCautionaryAlertsByPersonId, GetCautionaryAlertsByPersonIdUseCase>();
+            services.AddScoped<IPostNewCautionaryAlertUseCase, PostNewCautionaryAlertUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
             else
             {
@@ -167,6 +181,10 @@ namespace CautionaryAlertsApi
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .WithExposedHeaders("x-correlation-id"));
+
+            app.UseLoggingScope();
+            app.UseCustomExceptionHandler(logger);
+            app.UseLogCall();
             //Get All ApiVersions,
             var api = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
             _apiVersions = api.ApiVersionDescriptions.ToList();
@@ -181,8 +199,9 @@ namespace CautionaryAlertsApi
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
-            app.UseSwagger();
+
             app.UseRouting();
+            app.UseCustomExceptionHandler(logger);
             app.UseEndpoints(endpoints =>
             {
                 // SwaggerGen won't find controllers that are routed via this technique.

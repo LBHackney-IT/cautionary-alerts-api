@@ -4,8 +4,10 @@ services:
   cautionary-alerts-api:
     image: cautionary-alerts-api
     build:
-      context: CautionaryAlertsApi/
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: CautionaryAlertsApi/Dockerfile
+      args:
+      - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     ports:
       - 3000:3000
     environment:
@@ -24,6 +26,9 @@ services:
     build:
       context: .
       dockerfile: CautionaryAlertsApi.Tests/Dockerfile
+      args:
+      - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
+      - SONAR_TOKEN=${SONAR_TOKEN}
     environment:
       - DB_HOST=test-database
       - DB_PORT=5432

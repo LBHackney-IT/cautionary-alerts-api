@@ -1,5 +1,8 @@
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading.Tasks;
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System;
 
 namespace CautionaryAlertsApi.V1.Infrastructure
 {
@@ -9,6 +12,7 @@ namespace CautionaryAlertsApi.V1.Infrastructure
         public UhContext(DbContextOptions options) : base(options)
         {
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AlertDescriptionLookup>()

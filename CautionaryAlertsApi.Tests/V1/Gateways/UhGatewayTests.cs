@@ -1,15 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
+using Castle.Core.Logging;
 using CautionaryAlertsApi.Tests.V1.Helper;
+using CautionaryAlertsApi.V1.Boundary.Request;
+using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
+using CautionaryAlertsApi.V1.UseCase;
 using FluentAssertions;
+using Hackney.Core.Logging;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+using Moq;
+using Npgsql;
 using NUnit.Framework;
 
 namespace CautionaryAlertsApi.Tests.V1.Gateways
@@ -22,11 +34,14 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         private Fixture _fixture;
         private readonly Random _random = new Random();
         private readonly Faker _faker = new Faker();
+        private Mock<ILogger<UhGateway>> _mockedLogger;
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new UhGateway(UhContext);
+            new LogCallAspectFixture().RunBeforeTests();
+            _mockedLogger = new Mock<ILogger<UhGateway>>();
+            _classUnderTest = new UhGateway(UhContext, _mockedLogger.Object);
             _fixture = new Fixture();
         }
 
@@ -432,5 +447,32 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             result.Should().HaveSameCount(results);
         }
 
+        [Test]
+        public async Task PostNewCautionaryAlertReturnsEntityIfSuccessful()
+        {
+            // Arrange
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture);
+
+            // Act
+            var response = await _classUnderTest.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false);
+
+            // Assert
+            response.Should().NotBeNull();
+            response.Should().BeOfType<CautionaryAlertListItem>();
+            response.Reason.Should().BeSameAs(cautionaryAlert.IncidentDescription);
+            response.Code.Should().BeSameAs(cautionaryAlert.Alert.Code);
+            response.PropertyReference.Should().BeSameAs(cautionaryAlert.AssetDetails.PropertyReference);
+        }
+
+        [Test]
+        public void PostNewCautionaryAlertThrowsIfNotSuccessful()
+        {
+            // Arrange
+            var cautionaryAlert = _fixture.Create<CreateCautionaryAlert>();
+
+            // Act & Assert
+            Assert.ThrowsAsync<DbUpdateException>(async () => await _classUnderTest.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false));
+        }
     }
 }

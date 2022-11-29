@@ -1,12 +1,18 @@
 using System;
 using System.Threading.Tasks;
+using CautionaryAlertsApi.V1.Boundary.Request;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
+using Hackney.Core.Authorization;
+using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace CautionaryAlertsApi.V1.Controllers
 {
@@ -20,16 +26,19 @@ namespace CautionaryAlertsApi.V1.Controllers
         private readonly IGetCautionaryAlertsForProperty _getCautionaryAlertsForProperty;
         private readonly IPropertyAlertsNewUseCase _getPropertyAlertsNewUseCase;
         private readonly IGetCautionaryAlertsByPersonId _getCautionaryAlertsByPersonId;
+        private readonly IPostNewCautionaryAlertUseCase _postNewCautionaryAlertUseCase;
 
         public CautionaryAlertsApiController(IGetAlertsForPeople getAlertsForPeople,
                                              IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty,
                                              IPropertyAlertsNewUseCase getCautionaryContactAlertsUseCase,
-                                             IGetCautionaryAlertsByPersonId getCautionaryAlertsByPersonId)
+                                             IGetCautionaryAlertsByPersonId getCautionaryAlertsByPersonId,
+                                             IPostNewCautionaryAlertUseCase postNewCautionaryAlertUseCase)
         {
             _getAlertsForPeople = getAlertsForPeople;
             _getCautionaryAlertsForProperty = getCautionaryAlertsForProperty;
             _getPropertyAlertsNewUseCase = getCautionaryContactAlertsUseCase;
             _getCautionaryAlertsByPersonId = getCautionaryAlertsByPersonId;
+            _postNewCautionaryAlertUseCase = postNewCautionaryAlertUseCase;
         }
 
         /// <summary>
@@ -62,7 +71,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         /// <param name="propertyReference">The housing property reference of a property</param>
         /// <response code="200">Successful. Returns one or more cautionary alerts for a property.</response>
         /// <response code="404">No property cautionary alerts found for this property reference</response>
-        [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(CautionaryAlert), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [HttpGet]
         [Route("properties/{propertyReference}")]
@@ -108,6 +117,25 @@ namespace CautionaryAlertsApi.V1.Controllers
             var result = await _getCautionaryAlertsByPersonId.ExecuteAsync(personId).ConfigureAwait(false);
 
             return Ok(result);
+        }
+
+        [ProducesResponseType(typeof(CautionaryAlertListItem), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPost]
+        [LogCall(LogLevel.Information)]
+        [AuthorizeEndpointByGroups("CREATE_CAUTIONARY_ALERT_ALLOWED_GROUPS")]
+        public async Task<IActionResult> CreateNewCautionaryAlert([FromBody] CreateCautionaryAlert cautionaryAlert)
+        {
+            try
+            {
+                var result = await _postNewCautionaryAlertUseCase.ExecuteAsync(cautionaryAlert).ConfigureAwait(false);
+                return Ok(result);
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("Cautionary alert cannot be created");
+            }
         }
     }
 }

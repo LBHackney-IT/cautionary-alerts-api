@@ -1,7 +1,10 @@
+using CautionaryAlertsApi.V1.Boundary.Request;
+using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using PropertyAlert = CautionaryAlertsApi.V1.Infrastructure.PropertyAlert;
 
@@ -71,7 +74,25 @@ namespace CautionaryAlertsApi.V1.Factories
                 CautionOnSystem = entity.CautionOnSystem,
                 PropertyReference = entity.PropertyReference,
                 Name = entity.PersonName,
-                Reason = entity.Reason
+                Reason = entity.Reason,
+                AssureReference = entity.AssureReference
+            };
+        }
+
+        public static PropertyAlertNew ToDatabase(this CreateCautionaryAlert entity)
+        {
+            return new PropertyAlertNew()
+            {
+                AssureReference = entity.AssureReference,
+                Address = entity.AssetDetails.FullAddress,
+                UPRN = entity.AssetDetails.UPRN,
+                PropertyReference = entity.AssetDetails.PropertyReference,
+                MMHID = entity.PersonDetails.Id.ToString(),
+                PersonName = entity.PersonDetails.Name,
+                Code = entity.Alert.Code,
+                CautionOnSystem = entity.Alert.Description,
+                DateOfIncident = entity.IncidentDate.ToString("d", CultureInfo.InvariantCulture),
+                Reason = entity.IncidentDescription
             };
         }
 

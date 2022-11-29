@@ -22,5 +22,6 @@ namespace CautionaryAlertsApi.V1.Gateways
         public string TenancyDates { get; set; }
         public string IncidentBeforeCurrentTenancyDate { get; set; }
         public string Reason { get; set; }
+        public string AssureReference { get; set; }
     }
 }

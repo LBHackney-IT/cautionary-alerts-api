@@ -47,5 +47,10 @@ namespace CautionaryAlertsApi.Tests.V1.Helper
 
             await context.SaveChangesAsync().ConfigureAwait(false);
         }
+
+        public static int SetStringLength(int initialLength, int dbConstraint)
+        {
+            return initialLength < dbConstraint ? initialLength : dbConstraint;
+        }
     }
 }

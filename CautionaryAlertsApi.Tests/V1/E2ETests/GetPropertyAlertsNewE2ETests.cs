@@ -14,14 +14,14 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
     public class GetPropertyAlertsNewE2ETests : IntegrationTests<Startup>
     {
         private readonly Fixture _fixture = new Fixture();
-        private readonly Random _random = new Random();
+        //private readonly Random _random = new Random();
 
         [Test]
         public async Task GetPropertyAlertsNewReturnsAlerts()
         {
             // Arrange
             var propertyReference = "00001234";
-            var numberOfResults = _random.Next(2, 5);
+            var numberOfResults = 10;
 
             var results = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.PropertyReference, propertyReference)
