@@ -194,6 +194,7 @@ workflows:
               branches:
                 only: master
        - deploy-to-staging:
+           context: api-nuget-token-context
            requires:
              - assume-role-staging
            filters:
@@ -214,6 +215,7 @@ workflows:
               branches:
                 only: master
        - deploy-to-production:
+           context: api-nuget-token-context
            requires:
              - permit-production-release
              - assume-role-production
