@@ -75,14 +75,25 @@ namespace CautionaryAlertsApi.V1.Gateways
                  .Select(GetDescriptionOfAlert)
                  .ToList();
 
+                var assureReference = GetAssureReference(propertyReference);
+
                 return new CautionaryAlertsProperty
                 {
                     AddressNumber = addressLink.AddressNumber.ToString(),
                     PropertyReference = propertyReference,
                     UPRN = addressLink.UPRN,
-                    Alerts = propertyAlerts
+                    Alerts = propertyAlerts,
+                    AssureReference = assureReference
                 };
             }
+        }
+
+        private string GetAssureReference(string propertyReference)
+        {
+            return _uhContext.PropertyAlertsNew
+                .Where(x => x.PropertyReference == propertyReference)
+                .Select(x => x.AssureReference)
+                .FirstOrDefault();
         }
 
         private List<Infrastructure.PropertyAlert> GetPropertyAlerts(AddressLink addressLink)

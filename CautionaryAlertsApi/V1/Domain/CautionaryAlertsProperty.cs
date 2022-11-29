@@ -11,5 +11,6 @@ namespace CautionaryAlertsApi.V1.Domain
         public string UPRN { get; set; }
         public string AddressNumber { get; set; }
         public List<CautionaryAlert> Alerts { get; set; }
+        public string AssureReference { get; set; }
     }
 }

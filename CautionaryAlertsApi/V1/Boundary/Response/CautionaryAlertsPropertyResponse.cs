@@ -11,5 +11,6 @@ namespace CautionaryAlertsApi.V1.Boundary.Response
         public string UPRN { get; set; }
         public string AddressNumber { get; set; }
         public List<CautionaryAlertResponse> Alerts { get; set; }
+        public string AssureReference { get; set; }
     }
 }
