@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Gateways;
+using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 
 namespace CautionaryAlertsApi.V1.Factories
 {

@@ -4,6 +4,7 @@ using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Gateways;
+using CautionaryAlertsApi.V1.UseCase.Interfaces;
 
 namespace CautionaryAlertsApi.V1.UseCase
 {

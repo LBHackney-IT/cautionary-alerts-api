@@ -20,6 +20,8 @@ functions:
       SPREADSHEET_ID: ${ssm:/${self:service}/${self:provider.stage}/googlesheet-spreadsheetid}
       CREDENTIAL_JSON: ${ssm:/${self:service}/${self:provider.stage}/googlesheet-credentialjson}
       CREATE_CAUTIONARY_ALERT_ALLOWED_GROUPS: ${ssm:/tl-housing/${self:provider.stage}/create-cautionary-alerts-allowed-groups}
+      CAUTIONARY_ALERTS_SNS_ARN: ${ssm:/sns-topic/${self:provider.stage}/cautionary-alerts/arn}
+
     events:
       - http:
           path: /{proxy+}

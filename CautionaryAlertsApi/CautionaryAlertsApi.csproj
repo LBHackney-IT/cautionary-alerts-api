@@ -16,6 +16,9 @@
     <PackageReference Include="FluentValidation" Version="11.3.0" />
     <PackageReference Include="Google.Apis.Sheets.v4" Version="1.51.0.2338" />
     <PackageReference Include="Hackney.Core.Authorization" Version="1.78.0" />
+    <PackageReference Include="Hackney.Core.Http" Version="1.70.0" />
+    <PackageReference Include="Hackney.Core.JWT" Version="1.72.0" />
+    <PackageReference Include="Hackney.Core.Sns" Version="1.52.0" />
     <PackageReference Include="Microsoft.AspNetCore.HealthChecks" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />

@@ -1,7 +1,7 @@
 using System;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.UseCase;
+using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

@@ -3,11 +3,13 @@ using CautionaryAlertsApi.V1.Boundary.Request;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Controllers;
 using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
+using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using FluentAssertions;
+using Hackney.Core.Http;
+using Hackney.Core.JWT;
 using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +32,10 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         private Mock<IPropertyAlertsNewUseCase> _mockGetPropertyAlertsNewUseCase;
         private Mock<IGetCautionaryAlertsByPersonId> _mockGetCautionaryAlertsByPersonIdUseCase;
         private Mock<IPostNewCautionaryAlertUseCase> _mockPostNewCautionaryAlertUseCase;
-        private readonly Fixture _fixture = new Fixture();
+        private Mock<ITokenFactory> _mockTokenFactory;
+        private Mock<IHttpContextWrapper> _mockContextWrapper;
+        private Mock<HttpRequest> _mockHttpRequest;
+        private Fixture _fixture = new Fixture();
 
         [SetUp]
         public void SetUp()
@@ -40,6 +45,9 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             _mockGetPropertyAlertsNewUseCase = new Mock<IPropertyAlertsNewUseCase>();
             _mockGetCautionaryAlertsByPersonIdUseCase = new Mock<IGetCautionaryAlertsByPersonId>();
             _mockPostNewCautionaryAlertUseCase = new Mock<IPostNewCautionaryAlertUseCase>();
+            _mockTokenFactory = new Mock<ITokenFactory>();
+            _mockContextWrapper = new Mock<IHttpContextWrapper>();
+            _mockHttpRequest = new Mock<HttpRequest>();
 
             new LogCallAspectFixture().RunBeforeTests();
 
@@ -48,7 +56,12 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
                 _mockGetAlertsForPropertyUseCase.Object,
                 _mockGetPropertyAlertsNewUseCase.Object,
                 _mockGetCautionaryAlertsByPersonIdUseCase.Object,
-                _mockPostNewCautionaryAlertUseCase.Object);
+                _mockPostNewCautionaryAlertUseCase.Object,
+                _mockTokenFactory.Object,
+                _mockContextWrapper.Object);
+
+            _mockContextWrapper.Setup(x => x.GetContextRequestHeaders(It.IsAny<HttpContext>())).Returns(new HeaderDictionary());
+
         }
 
         [Test]
@@ -133,7 +146,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             var createAlertResponse = _fixture.Create<CautionaryAlertListItem>();
             var createAlertRequest = _fixture.Create<CreateCautionaryAlert>();
             _mockPostNewCautionaryAlertUseCase
-                .Setup(x => x.ExecuteAsync(createAlertRequest))
+                .Setup(x => x.ExecuteAsync(createAlertRequest, It.IsAny<Token>()))
                 .ReturnsAsync(createAlertResponse);
 
             // Act
@@ -143,7 +156,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(StatusCodes.Status200OK);
             response.Value.Should().BeEquivalentTo(createAlertResponse);
-            _mockPostNewCautionaryAlertUseCase.Verify(x => x.ExecuteAsync(createAlertRequest), Times.Once);
+            _mockPostNewCautionaryAlertUseCase.Verify(x => x.ExecuteAsync(createAlertRequest, It.IsAny<Token>()), Times.Once);
         }
     }
 }

@@ -1,8 +1,8 @@
 using CautionaryAlertsApi.V1.Boundary.Request;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
+using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -79,6 +79,22 @@ namespace CautionaryAlertsApi.V1.Factories
             };
         }
 
+        public static PropertyAlertNew ToDatabase(this CautionaryAlertListItem entity)
+        {
+            return new PropertyAlertNew
+            {
+                DoorNumber = entity.DoorNumber,
+                Address = entity.Address,
+                Neighbourhood = entity.Neighbourhood,
+                DateOfIncident = entity.DateOfIncident,
+                Code = entity.Code,
+                CautionOnSystem = entity.CautionOnSystem,
+                PropertyReference = entity.PropertyReference,
+                PersonName = entity.Name,
+                Reason = entity.Reason,
+                AssureReference = entity.AssureReference
+            };
+        }
         public static PropertyAlertNew ToDatabase(this CreateCautionaryAlert entity)
         {
             return new PropertyAlertNew()

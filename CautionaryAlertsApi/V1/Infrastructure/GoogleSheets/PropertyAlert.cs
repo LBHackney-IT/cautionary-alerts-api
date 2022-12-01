@@ -1,4 +1,4 @@
-namespace CautionaryAlertsApi.V1.Gateways
+namespace CautionaryAlertsApi.V1.Infrastructure.GoogleSheets
 {
     public class PropertyAlert
     {

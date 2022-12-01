@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
-using CautionaryAlertsApi.V1.UseCase;
 using AutoFixture;
-using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Boundary.Response;
+using CautionaryAlertsApi.V1.UseCase.Interfaces;
+using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 
 namespace CautionaryAlertsApi.Tests.V1.Controllers
 {

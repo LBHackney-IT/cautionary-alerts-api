@@ -1,7 +1,7 @@
 using CautionaryAlertsApi.V1.Boundary.Response;
 using System;
 
-namespace CautionaryAlertsApi.V1.Gateways
+namespace CautionaryAlertsApi.V1.Infrastructure.GoogleSheets
 {
     public class CautionaryAlertListItem
     {

@@ -7,6 +7,7 @@ using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Infrastructure;
+using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 using Hackney.Core.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

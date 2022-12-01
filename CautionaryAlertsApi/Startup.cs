@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
 using CautionaryAlertsApi.V1.UseCase;
@@ -12,10 +13,12 @@ using FluentValidation.AspNetCore;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
+using Hackney.Core.Http;
 using Hackney.Core.JWT;
 using Hackney.Core.Logging;
 using Hackney.Core.Middleware.Exception;
 using Hackney.Core.Middleware.Logging;
+using Hackney.Core.Sns;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -116,6 +119,7 @@ namespace CautionaryAlertsApi
                     c.IncludeXmlComments(xmlPath);
             });
 
+            services.ConfigureSns();
             services.AddTokenFactory();
             services.AddLogCallAspect();
 
@@ -124,7 +128,21 @@ namespace CautionaryAlertsApi
 
             RegisterGateways(services);
             RegisterUseCases(services);
+
+            services.AddScoped<ISnsFactory, CautionaryAlertsSnsFactory>();
+
+            ConfigureHackneyCoreDI(services);
+
+
         }
+
+        private static void ConfigureHackneyCoreDI(IServiceCollection services)
+        {
+            services.AddSnsGateway()
+                .AddTokenFactory()
+                .AddHttpContextWrapper();
+        }
+
 
         private static void ConfigureDbContext(IServiceCollection services)
         {
@@ -149,6 +167,7 @@ namespace CautionaryAlertsApi
         {
             services.AddScoped<IUhGateway, UhGateway>();
             services.AddScoped<IGoogleSheetGateway, GoogleSheetGateway>();
+            services.AddScoped<ISnsGateway, SnsGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
