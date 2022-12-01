@@ -1,6 +1,6 @@
 using AutoFixture;
-using CautionaryAlertsApi.V1.Boundary.Request;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Boundary.Request;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using System;
 
 namespace CautionaryAlertsApi.Tests

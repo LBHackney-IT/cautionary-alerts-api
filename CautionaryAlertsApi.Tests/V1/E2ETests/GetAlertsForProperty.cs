@@ -1,14 +1,13 @@
 using AutoFixture;
 using CautionaryAlertsApi.Tests.V1.Helper;
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Factories;
+using Hackney.Shared.CautionaryAlerts.Boundary.Response;
+using Hackney.Shared.CautionaryAlerts.Domain;
+using Hackney.Shared.CautionaryAlerts.Factories;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CautionaryAlertsApi.Tests.V1.E2ETests

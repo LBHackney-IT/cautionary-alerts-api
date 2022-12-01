@@ -1,6 +1,5 @@
-using System;
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Domain;
+using Hackney.Shared.CautionaryAlerts.Boundary.Response;
+using Hackney.Shared.CautionaryAlerts.Domain;
 using CautionaryAlertsApi.V1.UseCase;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

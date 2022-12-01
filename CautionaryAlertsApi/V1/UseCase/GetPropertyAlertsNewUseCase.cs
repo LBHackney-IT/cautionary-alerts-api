@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Factories;
+using Hackney.Shared.CautionaryAlerts.Boundary.Response;
+using Hackney.Shared.CautionaryAlerts.Factories;
 using CautionaryAlertsApi.V1.Gateways;
 
 namespace CautionaryAlertsApi.V1.UseCase

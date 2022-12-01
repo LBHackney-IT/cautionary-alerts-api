@@ -25,6 +25,7 @@
     <PackageReference Include="Hackney.Core.Middleware" Version="1.49.0" />
     <PackageReference Include="Hackney.Core.Validation" Version="1.56.0" />
     <PackageReference Include="Hackney.Core.Validation.AspNet" Version="1.53.0" />
+    <PackageReference Include="Hackney.Shared.CautionaryAlerts" Version="0.3.0-feat-create-pack0005" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.4.1" />
