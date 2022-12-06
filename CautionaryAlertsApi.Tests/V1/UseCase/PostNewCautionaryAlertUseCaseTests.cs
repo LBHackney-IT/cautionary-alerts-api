@@ -11,6 +11,7 @@ using Hackney.Core.Sns;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace CautionaryAlertsApi.Tests.V1.UseCase
@@ -39,9 +40,26 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture);
             var token = new Token();
 
+            //var cautionaryAlertDb = cautionaryAlert.ToDatabase();
+            //var cautionaryToDomain = cautionaryAlertDb.ToDomain();
+
+
+            var cautionaryAlertDb = _fixture.Build<PropertyAlertNew>()
+                                            .With(x => x.MMHID, cautionaryAlert.PersonDetails.Id.ToString())
+                                            .With(x => x.Address, cautionaryAlert.AssetDetails.FullAddress)
+                                            .With(x => x.AssureReference, cautionaryAlert.AssureReference)
+                                            .With(x => x.CautionOnSystem, cautionaryAlert.Alert.Description)
+                                            .With(x => x.Code, cautionaryAlert.Alert.Code)
+                                            .With(x => x.DateOfIncident, cautionaryAlert.IncidentDate.ToString("d", CultureInfo.InvariantCulture))
+                                            .With(x => x.UPRN, cautionaryAlert.AssetDetails.UPRN)
+                                            .With(x => x.PropertyReference, cautionaryAlert.AssetDetails.PropertyReference)
+                                            .With(x => x.PersonName, cautionaryAlert.PersonDetails.Name)
+                                            .With(x => x.Reason, cautionaryAlert.IncidentDescription)
+                                            .Create();
+
             _mockGateway
-                .Setup(x => x.PostNewCautionaryAlert(It.IsAny<CreateCautionaryAlert>()))
-                .ReturnsAsync(new CautionaryAlertListItem());
+                .Setup(x => x.PostNewCautionaryAlert(cautionaryAlert))
+                .ReturnsAsync(cautionaryAlertDb.ToDomain());
 
             // Act
             var result = await _classUnderTest.ExecuteAsync(cautionaryAlert, token).ConfigureAwait(false);
