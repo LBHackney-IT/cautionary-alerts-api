@@ -27,8 +27,6 @@ namespace CautionaryAlertsApi.V1.Boundary.Request.Validation
 
             RuleFor(x => x.Alert).SetValidator(new AlertValidator());
 
-            RuleFor(x => x.AssetDetails).SetValidator(new AssetDetailsValidator());
-
             RuleFor(x => x.PersonDetails).SetValidator(new PersonDetailsValidator());
         }
     }

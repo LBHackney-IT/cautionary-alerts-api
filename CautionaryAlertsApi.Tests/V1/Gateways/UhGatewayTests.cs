@@ -466,6 +466,23 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
+        public async Task PostNewCautionaryAlertWithoutAssetDetailsReturnsEntityIfSuccessful()
+        {
+            // Arrange
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertWithoutAssetDetailsFixture(defaultString, _fixture);
+
+            // Act
+            var response = await _classUnderTest.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false);
+
+            // Assert
+            response.Should().NotBeNull();
+            response.Should().BeOfType<CautionaryAlertListItem>();
+            response.Reason.Should().BeSameAs(cautionaryAlert.IncidentDescription);
+            response.Code.Should().BeSameAs(cautionaryAlert.Alert.Code);
+        }
+
+        [Test]
         public void PostNewCautionaryAlertThrowsIfNotSuccessful()
         {
             // Arrange

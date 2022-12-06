@@ -84,9 +84,9 @@ namespace CautionaryAlertsApi.V1.Factories
             return new PropertyAlertNew()
             {
                 AssureReference = entity.AssureReference,
-                Address = entity.AssetDetails.FullAddress,
-                UPRN = entity.AssetDetails.UPRN,
-                PropertyReference = entity.AssetDetails.PropertyReference,
+                Address = entity.AssetDetails?.FullAddress,
+                UPRN = entity.AssetDetails?.UPRN,
+                PropertyReference = entity.AssetDetails?.PropertyReference,
                 MMHID = entity.PersonDetails.Id.ToString(),
                 PersonName = entity.PersonDetails.Name,
                 Code = entity.Alert.Code,
