@@ -1,4 +1,4 @@
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NUnit.Framework;

@@ -1,13 +1,13 @@
 using AutoFixture;
-using CautionaryAlertsApi.V1.Boundary.Request;
+using Hackney.Shared.CautionaryAlerts.Boundary.Request;
 using CautionaryAlertsApi.V1.Gateways;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using CautionaryAlertsApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 
 namespace CautionaryAlertsApi.Tests.V1.UseCase
 {

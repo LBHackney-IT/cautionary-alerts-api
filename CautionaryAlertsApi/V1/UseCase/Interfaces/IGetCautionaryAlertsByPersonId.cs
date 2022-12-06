@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using CautionaryAlertsApi.V1.Boundary.Response;
+using Hackney.Shared.CautionaryAlerts.Boundary.Response;
 
 namespace CautionaryAlertsApi.V1.UseCase.Interfaces
 {

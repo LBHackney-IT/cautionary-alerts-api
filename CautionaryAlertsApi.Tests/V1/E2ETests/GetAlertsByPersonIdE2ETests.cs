@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoFixture;
 using CautionaryAlertsApi.Tests.V1.Helper;
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Boundary.Response;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;

@@ -1,10 +1,9 @@
 using System.Data.Common;
 using CautionaryAlertsApi.Tests.V1.Factories;
 using CautionaryAlertsApi.Tests.V1.Helper;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
-using Google.Apis.Sheets.v4.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;

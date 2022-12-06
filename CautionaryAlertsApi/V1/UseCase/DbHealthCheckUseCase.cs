@@ -1,4 +1,4 @@
-using CautionaryAlertsApi.V1.Boundary;
+using Hackney.Shared.CautionaryAlerts.Boundary;
 using Microsoft.Extensions.HealthChecks;
 
 namespace CautionaryAlertsApi.V1.UseCase

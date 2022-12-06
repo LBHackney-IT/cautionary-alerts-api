@@ -1,8 +1,7 @@
 using AutoFixture;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CautionaryAlertsApi.Tests.V1.Helper
