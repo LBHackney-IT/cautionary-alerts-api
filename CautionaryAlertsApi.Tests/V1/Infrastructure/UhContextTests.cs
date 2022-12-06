@@ -1,7 +1,5 @@
 using System.Linq;
 using AutoFixture;
-using CautionaryAlertsApi.Tests.V1.Helper;
-using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Infrastructure;
 using FluentAssertions;
 using NUnit.Framework;
