@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using AutoFixture;
 using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 
 namespace CautionaryAlertsApi.Tests.V1.Controllers
 {

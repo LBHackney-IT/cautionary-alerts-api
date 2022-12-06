@@ -28,12 +28,12 @@ namespace CautionaryAlertsApi.V1.UseCase
         {
             var cautionaryAlert = await _gateway.PostNewCautionaryAlert(createCautionaryAlert).ConfigureAwait(false);
 
-            var cautionaryAlertSnsMessage = _snsFactory.Create(cautionaryAlert.ToDatabase(), token);
+            var cautionaryAlertSnsMessage = _snsFactory.Create(cautionaryAlert, token);
             var cautionaryAlertTopicArn = Environment.GetEnvironmentVariable("CAUTIONARY_ALERTS_SNS_ARN");
 
             await _snsGateway.Publish(cautionaryAlertSnsMessage, cautionaryAlertTopicArn).ConfigureAwait(false);
 
-            return cautionaryAlert;
+            return cautionaryAlert.ToResponse();
         }
     }
 }

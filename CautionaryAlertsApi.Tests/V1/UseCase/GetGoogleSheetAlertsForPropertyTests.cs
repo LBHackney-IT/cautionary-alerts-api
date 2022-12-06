@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
+using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Gateways;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 using CautionaryAlertsApi.V1.UseCase;
 using FluentAssertions;
 using Moq;

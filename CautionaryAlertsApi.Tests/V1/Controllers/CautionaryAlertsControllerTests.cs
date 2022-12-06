@@ -4,7 +4,6 @@ using CautionaryAlertsApi.V1.Boundary.Response;
 using CautionaryAlertsApi.V1.Controllers;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Infrastructure;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using FluentAssertions;

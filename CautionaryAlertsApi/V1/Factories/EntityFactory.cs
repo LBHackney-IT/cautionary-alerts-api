@@ -79,6 +79,26 @@ namespace CautionaryAlertsApi.V1.Factories
             };
         }
 
+        public static PropertyAlertDomain ToPropertyAlertDomain(this PropertyAlertNew entity)
+        {
+            return new PropertyAlertDomain
+            {
+                DoorNumber = entity.DoorNumber,
+                Address = entity.Address,
+                Neighbourhood = entity.Neighbourhood,
+                DateOfIncident = entity.DateOfIncident,
+                Code = entity.Code,
+                CautionOnSystem = entity.CautionOnSystem,
+                PropertyReference = entity.PropertyReference,
+                PersonName = entity.PersonName,
+                Reason = entity.Reason,
+                AssureReference = entity.AssureReference,
+                Id = entity.Id,
+                MMHID = entity.MMHID,
+                UPRN = entity.UPRN
+            };
+        }
+
         public static PropertyAlertNew ToDatabase(this CautionaryAlertListItem entity)
         {
             return new PropertyAlertNew

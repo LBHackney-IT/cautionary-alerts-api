@@ -6,6 +6,6 @@ namespace CautionaryAlertsApi.V1.Factories
 {
     public interface ISnsFactory
     {
-        CautionaryAlertSns Create(PropertyAlertNew alert, Token token);
+        CautionaryAlertSns Create(PropertyAlertDomain alert, Token token);
     }
 }

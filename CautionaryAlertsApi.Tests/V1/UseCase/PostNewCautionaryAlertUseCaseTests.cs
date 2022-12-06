@@ -1,9 +1,9 @@
 using AutoFixture;
-using CautionaryAlertsApi.V1.Boundary.Request;
+using CautionaryAlertsApi.V1.Boundary.Response;
+using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 using CautionaryAlertsApi.V1.UseCase;
 using FluentAssertions;
 using Hackney.Core.JWT;
@@ -41,7 +41,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             var token = new Token();
 
             var cautionaryAlertDb = cautionaryAlert.ToDatabase();
-            var cautionaryToDomain = cautionaryAlertDb.ToDomain();
+            var cautionaryToDomain = cautionaryAlertDb.ToPropertyAlertDomain();
 
 
             _mockGateway

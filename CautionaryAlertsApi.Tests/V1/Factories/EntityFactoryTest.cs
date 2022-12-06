@@ -5,7 +5,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;
 using System;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
+using CautionaryAlertsApi.V1.Boundary.Response;
 
 namespace CautionaryAlertsApi.Tests.V1.Factories
 {

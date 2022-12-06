@@ -76,5 +76,22 @@ namespace CautionaryAlertsApi.V1.Factories
                 Reason = domain.Reason
             };
         }
+
+        public static CautionaryAlertListItem ToResponse(this PropertyAlertDomain domain)
+        {
+            return new CautionaryAlertListItem()
+            {
+                DoorNumber = domain.DoorNumber,
+                Address = domain.Address,
+                AssureReference = domain.AssureReference,
+                Code = domain.Code,
+                DateOfIncident = domain.DateOfIncident,
+                CautionOnSystem = domain.CautionOnSystem,
+                Name = domain.PersonName,
+                PropertyReference = domain.PropertyReference,
+                Reason = domain.Reason,
+                Neighbourhood = domain.Neighbourhood
+            };
+        }
     }
 }

@@ -14,7 +14,6 @@ using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.Infrastructure;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 using CautionaryAlertsApi.V1.UseCase;
 using FluentAssertions;
 using Hackney.Core.Logging;
@@ -460,7 +459,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             // Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType<CautionaryAlertListItem>();
+            response.Should().BeOfType<PropertyAlertDomain>();
             response.Reason.Should().BeSameAs(cautionaryAlert.IncidentDescription);
             response.Code.Should().BeSameAs(cautionaryAlert.Alert.Code);
             response.PropertyReference.Should().BeSameAs(cautionaryAlert.AssetDetails.PropertyReference);
