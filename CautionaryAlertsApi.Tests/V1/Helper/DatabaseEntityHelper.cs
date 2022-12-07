@@ -1,5 +1,5 @@
 using AutoFixture;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 
 namespace CautionaryAlertsApi.Tests.V1.Helper
 {

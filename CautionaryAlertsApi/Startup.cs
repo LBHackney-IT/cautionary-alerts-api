@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Gateways;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using CautionaryAlertsApi.Versioning;

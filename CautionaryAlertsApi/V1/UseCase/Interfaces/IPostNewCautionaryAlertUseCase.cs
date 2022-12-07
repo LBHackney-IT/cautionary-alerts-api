@@ -1,8 +1,6 @@
-using CautionaryAlertsApi.V1.Boundary.Request;
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
-using Hackney.Core.JWT;
+using Hackney.Shared.CautionaryAlerts.Boundary.Request;
 using System.Threading.Tasks;
+using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 
 namespace CautionaryAlertsApi.V1.UseCase.Interfaces
 {

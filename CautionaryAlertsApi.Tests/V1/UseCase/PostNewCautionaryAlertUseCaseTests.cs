@@ -1,9 +1,7 @@
 using AutoFixture;
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Factories;
+using CautionaryAlertsApi.V1.Boundary.Request;
 using CautionaryAlertsApi.V1.Gateways;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using CautionaryAlertsApi.V1.UseCase;
 using FluentAssertions;
 using Hackney.Core.JWT;
@@ -11,8 +9,8 @@ using Hackney.Core.Sns;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading.Tasks;
+using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 
 namespace CautionaryAlertsApi.Tests.V1.UseCase
 {

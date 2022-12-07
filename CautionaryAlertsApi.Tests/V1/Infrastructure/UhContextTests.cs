@@ -1,6 +1,6 @@
 using System.Linq;
 using AutoFixture;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using FluentAssertions;
 using NUnit.Framework;
 

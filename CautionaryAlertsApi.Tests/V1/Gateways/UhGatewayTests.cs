@@ -1,28 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
-using Castle.Core.Logging;
 using CautionaryAlertsApi.Tests.V1.Helper;
-using CautionaryAlertsApi.V1.Boundary.Request;
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Factories;
+using Hackney.Shared.CautionaryAlerts.Boundary.Request;
+using Hackney.Shared.CautionaryAlerts.Domain;
+using Hackney.Shared.CautionaryAlerts.Factories;
 using CautionaryAlertsApi.V1.Gateways;
-using CautionaryAlertsApi.V1.Infrastructure;
-using CautionaryAlertsApi.V1.UseCase;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using FluentAssertions;
-using Hackney.Core.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using Moq;
-using Npgsql;
 using NUnit.Framework;
+using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 
 namespace CautionaryAlertsApi.Tests.V1.Gateways
 {
@@ -463,6 +456,23 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             response.Reason.Should().BeSameAs(cautionaryAlert.IncidentDescription);
             response.Code.Should().BeSameAs(cautionaryAlert.Alert.Code);
             response.PropertyReference.Should().BeSameAs(cautionaryAlert.AssetDetails.PropertyReference);
+        }
+
+        [Test]
+        public async Task PostNewCautionaryAlertWithoutAssetDetailsReturnsEntityIfSuccessful()
+        {
+            // Arrange
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertWithoutAssetDetailsFixture(defaultString, _fixture);
+
+            // Act
+            var response = await _classUnderTest.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false);
+
+            // Assert
+            response.Should().NotBeNull();
+            response.Should().BeOfType<CautionaryAlertListItem>();
+            response.Reason.Should().BeSameAs(cautionaryAlert.IncidentDescription);
+            response.Code.Should().BeSameAs(cautionaryAlert.Alert.Code);
         }
 
         [Test]

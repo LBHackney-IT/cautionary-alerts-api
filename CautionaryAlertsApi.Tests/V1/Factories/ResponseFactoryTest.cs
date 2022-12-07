@@ -1,7 +1,7 @@
 using System;
 using AutoFixture;
-using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Factories;
+using Hackney.Shared.CautionaryAlerts.Domain;
+using Hackney.Shared.CautionaryAlerts.Factories;
 using FluentAssertions;
 using NUnit.Framework;
 

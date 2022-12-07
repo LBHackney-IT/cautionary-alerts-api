@@ -1,9 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using CautionaryAlertsApi.V1.Boundary.Request;
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
+using Hackney.Shared.CautionaryAlerts.Boundary.Request;
+using Hackney.Shared.CautionaryAlerts.Boundary.Response;
+using Hackney.Shared.CautionaryAlerts.Domain;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using Hackney.Core.Authorization;
@@ -15,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 
 namespace CautionaryAlertsApi.V1.Controllers
 {

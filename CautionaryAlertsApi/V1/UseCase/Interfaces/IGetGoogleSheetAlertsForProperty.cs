@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Gateways;
+using Hackney.Shared.CautionaryAlerts.Boundary.Response;
 
 namespace CautionaryAlertsApi.V1.UseCase.Interfaces
 {

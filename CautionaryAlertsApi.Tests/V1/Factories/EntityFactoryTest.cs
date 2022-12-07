@@ -1,11 +1,11 @@
 using AutoFixture;
-using CautionaryAlertsApi.V1.Infrastructure;
-using CautionaryAlertsApi.V1.Factories;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Factories;
 using FluentAssertions;
 using NUnit.Framework;
 using System.Linq;
 using System;
-using CautionaryAlertsApi.V1.Boundary.Response;
+using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 
 namespace CautionaryAlertsApi.Tests.V1.Factories
 {

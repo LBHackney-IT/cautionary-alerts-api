@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CautionaryAlertsApi.V1.Boundary.Request;
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Factories;
-using CautionaryAlertsApi.V1.Infrastructure;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
+using Hackney.Shared.CautionaryAlerts.Boundary.Request;
+using Hackney.Shared.CautionaryAlerts.Domain;
+using Hackney.Shared.CautionaryAlerts.Factories;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using Hackney.Core.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using CautionaryAlert = CautionaryAlertsApi.V1.Domain.CautionaryAlert;
+using CautionaryAlert = Hackney.Shared.CautionaryAlerts.Domain.CautionaryAlert;
+using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
+using PropertyAlert = Hackney.Shared.CautionaryAlerts.Infrastructure.PropertyAlert;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {
@@ -97,14 +97,14 @@ namespace CautionaryAlertsApi.V1.Gateways
                 .FirstOrDefault();
         }
 
-        private List<Infrastructure.PropertyAlert> GetPropertyAlerts(AddressLink addressLink)
+        private List<PropertyAlert> GetPropertyAlerts(AddressLink addressLink)
         {
             return _uhContext.PropertyAlerts
               .Include(x => x.AddressLink)
               .Where(x => x.AddressNumber == addressLink.AddressNumber).ToList();
         }
 
-        private CautionaryAlert GetDescriptionOfAlert(Infrastructure.PropertyAlert alert)
+        private CautionaryAlert GetDescriptionOfAlert(PropertyAlert alert)
         {
             var description = _uhContext.AlertDescriptionLookups
                 .OrderByDescending(a => a.DateModified)

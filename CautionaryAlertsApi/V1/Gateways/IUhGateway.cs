@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CautionaryAlertsApi.V1.Boundary.Request;
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
+using Hackney.Shared.CautionaryAlerts.Boundary.Request;
+using Hackney.Shared.CautionaryAlerts.Domain;
+using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {
