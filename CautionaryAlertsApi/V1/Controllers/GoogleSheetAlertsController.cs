@@ -3,6 +3,7 @@ using Hackney.Shared.CautionaryAlerts.Domain;
 using CautionaryAlertsApi.V1.UseCase;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using CautionaryAlertsApi.V1.UseCase.Interfaces;
 
 namespace CautionaryAlertsApi.V1.Controllers
 {

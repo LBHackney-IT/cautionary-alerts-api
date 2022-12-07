@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using CautionaryAlert = Hackney.Shared.CautionaryAlerts.Domain.CautionaryAlert;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using PropertyAlert = Hackney.Shared.CautionaryAlerts.Infrastructure.PropertyAlert;
+using CautionaryAlertsApi.V1.Domain;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {

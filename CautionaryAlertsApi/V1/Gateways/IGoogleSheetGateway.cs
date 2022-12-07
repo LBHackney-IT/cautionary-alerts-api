@@ -1,7 +1,5 @@
-using CautionaryAlertsApi.V1.Boundary.Response;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 using System.Collections.Generic;
-using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
+using CautionaryAlertListItem = Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets.CautionaryAlertListItem;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {

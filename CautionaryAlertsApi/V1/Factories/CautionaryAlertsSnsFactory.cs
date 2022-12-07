@@ -1,6 +1,7 @@
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.V1.Infrastructure;
 using Hackney.Core.JWT;
+using Hackney.Shared.CautionaryAlerts.Domain;
 using System;
 
 namespace CautionaryAlertsApi.V1.Factories

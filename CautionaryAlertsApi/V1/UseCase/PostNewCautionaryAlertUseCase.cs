@@ -1,12 +1,13 @@
 using Hackney.Shared.CautionaryAlerts.Boundary.Request;
 using CautionaryAlertsApi.V1.Gateways;
-using CautionaryAlertsApi.V1.Infrastructure.GoogleSheets;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using Hackney.Core.JWT;
 using Hackney.Core.Sns;
 using System;
 using System.Threading.Tasks;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
+using CautionaryAlertsApi.V1.Factories;
+using Hackney.Shared.CautionaryAlerts.Factories;
 
 namespace CautionaryAlertsApi.V1.UseCase
 {

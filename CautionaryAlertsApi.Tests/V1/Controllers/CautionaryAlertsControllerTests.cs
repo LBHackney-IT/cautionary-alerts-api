@@ -14,6 +14,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
+using Hackney.Core.Http;
+using Hackney.Core.JWT;
 
 namespace CautionaryAlertsApi.Tests.V1.Controllers
 {

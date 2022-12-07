@@ -8,6 +8,7 @@ using CautionaryAlertsApi.V1.UseCase;
 using AutoFixture;
 using Hackney.Shared.CautionaryAlerts.Boundary.Response;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
+using CautionaryAlertsApi.V1.UseCase.Interfaces;
 
 namespace CautionaryAlertsApi.Tests.V1.Controllers
 {
