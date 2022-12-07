@@ -470,7 +470,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             // Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType<CautionaryAlertListItem>();
+            response.Should().BeOfType<PropertyAlertDomain>();
             response.Reason.Should().BeSameAs(cautionaryAlert.IncidentDescription);
             response.Code.Should().BeSameAs(cautionaryAlert.Alert.Code);
         }
