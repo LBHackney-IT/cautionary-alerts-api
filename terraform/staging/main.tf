@@ -51,7 +51,7 @@ resource "aws_sns_topic" "cautionaryalerts_topic" {
 }
 
 resource "aws_ssm_parameter" "cautionary_alerts_sns_arn" {
-  name  = "/sns-topic/staging/cautionary-alerts/arn"
+  name  = "/sns-topic/staging/cautionary_alerts/arn"
   type  = "String"
   value = aws_sns_topic.cautionaryalerts_topic.arn
 }
