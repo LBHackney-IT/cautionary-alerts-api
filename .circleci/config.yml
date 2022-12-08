@@ -171,6 +171,12 @@ workflows:
           filters:
             branches:
               only: development
+      - terraform-init-and-apply-to-development:
+          requires:
+            - assume-role-development
+          filters:
+            branches:
+              only: development
       - deploy-to-development:
           requires:
             - assume-role-development
@@ -193,10 +199,16 @@ workflows:
            filters:
               branches:
                 only: master
+       - terraform-init-and-apply-to-staging:
+          requires:
+            - assume-role-staging
+          filters:
+            branches:
+              only: master
        - deploy-to-staging:
            context: api-nuget-token-context
            requires:
-             - assume-role-staging
+             - terraform-init-and-apply-to-staging
            filters:
              branches:
                only: master
@@ -214,11 +226,17 @@ workflows:
            filters:
               branches:
                 only: master
+       - terraform-init-and-apply-to-production:
+          requires:
+            - assume-role-production
+          filters:
+            branches:
+              only: master
        - deploy-to-production:
            context: api-nuget-token-context
            requires:
              - permit-production-release
-             - assume-role-production
+             - terraform-init-and-apply-to-production
            filters:
              branches:
                only: master
