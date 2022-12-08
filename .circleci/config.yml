@@ -236,7 +236,7 @@ workflows:
            context: api-nuget-token-context
            requires:
              - permit-production-release
-             - assume-role-production
+             - terraform-init-and-apply-to-production
            filters:
              branches:
                only: master
