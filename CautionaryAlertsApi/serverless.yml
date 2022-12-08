@@ -67,6 +67,7 @@ resources:
                 - Effect: Allow
                   Action:
                     - "sns:Publish"
+                    - "sns:Subscribe"
                   Resource:
                     - ${ssm:/sns-topic/${self:provider.stage}/cautionary-alerts/arn}
           - PolicyName: manageLogs
