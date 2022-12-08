@@ -183,23 +183,23 @@ workflows:
           context:
             - api-nuget-token-context
             - SonarCloud       
-          filters:
-             branches:
-               only: master
+          # filters:
+          #    branches:
+          #      only: master
        - assume-role-staging:
            context: api-assume-role-staging-context
            requires:
                - build-and-test
-           filters:
-              branches:
-                only: master
+          #  filters:
+          #     branches:
+          #       only: master
        - deploy-to-staging:
            context: api-nuget-token-context
            requires:
              - assume-role-staging
-           filters:
-             branches:
-               only: master
+          #  filters:
+          #    branches:
+          #      only: master
        - permit-production-release:
            type: approval
            requires:
