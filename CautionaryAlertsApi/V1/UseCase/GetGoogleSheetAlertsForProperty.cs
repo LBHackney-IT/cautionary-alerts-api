@@ -3,6 +3,7 @@ using Hackney.Shared.CautionaryAlerts.Boundary.Response;
 using Hackney.Shared.CautionaryAlerts.Domain;
 using Hackney.Shared.CautionaryAlerts.Factories;
 using CautionaryAlertsApi.V1.Gateways;
+using CautionaryAlertsApi.V1.UseCase.Interfaces;
 
 namespace CautionaryAlertsApi.V1.UseCase
 {

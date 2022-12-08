@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CautionaryAlertsApi.V1.Domain;
 using Hackney.Shared.CautionaryAlerts.Boundary.Request;
 using Hackney.Shared.CautionaryAlerts.Domain;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
@@ -17,6 +18,6 @@ namespace CautionaryAlertsApi.V1.Gateways
 
         Task<IEnumerable<CautionaryAlertListItem>> GetCautionaryAlertsByMMHPersonId(Guid personId);
 
-        Task<CautionaryAlertListItem> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert);
+        Task<PropertyAlertDomain> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert);
     }
 }

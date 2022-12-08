@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using CautionaryAlert = Hackney.Shared.CautionaryAlerts.Domain.CautionaryAlert;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using PropertyAlert = Hackney.Shared.CautionaryAlerts.Infrastructure.PropertyAlert;
+using CautionaryAlertsApi.V1.Domain;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {
@@ -131,7 +132,7 @@ namespace CautionaryAlertsApi.V1.Gateways
         }
 
         [LogCall]
-        public async Task<CautionaryAlertListItem> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert)
+        public async Task<PropertyAlertDomain> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert)
         {
             _logger.LogDebug($"Calling Postgress.SaveAsync");
             var alertDbEntity = cautionaryAlert.ToDatabase();
@@ -139,7 +140,7 @@ namespace CautionaryAlertsApi.V1.Gateways
             _uhContext.PropertyAlertsNew.Add(alertDbEntity);
             await _uhContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return alertDbEntity.ToDomain();
+            return alertDbEntity.ToPropertyAlertDomain();
         }
     }
 }

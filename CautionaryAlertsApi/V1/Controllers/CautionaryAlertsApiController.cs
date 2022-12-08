@@ -6,6 +6,8 @@ using Hackney.Shared.CautionaryAlerts.Domain;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using Hackney.Core.Authorization;
+using Hackney.Core.Http;
+using Hackney.Core.JWT;
 using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,18 +29,24 @@ namespace CautionaryAlertsApi.V1.Controllers
         private readonly IPropertyAlertsNewUseCase _getPropertyAlertsNewUseCase;
         private readonly IGetCautionaryAlertsByPersonId _getCautionaryAlertsByPersonId;
         private readonly IPostNewCautionaryAlertUseCase _postNewCautionaryAlertUseCase;
+        private readonly ITokenFactory _tokenFactory;
+        private readonly IHttpContextWrapper _contextWrapper;
 
         public CautionaryAlertsApiController(IGetAlertsForPeople getAlertsForPeople,
                                              IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty,
                                              IPropertyAlertsNewUseCase getCautionaryContactAlertsUseCase,
                                              IGetCautionaryAlertsByPersonId getCautionaryAlertsByPersonId,
-                                             IPostNewCautionaryAlertUseCase postNewCautionaryAlertUseCase)
+                                             IPostNewCautionaryAlertUseCase postNewCautionaryAlertUseCase,
+                                             ITokenFactory tokenFactory,
+                                             IHttpContextWrapper contextWrapper)
         {
             _getAlertsForPeople = getAlertsForPeople;
             _getCautionaryAlertsForProperty = getCautionaryAlertsForProperty;
             _getPropertyAlertsNewUseCase = getCautionaryContactAlertsUseCase;
             _getCautionaryAlertsByPersonId = getCautionaryAlertsByPersonId;
             _postNewCautionaryAlertUseCase = postNewCautionaryAlertUseCase;
+            _contextWrapper = contextWrapper;
+            _tokenFactory = tokenFactory;
         }
 
         /// <summary>
@@ -129,7 +137,9 @@ namespace CautionaryAlertsApi.V1.Controllers
         {
             try
             {
-                var result = await _postNewCautionaryAlertUseCase.ExecuteAsync(cautionaryAlert).ConfigureAwait(false);
+                var token = _tokenFactory.Create(_contextWrapper.GetContextRequestHeaders(HttpContext));
+
+                var result = await _postNewCautionaryAlertUseCase.ExecuteAsync(cautionaryAlert, token).ConfigureAwait(false);
                 return Ok(result);
             }
             catch (DbUpdateException)
