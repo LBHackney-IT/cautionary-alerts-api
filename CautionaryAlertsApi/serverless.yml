@@ -105,11 +105,11 @@ resources:
               Action: 
                 - sns:Subscribe
                 - sns:Publish
-      Topics:
-        Type: AWS::SNS::Topic
-        Properties:
-          DisplayName: ${ssm:/sns-topic/${self:provider.stage}/cautionary-alerts/arn}
-          TopicName: ${ssm:/sns-topic/${self:provider.stage}/cautionary-alerts/arn}
+        Topics:
+          Type: AWS::SNS::Topic
+          Properties:
+            DisplayName: ${ssm:/sns-topic/${self:provider.stage}/cautionary-alerts/arn}
+            TopicName: ${ssm:/sns-topic/${self:provider.stage}/cautionary-alerts/arn}
 custom:
   vpc:
     development:
