@@ -60,6 +60,15 @@ resources:
         ManagedPolicyArns:
           - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
         Policies:
+          - PolicyName: postToSns
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "sns:Publish"
+                  Resource:
+                    - ${ssm:/sns-topic/${self:provider.stage}/cautionary-alerts/arn}
           - PolicyName: manageLogs
             PolicyDocument:
               Version: '2012-10-17'
@@ -93,25 +102,6 @@ resources:
                   Action:
                     - "lambda:InvokeFunction"
                   Resource: "*"
-    SnsTopic: 
-      Type: AWS::SNS::Topic
-      Properties:
-        DisplayName: "cautionaryalerts.fifo"
-        TopicName: "cautionaryalerts.fifo"
-    SnsTopicPolicy:
-      Type: AWS::SNS::TopicPolicy
-      Properties:
-        PolicyDocument:
-          Version: "2012-10-17"
-          Statement: 
-            - Effect: Allow
-              Principal:
-                AWS: "*"
-              Action: 
-                - sns:Subscribe
-                - sns:Publish
-        Topics:
-          - Ref: SnsTopic
 custom:
   vpc:
     development:
