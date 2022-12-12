@@ -108,8 +108,8 @@ resources:
         Topics:
           Type: AWS::SNS::Topic
           Properties:
-            DisplayName: cautionaryalerts.fifo
-            TopicName: cautionaryalerts.fifo
+            DisplayName: "cautionaryalerts.fifo"
+            TopicName: "cautionaryalerts.fifo"
 custom:
   vpc:
     development:
