@@ -93,6 +93,11 @@ resources:
                   Action:
                     - "lambda:InvokeFunction"
                   Resource: "*"
+    SnsTopic: 
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: "cautionaryalerts.fifo"
+        TopicName: "cautionaryalerts.fifo"
     SnsTopicPolicy:
       Type: AWS::SNS::TopicPolicy
       Properties:
@@ -106,10 +111,7 @@ resources:
                 - sns:Subscribe
                 - sns:Publish
         Topics:
-          Type: AWS::SNS::Topic
-          Properties:
-            DisplayName: "cautionaryalerts.fifo"
-            TopicName: "cautionaryalerts.fifo"
+          - Ref: SnsTopic
 custom:
   vpc:
     development:
