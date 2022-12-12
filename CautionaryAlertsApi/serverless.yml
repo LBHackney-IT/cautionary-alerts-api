@@ -108,8 +108,8 @@ resources:
         Topics:
           Type: AWS::SNS::Topic
           Properties:
-            DisplayName: ${ssm:/sns-topic/${self:provider.stage}/cautionary-alerts/arn}
-            TopicName: ${ssm:/sns-topic/${self:provider.stage}/cautionary-alerts/arn}
+            DisplayName: "${ssm:/sns-topic/${self:provider.stage}/cautionary-alerts/arn}"
+            TopicName: "${ssm:/sns-topic/${self:provider.stage}/cautionary-alerts/arn}"
 custom:
   vpc:
     development:
