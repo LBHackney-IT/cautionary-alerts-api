@@ -619,7 +619,7 @@ create table dbo."CCAddress"(
     "GeometryX"         numeric(15, 9),
     "GeometryY"         numeric(15, 9),
     "WardCode"          varchar(40),
-    "ParishCode"        varchar(40)
+    "ParishCode"        varchar(40),
 );
 
 

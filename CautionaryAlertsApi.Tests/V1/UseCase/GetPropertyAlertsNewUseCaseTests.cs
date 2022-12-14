@@ -51,8 +51,11 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             // Arrange
             var propertyReference = "00001234";
             var numberOfResults = _random.Next(2, 5);
+            var personId = Guid.NewGuid();
 
-            var alerts = _fixture.CreateMany<CautionaryAlertListItem>(numberOfResults);
+            var alerts = _fixture.Build<CautionaryAlertListItem>()
+                                 .With(x => x.PersonId, personId.ToString())
+                                 .CreateMany(numberOfResults);
 
             _mockGateway
                 .Setup(x => x.GetPropertyAlertsNew(It.IsAny<string>()))

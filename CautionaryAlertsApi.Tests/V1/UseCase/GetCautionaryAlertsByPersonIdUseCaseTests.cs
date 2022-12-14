@@ -49,7 +49,9 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
         {
             // Arrange
             var personId = Guid.NewGuid();
-            var mockAlerts = _fixture.CreateMany<CautionaryAlertListItem>();
+            var mockAlerts = _fixture.Build<CautionaryAlertListItem>()
+                                     .With(x=> x.PersonId, personId.ToString())
+                                     .CreateMany();
 
             _mockGateway
                 .Setup(x => x.GetCautionaryAlertsByMMHPersonId(personId))
