@@ -21,6 +21,7 @@ namespace CautionaryAlertsApi.V1.Domain
         public Guid EntityId { get; set; }
 
         public EventData EventData { get; set; }
+        public User User { get; set; }
     }
 }
 
