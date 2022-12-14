@@ -20,6 +20,11 @@ namespace CautionaryAlertsApi.V1.Factories
                 Version = Constants.V1_VERSION,
                 SourceDomain = Constants.SOURCE_DOMAIN,
                 SourceSystem = Constants.SOURCE_SYSTEM,
+                User = new User
+                {
+                    Name = token.Name,
+                    Email = token.Email
+                },
                 EventData = new EventData
                 {
                     NewData = alert
