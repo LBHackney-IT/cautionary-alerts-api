@@ -50,7 +50,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             // Arrange
             var personId = Guid.NewGuid();
             var mockAlerts = _fixture.Build<CautionaryAlertListItem>()
-                                     .With(x=> x.PersonId, personId.ToString())
+                                     .With(x => x.PersonId, personId.ToString())
                                      .CreateMany();
 
             _mockGateway
