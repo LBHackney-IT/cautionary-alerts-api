@@ -92,7 +92,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
 
       principals {
         type        = "AWS"
-        identifiers = "*"
+        identifiers = ["*"]
       }
 
       resources = [
