@@ -56,14 +56,13 @@ resource "aws_ssm_parameter" "cautionary_alerts_sns_arn" {
   value = aws_sns_topic.cautionaryalerts_topic.arn
 }
 
-resource "aws_ssm_parameter" "housing_dev_account_id" {
-  name  = "/housing-dev/account-id"
-  type  = "String"
+
+data "aws_ssm_parameter" "housing_dev_account_id" {
+  name = "/housing-dev/account-id"
 }
 
-resource "aws_ssm_parameter" "housing_staging_account_id" {
-  name  = "/housing-staging/account-id"
-  type  = "String"
+data "aws_ssm_parameter" "housing_staging_account_id" {
+  name = "/housing-staging/account-id"
 }
 
 data "aws_iam_policy_document" "sns-topic-policy" {
@@ -106,7 +105,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
 
       principals = {
         type        = "AWS"
-        identifiers = ["arn:aws:iam::${housing_dev_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
+        identifiers = ["arn:aws:iam::${data.aws_ssm_parameter.housing_dev_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
       }
 
       actions = [
@@ -124,7 +123,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
 
       principals = {
         type        = "AWS"
-        identifiers = ["arn:aws:iam::${housing_staging_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
+        identifiers = ["arn:aws:iam::${data.aws_ssm_parameter.housing_staging_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
       }
 
       actions = [
