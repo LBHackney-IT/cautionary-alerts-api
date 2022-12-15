@@ -36,7 +36,8 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
         public async Task ReturnsCautionaryAlertListItemIfSuccessful()
         {
             var defaultString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
-            var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture);
+            var addressString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.FULLADDRESSLENGTH));
+            var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
             var token = new Token();
 
             var cautionaryAlertDb = cautionaryAlert.ToDatabase();

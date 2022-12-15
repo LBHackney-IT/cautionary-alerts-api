@@ -7,7 +7,7 @@ namespace CautionaryAlertsApi.Tests
 {
     public static class CreateCautionaryAlertFixture
     {
-        public static CreateCautionaryAlert GenerateValidCreateCautionaryAlertFixture(string defaultString, Fixture fixture)
+        public static CreateCautionaryAlert GenerateValidCreateCautionaryAlertFixture(string defaultString, Fixture fixture, string addressString)
         {
             var alert = fixture.Build<Alert>()
                 .With(x => x.Code, defaultString[..CreateCautionaryAlertConstants.ALERTCODELENGTH])
@@ -15,7 +15,7 @@ namespace CautionaryAlertsApi.Tests
                 .Create();
 
             var assetDetails = fixture.Build<AssetDetails>()
-                .With(x => x.FullAddress, defaultString[..CreateCautionaryAlertConstants.FULLADDRESSLENGTH])
+                .With(x => x.FullAddress, addressString[..CreateCautionaryAlertConstants.FULLADDRESSLENGTH])
                 .With(x => x.PropertyReference, defaultString[..CreateCautionaryAlertConstants.PROPERTYREFERENCELENGTH])
                 .With(x => x.UPRN, defaultString[..CreateCautionaryAlertConstants.UPRNLENGTH])
                 .Create();
