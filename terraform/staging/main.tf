@@ -82,7 +82,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         "SNS:Publish"
       ]
 
-      condition {
+      condition = {
         test     = "StringEquals"
         variable = "AWS:SourceOwner"
 
@@ -90,7 +90,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
 
       effect = "Allow"
 
-      principals {
+      principals = {
         type        = "AWS"
         identifiers = ["*"]
       }
@@ -104,7 +104,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
     {
       effect = "Allow"
 
-      principals {
+      principals = {
         type        = "AWS"
         identifiers = ["arn:aws:iam::${housing_dev_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
       }
