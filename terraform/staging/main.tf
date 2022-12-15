@@ -55,3 +55,87 @@ resource "aws_ssm_parameter" "cautionary_alerts_sns_arn" {
   type  = "String"
   value = aws_sns_topic.cautionaryalerts_topic.arn
 }
+
+resource "aws_ssm_parameter" "housing_dev_account_id" {
+  name  = "/housing-dev/account-id"
+  type  = "String"
+}
+
+resource "aws_ssm_parameter" "housing_staging_account_id" {
+  name  = "/housing-staging/account-id"
+  type  = "String"
+}
+
+data "aws_iam_policy_document" "sns-topic-policy" {
+  policy_id = "__default_policy_ID"
+
+  statement [
+    {
+      actions = [
+        "SNS:GetTopicAttributes",
+        "SNS:SetTopicAttributes",
+        "SNS:AddPermission",
+        "SNS:RemovePermission",
+        "SNS:DeleteTopic",
+        "SNS:Subscribe",
+        "SNS:ListSubscriptionsByTopic",
+        "SNS:Publish"
+      ]
+
+      condition {
+        test     = "StringEquals"
+        variable = "AWS:SourceOwner"
+
+      }
+
+      effect = "Allow"
+
+      principals {
+        type        = "AWS"
+        identifiers = ["arn:aws:iam::${data.account_id}:role/LBH_Circle_CI_Deployment_Role"]
+      }
+
+      resources = [
+        "arn:aws_sns_topic.cautionaryalerts_topic.arn",
+      ]
+
+      sid = "__default_statement_ID"
+    },
+    {
+      effect = "Allow"
+
+      principals {
+        type        = "AWS"
+        identifiers = ["arn:aws:iam::${housing_dev_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
+      }
+
+      actions = [
+        "SNS:Subscribe"
+      ]
+
+      resources = [
+        "arn:aws_sns_topic.cautionaryalerts_topic.arn",
+      ]
+
+      sid = "__default_statement_ID"
+    },
+    {
+      effect = "Allow"
+
+      principals {
+        type        = "AWS"
+        identifiers = ["arn:aws:iam::${housing_staging_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
+      }
+
+      actions = [
+        "SNS:Subscribe"
+      ]
+
+      resources = [
+        "arn:aws_sns_topic.cautionaryalerts_topic.arn",
+      ]
+
+      sid = "__default_statement_ID"
+    }
+  ]
+}
