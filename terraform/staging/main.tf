@@ -92,7 +92,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
 
       principals {
         type        = "AWS"
-        identifiers = ["arn:aws:iam::${data.account_id}:role/LBH_Circle_CI_Deployment_Role"]
+        identifiers = "*"
       }
 
       resources = [
