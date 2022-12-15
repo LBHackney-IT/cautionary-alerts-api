@@ -65,7 +65,7 @@ data "aws_ssm_parameter" "housing_staging_account_id" {
   name = "/housing-staging/account-id"
 }
 
-data "aws_sqs_topic_policy" "sns-topic-policy" {
+data "aws_sns_topic_policy" "sns-topic-policy" {
   policy    = <<POLICY
   {
       "Version": "2012-10-17",
