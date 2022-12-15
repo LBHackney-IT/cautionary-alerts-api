@@ -66,92 +66,61 @@ data "aws_ssm_parameter" "housing_staging_account_id" {
 }
 
 data "aws_iam_policy_document" "sns-topic-policy" {
-  policy_id = "__default_policy_ID"
-  
-  statement = 
-    {
-      actions = [
-        "SNS:GetTopicAttributes",
-        "SNS:SetTopicAttributes",
-        "SNS:AddPermission",
-        "SNS:RemovePermission",
-        "SNS:DeleteTopic",
-        "SNS:Subscribe",
-        "SNS:ListSubscriptionsByTopic",
-        "SNS:Publish"
-      ]
+  policy    = <<POLICY
+  {
+      "Version": "2012-10-17",
+      "Id": "sns-topic-policy",
+      "Statement": [
+          {
+		      "Sid": "First",
+			  "Action": [
+				"SNS:GetTopicAttributes",
+				"SNS:SetTopicAttributes",
+				"SNS:AddPermission",
+				"SNS:RemovePermission",
+				"SNS:DeleteTopic",
+				"SNS:Subscribe",
+				"SNS:ListSubscriptionsByTopic",
+				"SNS:Publish"
+			  ],
+			  "Condition":{
+				test     = "StringEquals"
+				variable = "AWS:SourceOwner"
 
-      condition = {
-        test     = "StringEquals"
-        variable = "AWS:SourceOwner"
+			  },
+			  Effect: "Allow"
+			  Principals: "*"
+			  Resource: "arn:aws_sns_topic.cautionaryalerts_topic.arn"
+		  },
+		  {
+		    "Sid": "Second",
+			  "Action": [
+				"SNS:Subscribe",
+			  ],
+			  "Condition":{
+				test     = "StringEquals"
+				variable = "AWS:SourceOwner"
 
-      }
+			  },
+			  Effect: "Allow"
+			  Principals: "arn:aws:iam::${data.aws_ssm_parameter.housing_dev_account_id.value}:role/LBH_Circle_CI_Deployment_Role"
+			  Resource: "arn:aws_sns_topic.cautionaryalerts_topic.arn"
+		  },
+		  {
+		    "Sid": "Third",
+			  "Action": [
+				"SNS:Subscribe",
+			  ],
+			  "Condition":{
+				test     = "StringEquals"
+				variable = "AWS:SourceOwner"
 
-      effect = "Allow"
-
-      principals = {
-        type        = "AWS"
-        identifiers = ["*"]
-      }
-
-      resources = [
-        "arn:aws_sns_topic.cautionaryalerts_topic.arn",
-      ]
-
-      sid = "__default_statement_ID"
-    },
-    statement = {
-
-      actions = [
-        "SNS:Subscribe"
-      ]
-      condition = {
-        test     = "StringEquals"
-        variable = "AWS:SourceOwner"
-
-      }
-
-      effect = "Allow"
-
-      principals = {
-        type        = "AWS"
-        identifiers = ["arn:aws:iam::${data.aws_ssm_parameter.housing_dev_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
-      }
-
-
-      resources = [
-        "arn:aws_sns_topic.cautionaryalerts_topic.arn",
-      ]
-
-      sid = "__default_statement_ID"
-    },
-    statement =
-    {
-      actions = [
-        "SNS:Subscribe"
-      ]
-
-      condition = {
-        test     = "StringEquals"
-        variable = "AWS:SourceOwner"
-
-      }
-
-      effect = "Allow"
-
-      principals = {
-        type        = "AWS"
-        identifiers = ["arn:aws:iam::${data.aws_ssm_parameter.housing_staging_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
-      }
-
-      actions = [
-        "SNS:Subscribe"
-      ]
-
-      resources = [
-        "arn:aws_sns_topic.cautionaryalerts_topic.arn",
-      ]
-
-      sid = "__default_statement_ID"
-    }
+			  },
+			  Effect: "Allow"
+			  Principals: "arn:aws:iam::${data.aws_ssm_parameter.housing_staging_account_id.value}:role/LBH_Circle_CI_Deployment_Role"
+			  Resource: "arn:aws_sns_topic.cautionaryalerts_topic.arn"
+		  }	  
+    ]
+  }
+  POLICY
 }
