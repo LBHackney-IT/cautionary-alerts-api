@@ -69,7 +69,7 @@ resource "aws_ssm_parameter" "housing_staging_account_id" {
 data "aws_iam_policy_document" "sns-topic-policy" {
   policy_id = "__default_policy_ID"
 
-  statement [
+  statement = [
     {
       actions = [
         "SNS:GetTopicAttributes",
