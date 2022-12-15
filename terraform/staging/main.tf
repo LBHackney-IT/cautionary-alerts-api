@@ -122,7 +122,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
     {
       effect = "Allow"
 
-      principals {
+      principals = {
         type        = "AWS"
         identifiers = ["arn:aws:iam::${housing_staging_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
       }
