@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         "SNS:Publish"
       ]
 
-      condition = {
+      condition {
         test     = "StringEquals"
         variable = "AWS:SourceOwner"
 
@@ -87,7 +87,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
 
       effect = "Allow"
 
-      principals = {
+      principals {
         type        = "AWS"
         identifiers = ["*"]
       }
@@ -98,15 +98,11 @@ data "aws_iam_policy_document" "sns-topic-policy" {
 
       sid = "__default_statement_ID"
     }
-}	
-
-data "aws_iam_policy_document" "sns-topic-policy-2" {
-  policy_id = "__default_policy_ID"
-  statement = {
+  statement {
       actions = [
         "SNS:Subscribe"
       ]
-      condition = {
+      condition {
         test     = "StringEquals"
         variable = "AWS:SourceOwner"
 
@@ -114,7 +110,7 @@ data "aws_iam_policy_document" "sns-topic-policy-2" {
 
       effect = "Allow"
 
-      principals = {
+      principals {
         type        = "AWS"
         identifiers = ["arn:aws:iam::${data.aws_ssm_parameter.housing_dev_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
       }
@@ -123,17 +119,13 @@ data "aws_iam_policy_document" "sns-topic-policy-2" {
       ]
 
       sid = "housing-dev-statement"
-    }
-}
-
-data "aws_iam_policy_document" "sns-topic-policy-3" {
-  policy_id = "__default_policy_ID"
-  statement = {
+    }	
+  statement {
       actions = [
         "SNS:Subscribe"
       ]
 
-      condition = {
+      condition {
         test     = "StringEquals"
         variable = "AWS:SourceOwner"
 
@@ -141,7 +133,7 @@ data "aws_iam_policy_document" "sns-topic-policy-3" {
 
       effect = "Allow"
 
-      principals = {
+      principals {
         type        = "AWS"
         identifiers = ["arn:aws:iam::${data.aws_ssm_parameter.housing_staging_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
       }
@@ -155,5 +147,5 @@ data "aws_iam_policy_document" "sns-topic-policy-3" {
       ]
 
       sid = "housing_staging_statement"
-    }
-}
+    }	
+}	
