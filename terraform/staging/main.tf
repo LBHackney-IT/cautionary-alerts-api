@@ -84,7 +84,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         variable = "AWS:SourceOwner"
 
 		values = [
-			data.current.account_id
+			data.aws_caller_identity.current.account_id
 		]
 
       }
@@ -111,7 +111,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         variable = "AWS:SourceOwner"
 
 		values = [
-			data.current.account_id
+			data.aws_caller_identity.current.account_id
 		]
 
       }
@@ -138,7 +138,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         variable = "AWS:SourceOwner"
 
 		values = [
-			data.current.account_id
+			data.aws_caller_identity.current.account_id
 		]
 
       }
