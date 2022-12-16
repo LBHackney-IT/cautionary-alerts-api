@@ -98,7 +98,10 @@ data "aws_iam_policy_document" "sns-topic-policy" {
 
       sid = "__default_statement_ID"
     }
+}	
 
+data "aws_iam_policy_document" "sns-topic-policy-2" {
+  policy_id = "__default_policy_ID"
   statement = {
       actions = [
         "SNS:Subscribe"
@@ -119,9 +122,12 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         "arn::aws:sns:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cautionaryalerts.fifo"
       ]
 
-      sid = "__console_sub_0"
+      sid = "housing-dev-statement"
     }
-  /* statement =
+
+data "aws_iam_policy_document" "sns-topic-policy-3" {
+  policy_id = "__default_policy_ID"
+  statement =
     {
       actions = [
         "SNS:Subscribe"
@@ -149,5 +155,5 @@ data "aws_iam_policy_document" "sns-topic-policy" {
       ]
 
       sid = "housing_staging_statement"
-    } */
+    }
 }
