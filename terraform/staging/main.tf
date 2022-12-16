@@ -94,7 +94,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
       }
 
       resources = [
-        "arn:aws_sns_topic.cautionaryalerts_topic.arn",
+        "arn::aws:sns:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cautionaryalerts.fifo"
       ]
 
       sid = "__default_statement_ID"
@@ -117,7 +117,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         identifiers = ["arn:aws:iam::${data.aws_ssm_parameter.housing_dev_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
       }
       resources = [
-        "arn:aws_sns_topic.cautionaryalerts_topic.arn",
+        "arn::aws:sns:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cautionaryalerts.fifo"
       ]
 
       sid = "housing_dev_statement"
@@ -146,7 +146,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
       ]
 
       resources = [
-        "arn:aws_sns_topic.cautionaryalerts_topic.arn",
+        "arn::aws:sns:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cautionaryalerts.fifo"
       ]
 
       sid = "housing_staging_statement"
