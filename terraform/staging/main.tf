@@ -99,7 +99,8 @@ data "aws_iam_policy_document" "sns-topic-policy" {
 
       sid = "__default_statement_ID"
     },
-    statement = {
+    statement = 
+	{
 
       actions = [
         "SNS:Subscribe"
@@ -121,8 +122,8 @@ data "aws_iam_policy_document" "sns-topic-policy" {
       ]
 
       sid = "housing_dev_statement"
-    },
-    statement =
+    }
+    /* statement =
     {
       actions = [
         "SNS:Subscribe"
@@ -150,5 +151,5 @@ data "aws_iam_policy_document" "sns-topic-policy" {
       ]
 
       sid = "housing_staging_statement"
-    }
+    } */
 }
