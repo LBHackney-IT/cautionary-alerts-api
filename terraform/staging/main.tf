@@ -124,6 +124,7 @@ data "aws_iam_policy_document" "sns-topic-policy-2" {
 
       sid = "housing-dev-statement"
     }
+}
 
 data "aws_iam_policy_document" "sns-topic-policy-3" {
   policy_id = "__default_policy_ID"
