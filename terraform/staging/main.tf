@@ -98,9 +98,8 @@ data "aws_iam_policy_document" "sns-topic-policy" {
 
       sid = "__default_statement_ID"
     }
-	
-  statement = {
 
+  statement = {
       actions = [
         "SNS:Subscribe"
       ]
@@ -120,7 +119,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         "arn::aws:sns:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cautionaryalerts.fifo"
       ]
 
-      sid = "housing_dev_statement"
+      sid = "__console_sub_0"
     }
   /* statement =
     {
