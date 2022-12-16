@@ -121,7 +121,7 @@ data "aws_iam_policy_document" "sns-topic-policy" {
       ]
 
       sid = "housing_dev_statement"
-    },
+    }
   /* statement =
     {
       actions = [
