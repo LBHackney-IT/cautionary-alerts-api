@@ -83,6 +83,10 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         test     = "StringEquals"
         variable = "AWS:SourceOwner"
 
+		values = [
+			data.current.account_id
+		]
+
       }
 
       effect = "Allow"
@@ -106,6 +110,10 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         test     = "StringEquals"
         variable = "AWS:SourceOwner"
 
+		values = [
+			data.current.account_id
+		]
+
       }
 
       effect = "Allow"
@@ -128,6 +136,10 @@ data "aws_iam_policy_document" "sns-topic-policy" {
       condition {
         test     = "StringEquals"
         variable = "AWS:SourceOwner"
+
+		values = [
+			data.current.account_id
+		]
 
       }
 
