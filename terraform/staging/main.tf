@@ -128,8 +128,7 @@ data "aws_iam_policy_document" "sns-topic-policy-2" {
 
 data "aws_iam_policy_document" "sns-topic-policy-3" {
   policy_id = "__default_policy_ID"
-  statement =
-    {
+  statement = {
       actions = [
         "SNS:Subscribe"
       ]
