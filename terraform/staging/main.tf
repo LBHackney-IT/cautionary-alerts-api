@@ -75,14 +75,14 @@ data "aws_iam_policy_document" "sns_topic_policy" {
   policy_id = "__default_policy_ID"
   statement {
       actions = [
-        "SNS:GetTopicAttributes",
-        "SNS:SetTopicAttributes",
-        "SNS:AddPermission",
-        "SNS:RemovePermission",
-        "SNS:DeleteTopic",
-        "SNS:Subscribe",
-        "SNS:ListSubscriptionsByTopic",
-        "SNS:Publish"
+        "sns:GetTopicAttributes",
+        "sns:SetTopicAttributes",
+        "sns:AddPermission",
+        "sns:RemovePermission",
+        "sns:DeleteTopic",
+        "sns:Subscribe",
+        "sns:ListSubscriptionsByTopic",
+        "sns:Publish"
       ]
 
       condition {
@@ -110,7 +110,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
     }
   statement {
       actions = [
-        "SNS:Subscribe"
+        "sns:Subscribe"
       ]
       condition {
         test     = "StringEquals"
@@ -136,7 +136,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
     }	
   statement {
       actions = [
-        "SNS:Subscribe"
+        "sns:Subscribe"
       ]
 
       condition {
