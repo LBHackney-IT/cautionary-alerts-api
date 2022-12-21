@@ -50,6 +50,12 @@ resource "aws_sns_topic" "cautionaryalerts_topic" {
   kms_master_key_id           = "alias/aws/sns"
 }
 
+resource "aws_sns_topic_policy" "default" {
+  arn = aws_sns_topic.cautionaryalerts_topic.arn
+
+  policy = data.aws_iam_policy_document.sns_topic_policy.json
+}
+
 resource "aws_ssm_parameter" "cautionary_alerts_sns_arn" {
   name  = "/sns-topic/staging/cautionary_alerts/arn"
   type  = "String"
@@ -65,7 +71,7 @@ data "aws_ssm_parameter" "housing_staging_account_id" {
   name = "/housing-staging/account-id"
 }
 
-data "aws_iam_policy_document" "sns-topic-policy" {
+data "aws_iam_policy_document" "sns_topic_policy" {
   policy_id = "__default_policy_ID"
   statement {
       actions = [
@@ -83,9 +89,9 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         test     = "StringEquals"
         variable = "AWS:SourceOwner"
 
-		values = [
-			data.aws_caller_identity.current.account_id
-		]
+        values = [
+          data.aws_caller_identity.current.account_id
+        ]
 
       }
 
@@ -110,9 +116,9 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         test     = "StringEquals"
         variable = "AWS:SourceOwner"
 
-		values = [
-			data.aws_caller_identity.current.account_id
-		]
+        values = [
+          data.aws_caller_identity.current.account_id
+        ]
 
       }
 
@@ -137,9 +143,9 @@ data "aws_iam_policy_document" "sns-topic-policy" {
         test     = "StringEquals"
         variable = "AWS:SourceOwner"
 
-		values = [
-			data.aws_caller_identity.current.account_id
-		]
+        values = [
+          data.aws_caller_identity.current.account_id
+        ]
 
       }
 
