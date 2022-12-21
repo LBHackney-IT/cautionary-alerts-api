@@ -103,7 +103,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       }
 
       resources = [
-        aws_sns_topic.cautionaryalerts_topic
+        aws_sns_topic.cautionaryalerts_topic.arn
       ]
 
       sid = "__default_statement_ID"
@@ -129,7 +129,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
         identifiers = ["arn:aws:iam::${data.aws_ssm_parameter.housing_dev_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
       }
       resources = [
-        aws_sns_topic.cautionaryalerts_topic
+        aws_sns_topic.cautionaryalerts_topic.arn
       ]
 
       sid = "housing-dev-statement"
@@ -157,7 +157,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       }
 
       resources = [
-        aws_sns_topic.cautionaryalerts_topic
+        aws_sns_topic.cautionaryalerts_topic.arn
       ]
 
       sid = "housing_staging_statement"
