@@ -153,7 +153,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
 
       principals {
         type        = "AWS"
-        identifiers = ["arn:aws:iam::${data.aws_ssm_parameter.housing_staging_account_id.value}:assumed-role/LBH_Circle_CI_Deployment_Role"]
+        identifiers = ["arn:aws:iam::${data.aws_ssm_parameter.housing_staging_account_id.value}:role/LBH_Circle_CI_Deployment_Role"]
       }
 
       resources = [
