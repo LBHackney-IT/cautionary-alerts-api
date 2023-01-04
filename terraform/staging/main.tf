@@ -112,15 +112,6 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       actions = [
         "sns:Subscribe"
       ]
-      condition {
-        test     = "StringEquals"
-        variable = "AWS:SourceOwner"
-
-        values = [
-          data.aws_caller_identity.current.account_id
-        ]
-
-      }
 
       effect = "Allow"
 
@@ -138,16 +129,6 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       actions = [
         "sns:Subscribe"
       ]
-
-      condition {
-        test     = "StringEquals"
-        variable = "AWS:SourceOwner"
-
-        values = [
-          data.aws_ssm_parameter.housing_staging_account_id.value
-        ]
-
-      }
 
       effect = "Allow"
 
