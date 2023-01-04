@@ -185,10 +185,10 @@ workflows:
               only: development
   check-and-deploy-staging-and-production:
     jobs:
-       - build-and-test:
-          context:
-            - api-nuget-token-context
-            - SonarCloud       
+      #  - build-and-test:
+      #     context:
+      #       - api-nuget-token-context
+      #       - SonarCloud       
           # filters:
           #    branches:
           #      only: master

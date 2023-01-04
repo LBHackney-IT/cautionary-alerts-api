@@ -114,7 +114,7 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       ]
       condition {
         test     = "StringEquals"
-        variable = "AWS:SourceOwner"
+        variable = "AWS:SourceAccount"
 
         values = [
           data.aws_ssm_parameter.housing_dev_account_id.value
