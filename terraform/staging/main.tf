@@ -85,6 +85,16 @@ data "aws_iam_policy_document" "sns_topic_policy" {
         "sns:Publish"
       ]
 
+      condition {
+        test     = "StringEquals"
+        variable = "AWS:SourceOwner"
+
+        values = [
+          data.aws_caller_identity.current.account_id
+        ]
+
+      }
+
       effect = "Allow"
 
       principals {
@@ -102,15 +112,6 @@ data "aws_iam_policy_document" "sns_topic_policy" {
       actions = [
         "sns:Subscribe"
       ]
-      condition {
-        test     = "StringEquals"
-        variable = "AWS:SourceAccount"
-
-        values = [
-          data.aws_ssm_parameter.housing_dev_account_id.value
-        ]
-
-      }
 
       effect = "Allow"
 
