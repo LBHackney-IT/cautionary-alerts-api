@@ -129,16 +129,6 @@ data "aws_iam_policy_document" "sns_topic_policy" {
         "sns:Subscribe"
       ]
 
-      condition {
-        test     = "StringEquals"
-        variable = "AWS:SourceOwner"
-
-        values = [
-          data.aws_caller_identity.current.account_id
-        ]
-
-      }
-
       effect = "Allow"
 
       principals {
