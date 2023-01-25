@@ -60,6 +60,33 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             returnedAlerts.Alerts.Should().BeEmpty();
         }
 
+        [Test]
+        public async Task GetPropertyAlertsWithNoPersonIdReturnsAlerts()
+        {
+            // Arrange
+            var propertyReference = "00001234";
+            var numberOfResults = 10;
+
+            var results = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.PropertyReference, propertyReference)
+                .Without(x=> x.MMHID)
+                .CreateMany(numberOfResults);
+
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
+
+            // Act
+            var response = await GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
+
+            // Assert
+            response.StatusCode.Should().Be(200);
+
+            var data = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+            var returnedAlerts = JsonConvert.DeserializeObject<CautionaryAlertsPropertyResponse>(data);
+
+            returnedAlerts.PropertyReference.Should().Be(propertyReference);
+            returnedAlerts.Alerts.Should().HaveCount(numberOfResults);
+        }
+
         private async Task<System.Net.Http.HttpResponseMessage> GetPropertyAlertsNew(string propertyReference)
         {
             var url = new Uri($"/api/v1/cautionary-alerts/properties-new/{propertyReference}", UriKind.Relative);
