@@ -69,7 +69,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             var results = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.PropertyReference, propertyReference)
-                .Without(x=> x.MMHID)
+                .Without(x => x.MMHID)
                 .CreateMany(numberOfResults);
 
             await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
