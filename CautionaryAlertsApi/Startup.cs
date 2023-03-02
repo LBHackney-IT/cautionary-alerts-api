@@ -51,8 +51,7 @@ namespace CautionaryAlertsApi
             services.AddCors();
             services
                 .AddMvc()
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()))
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
             services.AddApiVersioning(o =>
             {
                 o.DefaultApiVersion = new ApiVersion(1, 0);
