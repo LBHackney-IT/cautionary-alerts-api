@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,8 @@ namespace CautionaryAlertsApi.Tests
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             _connection = new NpgsqlConnection(ConnectionString.TestDatabase());
             _connection.Open();
             var npgsqlCommand = _connection.CreateCommand();
