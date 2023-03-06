@@ -443,6 +443,8 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             // Assert
             result.Should().NotBeNull();
+            var activAlerts = result.Select(x => x.IsActive == true);
+            activAlerts.Should().HaveCount(2);
             result.Should().HaveCount(2);
         }
 
