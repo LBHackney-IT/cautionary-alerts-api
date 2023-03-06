@@ -15,7 +15,7 @@ namespace CautionaryAlertsApi.Tests
         [SetUp]
         public void RunBeforeAnyTests()
         {
-            //AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
             var builder = new DbContextOptionsBuilder();
 
