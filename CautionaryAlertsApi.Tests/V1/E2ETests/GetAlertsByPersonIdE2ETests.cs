@@ -7,6 +7,7 @@ using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System.Linq;
 
 namespace CautionaryAlertsApi.Tests.V1.E2ETests
 {
@@ -43,7 +44,10 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             var alerts = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.MMHID, id.ToString())
-                .CreateMany();
+                .With(x => x.IsActive, true)
+                .CreateMany(3);
+
+            alerts.First().IsActive = false;
             await TestDataHelper.SavePropertyAlertsToDb(UhContext, alerts).ConfigureAwait(false);
 
             var url = new Uri($"/api/v1/cautionary-alerts/persons/{id}", UriKind.Relative);
@@ -57,7 +61,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             var returnedAlerts = JsonConvert.DeserializeObject<CautionaryAlertsMMHPersonResponse>(data);
 
             returnedAlerts.PersonId.Should().Be(id);
-            returnedAlerts.Alerts.Should().HaveSameCount(alerts);
+            returnedAlerts.Alerts.Count.Should().Be(2);
         }
     }
 }

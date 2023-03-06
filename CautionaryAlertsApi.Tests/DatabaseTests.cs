@@ -2,6 +2,7 @@ using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using NUnit.Framework;
+using System;
 
 namespace CautionaryAlertsApi.Tests
 {
@@ -14,6 +15,8 @@ namespace CautionaryAlertsApi.Tests
         [SetUp]
         public void RunBeforeAnyTests()
         {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             var builder = new DbContextOptionsBuilder();
 
             var connectionString = ConnectionString.TestDatabase();
