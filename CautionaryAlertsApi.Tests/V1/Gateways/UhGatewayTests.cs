@@ -447,6 +447,29 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
+        public async Task GetGetCautionaryAlertsByAlertIdReturnsAlert()
+        {
+            // Arrange
+            var personId = Guid.NewGuid();
+            var alertId = Guid.NewGuid();
+            var dateOfIncident = "12/12/2020";
+            var alert = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.MMHID, personId.ToString())
+                .With(x => x.AlertId, alertId.ToString())
+                .With(x => x.DateOfIncident, dateOfIncident)
+                .Create();
+
+            await TestDataHelper.SavePropertyAlertToDb(UhContext, alert).ConfigureAwait(false);
+
+            // Act
+            var result = _classUnderTest.GetCautionaryAlertByAlertId(personId, alertId);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(alert.ToCautionaryAlertDomain());
+        }
+
+        [Test]
         public async Task PostNewCautionaryAlertReturnsEntityIfSuccessful()
         {
             // Arrange

@@ -179,6 +179,7 @@ namespace CautionaryAlertsApi
             services.AddScoped<IGetGoogleSheetAlertsForPerson, GetGoogleSheetAlertsForPerson>();
             services.AddScoped<IPropertyAlertsNewUseCase, GetPropertyAlertsNewUseCase>();
             services.AddScoped<IGetCautionaryAlertsByPersonId, GetCautionaryAlertsByPersonIdUseCase>();
+            services.AddScoped<IGetCautionaryAlertByAlertIdUseCase, GetCautionaryAlertByAlertIdUseCase>();
             services.AddScoped<IPostNewCautionaryAlertUseCase, PostNewCautionaryAlertUseCase>();
         }
 

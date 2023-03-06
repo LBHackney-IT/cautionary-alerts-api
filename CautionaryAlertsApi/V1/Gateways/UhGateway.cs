@@ -132,6 +132,23 @@ namespace CautionaryAlertsApi.V1.Gateways
             return alerts.Select(x => x.ToDomain());
         }
 
+        public CautionaryAlert GetCautionaryAlertByAlertId(Guid personId, Guid alertId)
+        {
+            var alerts = _uhContext.PropertyAlertsNew
+                        .Where(x => x.MMHID == personId.ToString())
+                        .Where(x => x.AlertId == alertId.ToString())
+                        .ToList();
+
+            var cautionaryAlert = alerts.Select(x => x.ToCautionaryAlertDomain());
+            if (cautionaryAlert.Count() > 1)
+                throw new Exception();
+
+
+
+            return cautionaryAlert.First();
+        }
+
+
         [LogCall]
         public async Task<PropertyAlertDomain> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert)
         {
