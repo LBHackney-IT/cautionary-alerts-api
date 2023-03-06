@@ -637,5 +637,6 @@ create table dbo."PropertyAlertNew"(
 	"mmh_id" varchar(36),
 	"outcome" varchar(100),
 	"assure_reference" varchar(12),
-	"is_active" Boolean NOT NULL
+	"is_active" Boolean NOT NULL, 
+	"alert_Id" varchar(36)
 );
