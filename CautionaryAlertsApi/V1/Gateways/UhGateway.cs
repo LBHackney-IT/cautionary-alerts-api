@@ -139,11 +139,13 @@ namespace CautionaryAlertsApi.V1.Gateways
                         .Where(x => x.AlertId == alertId.ToString())
                         .ToList();
 
+            if (alerts.Count() == 0) return null;
+
             var cautionaryAlert = alerts.Select(x => x.ToCautionaryAlertDomain());
+
+            //We should never expect the count to by more than one as AlertId should be unique but adding this condition as we only return the first alert. 
             if (cautionaryAlert.Count() > 1)
                 throw new Exception();
-
-
 
             return cautionaryAlert.First();
         }

@@ -447,7 +447,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
-        public async Task GetGetCautionaryAlertsByAlertIdReturnsAlert()
+        public async Task GetCautionaryAlertsByAlertIdReturnsAlert()
         {
             // Arrange
             var personId = Guid.NewGuid();

@@ -144,6 +144,8 @@ namespace CautionaryAlertsApi.V1.Controllers
         {
             var result = _getCautionaryAlertByAlertId.ExecuteAsync(personId, alertId);
 
+            if (result == null) return NotFound(alertId);
+
             return Ok(result);
         }
 

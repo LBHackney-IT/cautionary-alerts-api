@@ -20,7 +20,7 @@ namespace CautionaryAlertsApi.V1.UseCase
         {
             var result = _gateway.GetCautionaryAlertByAlertId(personId, alertId);
 
-            return result.ToResponse();
+            return result?.ToResponse();
         }
     }
 }
