@@ -19,6 +19,8 @@ services:
       - ACCEPT_EULA=Y
       - POSTGRES_PASSWORD=mypassword
     image: postgres:12
+    ports:
+      - "5432:5432"
     volumes:
       - ./database:/docker-entrypoint-initdb.d
 
