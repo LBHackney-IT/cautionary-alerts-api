@@ -412,6 +412,10 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         {
             // Arrange
             var personId = Guid.NewGuid();
+            var results = _fixture.Build<PropertyAlertNew>()
+                                  .With(x => x.MMHID, personId.ToString())
+                                  .Create();
+
 
             // Act
             var result = await _classUnderTest.GetCautionaryAlertsByMMHPersonId(personId).ConfigureAwait(false);
@@ -428,8 +432,10 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var personId = Guid.NewGuid();
             var results = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.MMHID, personId.ToString())
-                .CreateMany();
+                .With(x => x.IsActive, true)
+                .CreateMany(3);
 
+            results.First().IsActive = false;
             await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
 
             // Act
@@ -437,7 +443,8 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().HaveSameCount(results);
+            var activAlerts = result.Select(x => x.IsActive == true);
+            activAlerts.Should().HaveCount(2);
         }
 
         [Test]

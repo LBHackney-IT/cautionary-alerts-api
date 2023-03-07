@@ -125,6 +125,7 @@ namespace CautionaryAlertsApi.V1.Gateways
         {
             var alerts = await _uhContext.PropertyAlertsNew
                 .Where(x => x.MMHID == personId.ToString())
+                .Where(x => x.IsActive == true)
                 .ToListAsync().ConfigureAwait(false);
 
             return alerts.Select(x => x.ToDomain());
