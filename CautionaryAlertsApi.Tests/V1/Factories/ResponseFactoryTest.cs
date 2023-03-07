@@ -19,7 +19,7 @@ namespace CautionaryAlertsApi.Tests.V1.Factories
             response.Description.Should().Be(domain.Description);
             response.AlertCode.Should().Be(domain.AlertCode);
             response.ModifiedBy.Should().Be(domain.ModifiedBy);
-            response.DateModified.Should().Be(DateTimeToDateString(domain.DateModified));
+            response.DateModified.Should().Be(DateTimeToDateString(domain.DateModified.Value));
             response.EndDate.Should().Be(DateTimeToDateString(domain.EndDate.Value));
             response.StartDate.Should().Be(DateTimeToDateString(domain.StartDate.Value));
         }
