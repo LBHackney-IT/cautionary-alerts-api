@@ -143,5 +143,17 @@ namespace CautionaryAlertsApi.V1.Gateways
 
             return alertDbEntity.ToPropertyAlertDomain();
         }
+
+        [LogCall]
+        public async Task<PropertyAlertDomain> EndCautionaryAlert(EndCautionaryAlert cautionaryAlert)
+        {
+            _logger.LogDebug($"Calling Postgress.SaveAsync");
+            var alertDbEntity = cautionaryAlert.ToDatabase();
+
+            _uhContext.PropertyAlertsNew.Add(alertDbEntity);
+            await _uhContext.SaveChangesAsync().ConfigureAwait(false);
+
+            return alertDbEntity.ToPropertyAlertDomain();
+        }
     }
 }

@@ -29,6 +29,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         private readonly IPropertyAlertsNewUseCase _getPropertyAlertsNewUseCase;
         private readonly IGetCautionaryAlertsByPersonId _getCautionaryAlertsByPersonId;
         private readonly IPostNewCautionaryAlertUseCase _postNewCautionaryAlertUseCase;
+        private readonly IEndCautionaryAlertUseCase _endCautionaryAlertUseCase;
         private readonly ITokenFactory _tokenFactory;
         private readonly IHttpContextWrapper _contextWrapper;
 
@@ -37,6 +38,7 @@ namespace CautionaryAlertsApi.V1.Controllers
                                              IPropertyAlertsNewUseCase getCautionaryContactAlertsUseCase,
                                              IGetCautionaryAlertsByPersonId getCautionaryAlertsByPersonId,
                                              IPostNewCautionaryAlertUseCase postNewCautionaryAlertUseCase,
+                                             IEndCautionaryAlertUseCase endCautionaryAlertUseCase,
                                              ITokenFactory tokenFactory,
                                              IHttpContextWrapper contextWrapper)
         {
@@ -45,6 +47,7 @@ namespace CautionaryAlertsApi.V1.Controllers
             _getPropertyAlertsNewUseCase = getCautionaryContactAlertsUseCase;
             _getCautionaryAlertsByPersonId = getCautionaryAlertsByPersonId;
             _postNewCautionaryAlertUseCase = postNewCautionaryAlertUseCase;
+            _endCautionaryAlertUseCase = endCautionaryAlertUseCase;
             _contextWrapper = contextWrapper;
             _tokenFactory = tokenFactory;
         }
@@ -146,6 +149,22 @@ namespace CautionaryAlertsApi.V1.Controllers
             {
                 return BadRequest("Cautionary alert cannot be created");
             }
+        }
+
+        /// <summary>
+        /// Update alert to be inactive
+        /// </summary>
+        /// <response code="204">Alert updated to inactive</response>
+        [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
+        [HttpPatch]
+        [Route("persons/{personId}/alert/{alertId}")]
+        public async Task<IActionResult> EndCautionaryAlert([FromBody] EndCautionaryAlert cautionaryAlert)
+        {
+            var token = _tokenFactory.Create(_contextWrapper.GetContextRequestHeaders(HttpContext));
+
+            await _endCautionaryAlertUseCase.ExecuteAsync(cautionaryAlert, token).ConfigureAwait(false);
+
+            return NoContent();
         }
     }
 }

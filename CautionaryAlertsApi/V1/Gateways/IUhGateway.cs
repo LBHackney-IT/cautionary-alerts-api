@@ -19,5 +19,7 @@ namespace CautionaryAlertsApi.V1.Gateways
         Task<IEnumerable<CautionaryAlertListItem>> GetCautionaryAlertsByMMHPersonId(Guid personId);
 
         Task<PropertyAlertDomain> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert);
+
+        Task<PropertyAlertDomain> EndCautionaryAlert(EndCautionaryAlert cautionaryAlert);
     }
 }

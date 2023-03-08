@@ -27,6 +27,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         private Mock<IPropertyAlertsNewUseCase> _mockGetPropertyAlertsNewUseCase;
         private Mock<IGetCautionaryAlertsByPersonId> _mockGetCautionaryAlertsByPersonIdUseCase;
         private Mock<IPostNewCautionaryAlertUseCase> _mockPostNewCautionaryAlertUseCase;
+        private Mock<IEndCautionaryAlertUseCase> _mockEndCautionaryAlertUseCase;
         private Mock<ITokenFactory> _mockTokenFactory;
         private Mock<IHttpContextWrapper> _mockContextWrapper;
         private Mock<HttpRequest> _mockHttpRequest;
@@ -40,6 +41,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             _mockGetPropertyAlertsNewUseCase = new Mock<IPropertyAlertsNewUseCase>();
             _mockGetCautionaryAlertsByPersonIdUseCase = new Mock<IGetCautionaryAlertsByPersonId>();
             _mockPostNewCautionaryAlertUseCase = new Mock<IPostNewCautionaryAlertUseCase>();
+            _mockEndCautionaryAlertUseCase = new Mock<IEndCautionaryAlertUseCase>();
             _mockTokenFactory = new Mock<ITokenFactory>();
             _mockContextWrapper = new Mock<IHttpContextWrapper>();
             _mockHttpRequest = new Mock<HttpRequest>();
@@ -52,6 +54,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
                 _mockGetPropertyAlertsNewUseCase.Object,
                 _mockGetCautionaryAlertsByPersonIdUseCase.Object,
                 _mockPostNewCautionaryAlertUseCase.Object,
+                _mockEndCautionaryAlertUseCase.Object,
                 _mockTokenFactory.Object,
                 _mockContextWrapper.Object);
 
@@ -152,6 +155,25 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(StatusCodes.Status200OK);
             response.Value.Should().BeEquivalentTo(createAlertResponse);
             _mockPostNewCautionaryAlertUseCase.Verify(x => x.ExecuteAsync(createAlertRequest, It.IsAny<Token>()), Times.Once);
+        }
+
+        [Test]
+        public async Task EndCautionaryAlertReturnsNoContentIfSuccessful()
+        {
+            // Arrange
+            var createAlertRequest = _fixture.Create<EndCautionaryAlert>();
+            var createAlertResponse = _fixture.Create<CautionaryAlertResponse>();
+            _mockEndCautionaryAlertUseCase
+                .Setup(x => x.ExecuteAsync(createAlertRequest, It.IsAny<Token>()))
+                .ReturnsAsync(createAlertResponse);
+
+            // Act
+            var response = await _classUnderTest.EndCautionaryAlert(createAlertRequest).ConfigureAwait(false) as NoContentResult;
+
+            // Assert
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(StatusCodes.Status204NoContent);
+            _mockEndCautionaryAlertUseCase.Verify(x => x.ExecuteAsync(createAlertRequest, It.IsAny<Token>()), Times.Once);
         }
     }
 }
