@@ -42,7 +42,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             var token = new Token();
 
             var alertId = _fixture.Create<Guid>().ToString();
-            var cautionaryAlertDb = cautionaryAlert.ToDatabase(true, alertId);
+            var cautionaryAlertDb = cautionaryAlert.ToDatabase(isActive: true, alertId);
             var cautionaryToDomain = cautionaryAlertDb.ToPropertyAlertDomain();
 
 
