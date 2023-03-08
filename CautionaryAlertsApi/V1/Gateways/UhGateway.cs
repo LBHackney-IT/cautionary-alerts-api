@@ -13,6 +13,7 @@ using CautionaryAlert = Hackney.Shared.CautionaryAlerts.Domain.CautionaryAlert;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using PropertyAlert = Hackney.Shared.CautionaryAlerts.Infrastructure.PropertyAlert;
 using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.Tests.V1.Infrastructure;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {
@@ -132,11 +133,11 @@ namespace CautionaryAlertsApi.V1.Gateways
             return alerts.Select(x => x.ToDomain());
         }
 
-        public CautionaryAlert GetCautionaryAlertByAlertId(Guid personId, Guid alertId)
+        public CautionaryAlert GetCautionaryAlertByAlertId(AlertQueryObject query)
         {
             var alerts = _uhContext.PropertyAlertsNew
-                        .Where(x => x.MMHID == personId.ToString())
-                        .Where(x => x.AlertId == alertId.ToString())
+                        .Where(x => x.MMHID == query.PersonId.ToString())
+                        .Where(x => x.AlertId == query.AlertId.ToString())
                         .ToList();
 
             if (alerts.Count() == 0) return null;
@@ -145,7 +146,8 @@ namespace CautionaryAlertsApi.V1.Gateways
 
             //We should never expect the count to by more than one as AlertId should be unique but adding this condition as we only return the first alert. 
             if (cautionaryAlert.Count() > 1)
-                throw new Exception();
+                throw new MoreThanOneAlertException(cautionaryAlert.Count());
+
 
             return cautionaryAlert.First();
         }
@@ -155,7 +157,7 @@ namespace CautionaryAlertsApi.V1.Gateways
         public async Task<PropertyAlertDomain> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert)
         {
             _logger.LogDebug($"Calling Postgress.SaveAsync");
-            var alertDbEntity = cautionaryAlert.ToDatabase();
+            var alertDbEntity = cautionaryAlert.ToDatabase(isActive: true, Guid.NewGuid().ToString());
 
             _uhContext.PropertyAlertsNew.Add(alertDbEntity);
             await _uhContext.SaveChangesAsync().ConfigureAwait(false);

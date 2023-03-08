@@ -141,24 +141,63 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         public void GetAlertByAlertIdReturnsAlertsFromUseCase()
         {
             // Arrange
-            var personId = Guid.NewGuid();
-            var alertId = Guid.NewGuid();
+            var query = _fixture.Create<AlertQueryObject>();
 
-            var usecaseResponse = _fixture.Create<CautionaryAlertResponse>();
+            var usecaseResponse = _fixture.Create<CautionaryAlert>();
 
 
             _mockGetCautionaryAlertByAlertIdUseCase
-                .Setup(x => x.ExecuteAsync(personId, alertId))
+                .Setup(x => x.ExecuteAsync(query))
                 .Returns(usecaseResponse);
 
             // Act
-            var response = _classUnderTest.GetAlertByAlertId(personId, alertId) as OkObjectResult;
+            var response = _classUnderTest.GetAlertByAlertId(query) as OkObjectResult;
 
             // Assert
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(200);
             response.Value.Should().BeEquivalentTo(usecaseResponse);
-            _mockGetCautionaryAlertByAlertIdUseCase.Verify(x => x.ExecuteAsync(personId, alertId), Times.Once);
+            _mockGetCautionaryAlertByAlertIdUseCase.Verify(x => x.ExecuteAsync(query), Times.Once);
+        }
+
+        [Test]
+        public void GetAlertByAlertIdReturns404()
+        {
+            // Arrange
+            var query = _fixture.Create<AlertQueryObject>();
+
+
+            _mockGetCautionaryAlertByAlertIdUseCase
+                .Setup(x => x.ExecuteAsync(query))
+                .Returns((CautionaryAlert) null);
+
+            // Act
+            var response = _classUnderTest.GetAlertByAlertId(query) as NotFoundObjectResult;
+
+            // Assert
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be(query.AlertId);
+            _mockGetCautionaryAlertByAlertIdUseCase.Verify(x => x.ExecuteAsync(query), Times.Once);
+        }
+
+        [Test]
+        public void GetAlertByAlertIdThrowsException()
+        {
+            // Arrange
+            var query = _fixture.Create<AlertQueryObject>();
+
+            var exception = new ApplicationException("Test exception");
+
+            _mockGetCautionaryAlertByAlertIdUseCase
+                .Setup(x => x.ExecuteAsync(query))
+                .Throws(exception);
+
+            // Act
+            Func<Task<IActionResult>> func = () => (Task<IActionResult>) _classUnderTest.GetAlertByAlertId(query);
+
+            // Assert
+            func.Should().Throw<ApplicationException>().WithMessage(exception.Message);
+
         }
 
         [Test]

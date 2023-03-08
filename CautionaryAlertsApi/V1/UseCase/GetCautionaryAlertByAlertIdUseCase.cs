@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using System;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using Hackney.Shared.CautionaryAlerts.Factories;
+using Hackney.Shared.CautionaryAlerts.Domain;
+using Hackney.Shared.CautionaryAlerts.Boundary.Request;
 
 namespace CautionaryAlertsApi.V1.UseCase
 {
@@ -16,11 +18,11 @@ namespace CautionaryAlertsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public CautionaryAlertResponse ExecuteAsync(Guid personId, Guid alertId)
+        public CautionaryAlert ExecuteAsync(AlertQueryObject query)
         {
-            var result = _gateway.GetCautionaryAlertByAlertId(personId, alertId);
+            var result = _gateway.GetCautionaryAlertByAlertId(query);
 
-            return result?.ToResponse();
+            return result;
         }
     }
 }

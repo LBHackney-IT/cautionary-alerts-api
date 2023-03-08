@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using CautionaryAlertsApi.V1.Factories;
 using Hackney.Shared.CautionaryAlerts.Factories;
+using System;
 
 namespace CautionaryAlertsApi.Tests.V1.UseCase
 {
@@ -35,12 +36,12 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
         [Test]
         public async Task ReturnsCautionaryAlertListItemIfSuccessful()
         {
-            var defaultString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
-            var addressString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.FULLADDRESSLENGTH));
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
             var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
             var token = new Token();
 
-            var cautionaryAlertDb = cautionaryAlert.ToDatabase();
+            var cautionaryAlertDb = cautionaryAlert.ToDatabase(isActive: true, Guid.NewGuid().ToString());
             var cautionaryToDomain = cautionaryAlertDb.ToPropertyAlertDomain();
 
 

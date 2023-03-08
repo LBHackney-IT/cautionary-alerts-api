@@ -1,12 +1,11 @@
 using Hackney.Shared.CautionaryAlerts.Boundary.Response;
-using System.Threading.Tasks;
-using System;
-using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
+using Hackney.Shared.CautionaryAlerts.Domain;
+using Hackney.Shared.CautionaryAlerts.Boundary.Request;
 
 namespace CautionaryAlertsApi.V1.UseCase.Interfaces
 {
     public interface IGetCautionaryAlertByAlertIdUseCase
     {
-        CautionaryAlertResponse ExecuteAsync(Guid personId, Guid alertId);
+        CautionaryAlert ExecuteAsync(AlertQueryObject query);
     }
 }

@@ -133,18 +133,16 @@ namespace CautionaryAlertsApi.V1.Controllers
         /// <summary>
         /// Returns cautionary alert based on person ID and alert Id.
         /// Reads from new table in database to mitigate GS performance issues
-        /// </summary>
-        /// <param name="personId">A unique MMH identifier (GUID) of a person.</param>
-        /// <param name="alertId">A unique  identifier (GUID) of alert.</param>
         /// <response code="200">Successful. Returns a list of cautionary alerts for a person.</response>
+        /// </summary>
         [ProducesResponseType(typeof(CautionaryAlertResponse), StatusCodes.Status200OK)]
         [HttpGet]
         [Route("persons/{personId}/alerts/{alertId}")]
-        public IActionResult GetAlertByAlertId([FromRoute] Guid personId, [FromRoute] Guid alertId)
+        public IActionResult GetAlertByAlertId([FromRoute] AlertQueryObject query)
         {
-            var result = _getCautionaryAlertByAlertId.ExecuteAsync(personId, alertId);
+            var result = _getCautionaryAlertByAlertId.ExecuteAsync(query);
 
-            if (result == null) return NotFound(alertId);
+            if (result == null) return NotFound(query.AlertId);
 
             return Ok(result);
         }
