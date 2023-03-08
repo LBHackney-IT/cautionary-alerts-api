@@ -16,7 +16,6 @@ services:
       - dev-database
   dev-database:
     environment:
-      - ACCEPT_EULA=Y
       - POSTGRES_PASSWORD=mypassword
     image: postgres:12
     ports:
