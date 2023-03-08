@@ -1,4 +1,4 @@
- using AutoFixture;
+using AutoFixture;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.UseCase;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
@@ -31,7 +31,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
         {
             // Arrange
             var query = _fixture.Create<AlertQueryObject>();
-            var mockAlert= _fixture.Build<CautionaryAlert>()
+            var mockAlert = _fixture.Build<CautionaryAlert>()
                                      .With(x => x.PersonId, query.PersonId)
                                      .With(x => x.AlertId, query.AlertId)
                                      .Create();

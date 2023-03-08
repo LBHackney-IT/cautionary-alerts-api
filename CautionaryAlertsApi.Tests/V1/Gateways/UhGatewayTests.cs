@@ -508,7 +508,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             await TestDataHelper.SavePropertyAlertsToDb(UhContext, alerts).ConfigureAwait(false);
 
             // Act
-            Func<CautionaryAlert> func = () =>  _classUnderTest.GetCautionaryAlertByAlertId(query);
+            Func<CautionaryAlert> func = () => _classUnderTest.GetCautionaryAlertByAlertId(query);
 
             // Assert
             func.Should().Throw<MoreThanOneAlertException>().Where(x => x.AlertCount > 1);
