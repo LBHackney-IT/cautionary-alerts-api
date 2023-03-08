@@ -139,7 +139,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         /// <response code="200">Successful. Returns a list of cautionary alerts for a person.</response>
         [ProducesResponseType(typeof(CautionaryAlertResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("persons/{personId}/alert/{alertId}")]
+        [Route("persons/{personId}/alerts/{alertId}")]
         public IActionResult GetAlertByAlertId([FromRoute] Guid personId, [FromRoute] Guid alertId)
         {
             var result = _getCautionaryAlertByAlertId.ExecuteAsync(personId, alertId);
