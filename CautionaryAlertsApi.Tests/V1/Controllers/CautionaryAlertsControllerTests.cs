@@ -162,10 +162,10 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         {
             // Arrange
             var createAlertRequest = _fixture.Create<EndCautionaryAlert>();
-            var createAlertResponse = _fixture.Create<CautionaryAlertResponse>();
+            var createAlertDomain = _fixture.Create<PropertyAlertDomain>();
             _mockEndCautionaryAlertUseCase
                 .Setup(x => x.ExecuteAsync(createAlertRequest, It.IsAny<Token>()))
-                .ReturnsAsync(createAlertResponse);
+                .ReturnsAsync(createAlertDomain);
 
             // Act
             var response = await _classUnderTest.EndCautionaryAlert(createAlertRequest).ConfigureAwait(false) as NoContentResult;

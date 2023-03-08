@@ -24,7 +24,7 @@ namespace CautionaryAlertsApi.V1.UseCase
             _snsGateway = snsGateway;
             _snsFactory = snsFactory;
         }
-        public async Task<CautionaryAlertResponse> ExecuteAsync(EndCautionaryAlert cautionaryAlert, Token token)
+        public async Task<PropertyAlertDomain> ExecuteAsync(EndCautionaryAlert cautionaryAlert, Token token)
         {
              var result = await _gateway.EndCautionaryAlert(cautionaryAlert).ConfigureAwait(false);
 
@@ -33,7 +33,7 @@ namespace CautionaryAlertsApi.V1.UseCase
 
             await _snsGateway.Publish(cautionaryAlertSnsMessage, cautionaryAlertTopicArn).ConfigureAwait(false);
 
-            return result.CautionaryAlertToResponse();
+            return result;
 
         }
     }

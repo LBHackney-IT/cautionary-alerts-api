@@ -492,5 +492,27 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             // Act & Assert
             Assert.ThrowsAsync<DbUpdateException>(async () => await _classUnderTest.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false));
         }
+
+        [Test]
+        public async Task EndCautionaryAlertReturnsEntityIfSuccessful()
+        {
+            // Arrange
+
+
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var addressString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.FULLADDRESSLENGTH));
+            var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
+            var cautionaryAlertDb = cautionaryAlert.ToDatabase();
+            await TestDataHelper.SavePropertyAlertToDb(UhContext, cautionaryAlertDb).ConfigureAwait(false);
+
+            var endCautionaryAlert = CreateCautionaryAlertFixture.GenerateValidEndCautionaryAlertFixture(cautionaryAlert, _fixture);
+
+            // Act
+            var response = await _classUnderTest.EndCautionaryAlert(endCautionaryAlert).ConfigureAwait(false);
+
+            // Assert
+            response.Should().NotBeNull();
+            response.Should().BeOfType<PropertyAlertDomain>();
+        }
     }
 }

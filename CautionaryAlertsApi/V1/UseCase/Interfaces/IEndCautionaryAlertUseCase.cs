@@ -9,6 +9,6 @@ namespace CautionaryAlertsApi.V1.UseCase.Interfaces
 {
     public interface IEndCautionaryAlertUseCase
     {
-        Task<CautionaryAlertResponse> ExecuteAsync(EndCautionaryAlert cautionaryAlert, Token token);
+        Task<PropertyAlertDomain> ExecuteAsync(EndCautionaryAlert cautionaryAlert, Token token);
     }
 }

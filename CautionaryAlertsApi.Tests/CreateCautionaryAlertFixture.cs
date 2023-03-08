@@ -1,5 +1,6 @@
 using AutoFixture;
 using Hackney.Shared.CautionaryAlerts.Boundary.Request;
+using Hackney.Shared.CautionaryAlerts.Domain;
 using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using System;
 
@@ -58,6 +59,23 @@ namespace CautionaryAlertsApi.Tests
                 .Create();
 
             return cautionaryAlert;
+        }
+
+        public static EndCautionaryAlert GenerateValidEndCautionaryAlertFixture(CreateCautionaryAlert existingCautionaryAlert, Fixture fixture)
+        {
+            
+            var endCautionaryAlert = fixture.Build<EndCautionaryAlert>()
+                .With(x => x.Alert, existingCautionaryAlert.Alert)
+                .With(x => x.PersonDetails, existingCautionaryAlert.PersonDetails)
+                .With(x => x.AssetDetails, existingCautionaryAlert.AssetDetails)
+                .With(x => x.IncidentDescription, existingCautionaryAlert.IncidentDescription)
+                .With(x => x.IncidentDate, existingCautionaryAlert.IncidentDate)
+                .With(x => x.AssureReference, existingCautionaryAlert.AssureReference)
+                .With(x=> x.IsActive, false)
+                .With(x=> x.AlertId, existingCautionaryAlert.AlertId)
+                .Create();
+
+            return endCautionaryAlert;
         }
     }
 }
