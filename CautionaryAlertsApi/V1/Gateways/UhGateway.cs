@@ -157,7 +157,8 @@ namespace CautionaryAlertsApi.V1.Gateways
         public async Task<PropertyAlertDomain> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert)
         {
             _logger.LogDebug($"Calling Postgress.SaveAsync");
-            var alertDbEntity = cautionaryAlert.ToDatabase(isActive: true, Guid.NewGuid().ToString());
+            var alertId = Guid.NewGuid().ToString();
+            var alertDbEntity = cautionaryAlert.ToDatabase(isActive: true, alertId);
 
             _uhContext.PropertyAlertsNew.Add(alertDbEntity);
             await _uhContext.SaveChangesAsync().ConfigureAwait(false);

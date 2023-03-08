@@ -1,3 +1,4 @@
+using System;
 using AutoFixture;
 using CautionaryAlertsApi.V1.Gateways;
 using Hackney.Shared.CautionaryAlerts.Infrastructure;
@@ -40,8 +41,9 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
             var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
             var token = new Token();
+            var alertId = _fixture.Create<Guid>().ToString();
+            var cautionaryAlertDb = cautionaryAlert.ToDatabase(isActive: true, alertId);
 
-            var cautionaryAlertDb = cautionaryAlert.ToDatabase(isActive: true, Guid.NewGuid().ToString());
             var cautionaryToDomain = cautionaryAlertDb.ToPropertyAlertDomain();
 
 
