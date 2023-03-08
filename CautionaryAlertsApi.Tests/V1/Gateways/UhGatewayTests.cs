@@ -446,7 +446,8 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().HaveCount(2);
+            var activAlerts = result.Select(x => x.IsActive == true);
+            activAlerts.Should().HaveCount(2);
         }
 
         [Test]

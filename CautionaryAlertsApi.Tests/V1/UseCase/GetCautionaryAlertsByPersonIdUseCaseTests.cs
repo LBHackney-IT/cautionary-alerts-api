@@ -2,6 +2,7 @@ using AutoFixture;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.UseCase;
 using FluentAssertions;
+using Hackney.Shared.CautionaryAlerts.Domain;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using Moq;
 using NUnit.Framework;

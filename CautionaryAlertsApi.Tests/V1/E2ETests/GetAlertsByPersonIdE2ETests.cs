@@ -61,7 +61,8 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             var returnedAlerts = JsonConvert.DeserializeObject<CautionaryAlertsMMHPersonResponse>(data);
 
             returnedAlerts.PersonId.Should().Be(id);
-            returnedAlerts.Alerts.Count.Should().Be(2);
+            var activAlerts = returnedAlerts.Alerts.FindAll(x => x.IsActive == true);
+            activAlerts.Count.Should().Be(2);
         }
     }
 }
