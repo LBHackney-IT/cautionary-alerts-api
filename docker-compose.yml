@@ -15,9 +15,11 @@ services:
     links:
       - dev-database
   dev-database:
-    env_file:
-      - database.env
+    environment:
+      - POSTGRES_PASSWORD=mypassword
     image: postgres:12
+    ports:
+      - "5432:5432"
     volumes:
       - ./database:/docker-entrypoint-initdb.d
 
@@ -53,15 +55,15 @@ services:
 
   localstack:
     container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
-    image: localstack/localstack    
-    hostname: awslocal    
+    image: localstack/localstack
+    hostname: awslocal
     ports:
-      - "4566:4566"      
+      - "4566:4566"
     environment:
       - SERVICES=sns
-      - DEBUG=1                  
+      - DEBUG=1
       - DOCKER_HOST=unix:///var/run/docker.sock
-      - HOST_TMP_FOLDER=/tmp/localstack      
+      - HOST_TMP_FOLDER=/tmp/localstack
     volumes:
       - "./.localstack:/tmp/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
