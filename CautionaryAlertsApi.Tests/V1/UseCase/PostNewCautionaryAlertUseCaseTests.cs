@@ -1,3 +1,4 @@
+using System;
 using AutoFixture;
 using CautionaryAlertsApi.V1.Gateways;
 using Hackney.Shared.CautionaryAlerts.Infrastructure;
@@ -7,7 +8,6 @@ using Hackney.Core.JWT;
 using Hackney.Core.Sns;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using CautionaryAlertsApi.V1.Factories;
@@ -35,12 +35,13 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
         [Test]
         public async Task ReturnsCautionaryAlertListItemIfSuccessful()
         {
-            var defaultString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
-            var addressString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.FULLADDRESSLENGTH));
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
             var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
             var token = new Token();
+            var alertId = _fixture.Create<Guid>().ToString();
+            var cautionaryAlertDb = cautionaryAlert.ToDatabase(isActive: true, alertId);
 
-            var cautionaryAlertDb = cautionaryAlert.ToDatabase();
             var cautionaryToDomain = cautionaryAlertDb.ToPropertyAlertDomain();
 
 

@@ -28,6 +28,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         private readonly IGetCautionaryAlertsForProperty _getCautionaryAlertsForProperty;
         private readonly IPropertyAlertsNewUseCase _getPropertyAlertsNewUseCase;
         private readonly IGetCautionaryAlertsByPersonId _getCautionaryAlertsByPersonId;
+        private readonly IGetCautionaryAlertByAlertIdUseCase _getCautionaryAlertByAlertId;
         private readonly IPostNewCautionaryAlertUseCase _postNewCautionaryAlertUseCase;
         private readonly IEndCautionaryAlertUseCase _endCautionaryAlertUseCase;
         private readonly ITokenFactory _tokenFactory;
@@ -37,6 +38,7 @@ namespace CautionaryAlertsApi.V1.Controllers
                                              IGetCautionaryAlertsForProperty getCautionaryAlertsForProperty,
                                              IPropertyAlertsNewUseCase getCautionaryContactAlertsUseCase,
                                              IGetCautionaryAlertsByPersonId getCautionaryAlertsByPersonId,
+                                             IGetCautionaryAlertByAlertIdUseCase getCautionaryAlertByAlertId,
                                              IPostNewCautionaryAlertUseCase postNewCautionaryAlertUseCase,
                                              IEndCautionaryAlertUseCase endCautionaryAlertUseCase,
                                              ITokenFactory tokenFactory,
@@ -46,6 +48,7 @@ namespace CautionaryAlertsApi.V1.Controllers
             _getCautionaryAlertsForProperty = getCautionaryAlertsForProperty;
             _getPropertyAlertsNewUseCase = getCautionaryContactAlertsUseCase;
             _getCautionaryAlertsByPersonId = getCautionaryAlertsByPersonId;
+            _getCautionaryAlertByAlertId = getCautionaryAlertByAlertId;
             _postNewCautionaryAlertUseCase = postNewCautionaryAlertUseCase;
             _endCautionaryAlertUseCase = endCautionaryAlertUseCase;
             _contextWrapper = contextWrapper;
@@ -126,6 +129,23 @@ namespace CautionaryAlertsApi.V1.Controllers
         public async Task<IActionResult> GetAlertsByPersonId([FromRoute] Guid personId)
         {
             var result = await _getCautionaryAlertsByPersonId.ExecuteAsync(personId).ConfigureAwait(false);
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Returns cautionary alert based on person ID and alert Id.
+        /// Reads from new table in database to mitigate GS performance issues
+        /// <response code="200">Successful. Returns a list of cautionary alerts for a person.</response>
+        /// </summary>
+        [ProducesResponseType(typeof(CautionaryAlertResponse), StatusCodes.Status200OK)]
+        [HttpGet]
+        [Route("persons/{personId}/alerts/{alertId}")]
+        public IActionResult GetAlertByAlertId([FromRoute] AlertQueryObject query)
+        {
+            var result = _getCautionaryAlertByAlertId.ExecuteAsync(query);
+
+            if (result == null) return NotFound(query.AlertId);
 
             return Ok(result);
         }

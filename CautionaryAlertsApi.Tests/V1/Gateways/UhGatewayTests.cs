@@ -16,6 +16,9 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
+using Google.Apis.Util;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using CautionaryAlertsApi.Tests.V1.Infrastructure;
 
 namespace CautionaryAlertsApi.Tests.V1.Gateways
 {
@@ -426,7 +429,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
-        public async Task GetGetCautionaryAlertsByPersonIdReturnsMany()
+        public async Task GetCautionaryAlertsByPersonIdReturnsMany()
         {
             // Arrange
             var personId = Guid.NewGuid();
@@ -448,11 +451,77 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         }
 
         [Test]
+        public async Task GetCautionaryAlertsByAlertIdReturnsAlert()
+        {
+            // Arrange
+            var query = _fixture.Create<AlertQueryObject>();
+
+            var dateOfIncident = "12/12/2020";
+            var alert = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.MMHID, query.PersonId.ToString())
+                .With(x => x.AlertId, query.AlertId.ToString())
+                .With(x => x.DateOfIncident, dateOfIncident)
+                .Create();
+
+            await TestDataHelper.SavePropertyAlertToDb(UhContext, alert).ConfigureAwait(false);
+
+            // Act
+            var result = _classUnderTest.GetCautionaryAlertByAlertId(query);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(alert.ToCautionaryAlertDomain());
+        }
+
+        [Test]
+        public void GetCautionaryAlertsByAlertIdReturnsNull()
+        {
+            // Arrange
+            var query = _fixture.Create<AlertQueryObject>();
+
+            var dateOfIncident = "12/12/2020";
+            var alert = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.MMHID, query.PersonId.ToString())
+                .With(x => x.AlertId, query.AlertId.ToString())
+                .With(x => x.DateOfIncident, dateOfIncident)
+                .Create();
+
+            // Act
+            var result = _classUnderTest.GetCautionaryAlertByAlertId(query);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task GetCautionaryAlertsByAlertIdThrowsException()
+        {
+            // Arrange
+            var query = _fixture.Create<AlertQueryObject>();
+
+            var dateOfIncident = "12/12/2020";
+            var alerts = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.MMHID, query.PersonId.ToString())
+                .With(x => x.AlertId, query.AlertId.ToString())
+                .With(x => x.DateOfIncident, dateOfIncident)
+                .CreateMany(3);
+
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, alerts).ConfigureAwait(false);
+
+            // Act
+            Func<CautionaryAlert> func = () => _classUnderTest.GetCautionaryAlertByAlertId(query);
+
+            // Assert
+            func.Should().Throw<MoreThanOneAlertException>().Where(x => x.AlertCount > 1);
+
+        }
+
+        [Test]
         public async Task PostNewCautionaryAlertReturnsEntityIfSuccessful()
         {
             // Arrange
-            var defaultString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
-            var addressString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.FULLADDRESSLENGTH));
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
             var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
 
             // Act
@@ -470,7 +539,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         public async Task PostNewCautionaryAlertWithoutAssetDetailsReturnsEntityIfSuccessful()
         {
             // Arrange
-            var defaultString = string.Join("", _fixture.CreateMany<char>(CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
             var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertWithoutAssetDetailsFixture(defaultString, _fixture);
 
             // Act

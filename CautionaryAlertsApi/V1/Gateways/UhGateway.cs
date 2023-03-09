@@ -13,6 +13,7 @@ using CautionaryAlert = Hackney.Shared.CautionaryAlerts.Domain.CautionaryAlert;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using PropertyAlert = Hackney.Shared.CautionaryAlerts.Infrastructure.PropertyAlert;
 using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.Tests.V1.Infrastructure;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {
@@ -132,11 +133,29 @@ namespace CautionaryAlertsApi.V1.Gateways
             return alerts.Select(x => x.ToDomain());
         }
 
+        public CautionaryAlert GetCautionaryAlertByAlertId(AlertQueryObject query)
+        {
+            var alerts = _uhContext.PropertyAlertsNew
+                        .Where(x => x.MMHID == query.PersonId.ToString())
+                        .Where(x => x.AlertId == query.AlertId.ToString());
+
+            var cautionaryAlert = alerts.Select(x => x.ToCautionaryAlertDomain());
+
+            //We should never expect the count to by more than one as AlertId should be unique but adding this condition as we only return the first alert. 
+            if (cautionaryAlert.Count() > 1)
+                throw new MoreThanOneAlertException(cautionaryAlert.Count());
+
+
+            return cautionaryAlert.FirstOrDefault();
+        }
+
+
         [LogCall]
         public async Task<PropertyAlertDomain> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert)
         {
             _logger.LogDebug($"Calling Postgress.SaveAsync");
-            var alertDbEntity = cautionaryAlert.ToDatabase();
+            var alertId = Guid.NewGuid().ToString();
+            var alertDbEntity = cautionaryAlert.ToDatabase(isActive: true, alertId);
 
             _uhContext.PropertyAlertsNew.Add(alertDbEntity);
             await _uhContext.SaveChangesAsync().ConfigureAwait(false);
