@@ -3,10 +3,11 @@ using Hackney.Shared.CautionaryAlerts.Boundary.Request;
 using Hackney.Shared.CautionaryAlerts.Domain;
 using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace CautionaryAlertsApi.Tests
 {
-    public static class CreateCautionaryAlertFixture
+    public static class CautionaryAlertFixture
     {
         public static CreateCautionaryAlert GenerateValidCreateCautionaryAlertFixture(string defaultString, Fixture fixture, string addressString)
         {
@@ -61,21 +62,37 @@ namespace CautionaryAlertsApi.Tests
             return cautionaryAlert;
         }
 
-        public static EndCautionaryAlert GenerateValidEndCautionaryAlertFixture(CreateCautionaryAlert existingCautionaryAlert, Fixture fixture)
+        public static EndCautionaryAlert GenerateValidEndCautionaryAlertFixture(Guid personId, Guid alertId, string defaultString, string addressString, Fixture fixture)
         {
-            
-            var endCautionaryAlert = fixture.Build<EndCautionaryAlert>()
-                .With(x => x.Alert, existingCautionaryAlert.Alert)
-                .With(x => x.PersonDetails, existingCautionaryAlert.PersonDetails)
-                .With(x => x.AssetDetails, existingCautionaryAlert.AssetDetails)
-                .With(x => x.IncidentDescription, existingCautionaryAlert.IncidentDescription)
-                .With(x => x.IncidentDate, existingCautionaryAlert.IncidentDate)
-                .With(x => x.AssureReference, existingCautionaryAlert.AssureReference)
-                .With(x=> x.IsActive, false)
-                .With(x=> x.AlertId, existingCautionaryAlert.AlertId)
+
+            var alert = fixture.Build<Alert>()
+                .With(x => x.Code, defaultString[..CautionaryAlertConstants.ALERTCODELENGTH])
+                .With(x => x.Description, defaultString[..CautionaryAlertConstants.ALERTDESCRIPTION])
                 .Create();
 
-            return endCautionaryAlert;
+            var assetDetails = fixture.Build<AssetDetails>()
+                .With(x => x.FullAddress, addressString[..CautionaryAlertConstants.FULLADDRESSLENGTH])
+                .With(x => x.PropertyReference, defaultString[..CautionaryAlertConstants.PROPERTYREFERENCELENGTH])
+                .With(x => x.UPRN, defaultString[..CautionaryAlertConstants.UPRNLENGTH])
+                .Create();
+
+            var personDetails = fixture.Build<PersonDetails>()
+                .With(x => x.Name, defaultString[..CautionaryAlertConstants.PERSONNAMELENGTH])
+                .With(x=> x.Id, personId)
+                .Create();
+
+            var cautionaryAlert = fixture.Build<EndCautionaryAlert>()
+                .With(x => x.Alert, alert)
+                .With(x => x.PersonDetails, personDetails)
+                .With(x => x.AssetDetails, assetDetails)
+                .With(x => x.IncidentDescription, defaultString[..CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH])
+                .With(x => x.IncidentDate, fixture.Create<DateTime>().AddDays(-1))
+                .With(x => x.AssureReference, defaultString[..CautionaryAlertConstants.ASSUREREFERENCELENGTH])
+                .With(x=> x.AlertId, alertId)
+                .With(x=> x.IsActive, true)
+                .Create();
+
+            return cautionaryAlert;
         }
     }
 }

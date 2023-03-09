@@ -166,13 +166,42 @@ namespace CautionaryAlertsApi.V1.Gateways
         [LogCall]
         public async Task<PropertyAlertDomain> EndCautionaryAlert(EndCautionaryAlert cautionaryAlert)
         {
-            _logger.LogDebug($"Calling Postgress.SaveAsync");
-            var alertDbEntity = cautionaryAlert.ToDatabase();
+            var existingAlert = _uhContext.PropertyAlertsNew
+                                        .Where(x => x.MMHID == cautionaryAlert.PersonDetails.Id.ToString())
+                                        .Where(x => x.AlertId == cautionaryAlert.AlertId.ToString());
 
-            _uhContext.PropertyAlertsNew.Add(alertDbEntity);
+            existingAlert.Select(x => x.ToCautionaryAlertDomain());
+
+            if (existingAlert.Count() < 1 ) return null;
+
+            var updateAlert = existingAlert.FirstOrDefault();
+            updateAlert.IsActive = cautionaryAlert.IsActive;
+            _logger.LogDebug($"Calling Postgress.SaveAsync");
+
+            _uhContext.PropertyAlertsNew.Update(updateAlert);
             await _uhContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return alertDbEntity.ToPropertyAlertDomain();
+            return updateAlert.ToPropertyAlertDomain();
         }
+
+
+
+
+
+
+
+
+
+        //var alertObjectQuery = new AlertQueryObject() { AlertId = cautionaryAlert.AlertId, PersonId = cautionaryAlert.PersonDetails.Id };
+        //var existingAlert = GetCautionaryAlertByAlertId(alertObjectQuery);
+        //    if (existingAlert == null) return null;
+
+        //    _logger.LogDebug($"Calling Postgress.SaveAsync");
+        //    var alertDbEntity = cautionaryAlert.ToDatabase();
+
+        //_uhContext.PropertyAlertsNew.Update(alertDbEntity);
+        //    await _uhContext.SaveChangesAsync().ConfigureAwait(false);
+
+        //    return alertDbEntity.ToPropertyAlertDomain();
     }
 }

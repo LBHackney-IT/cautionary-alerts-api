@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using CautionaryAlertsApi.V1.Factories;
 using Hackney.Shared.CautionaryAlerts.Factories;
+using Hackney.Shared.CautionaryAlerts.Domain;
 
 namespace CautionaryAlertsApi.V1.UseCase
 {

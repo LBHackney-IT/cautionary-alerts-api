@@ -181,6 +181,7 @@ namespace CautionaryAlertsApi
             services.AddScoped<IGetCautionaryAlertsByPersonId, GetCautionaryAlertsByPersonIdUseCase>();
             services.AddScoped<IGetCautionaryAlertByAlertIdUseCase, GetCautionaryAlertByAlertIdUseCase>();
             services.AddScoped<IPostNewCautionaryAlertUseCase, PostNewCautionaryAlertUseCase>();
+            services.AddScoped<IEndCautionaryAlertUseCase, EndCautionaryAlertUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
