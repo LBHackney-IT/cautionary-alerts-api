@@ -10,27 +10,27 @@ namespace CautionaryAlertsApi.Tests
         public static CreateCautionaryAlert GenerateValidCreateCautionaryAlertFixture(string defaultString, Fixture fixture, string addressString)
         {
             var alert = fixture.Build<Alert>()
-                .With(x => x.Code, defaultString[..CreateCautionaryAlertConstants.ALERTCODELENGTH])
-                .With(x => x.Description, defaultString[..CreateCautionaryAlertConstants.ALERTDESCRIPTION])
+                .With(x => x.Code, defaultString[..CautionaryAlertConstants.ALERTCODELENGTH])
+                .With(x => x.Description, defaultString[..CautionaryAlertConstants.ALERTDESCRIPTION])
                 .Create();
 
             var assetDetails = fixture.Build<AssetDetails>()
-                .With(x => x.FullAddress, addressString[..CreateCautionaryAlertConstants.FULLADDRESSLENGTH])
-                .With(x => x.PropertyReference, defaultString[..CreateCautionaryAlertConstants.PROPERTYREFERENCELENGTH])
-                .With(x => x.UPRN, defaultString[..CreateCautionaryAlertConstants.UPRNLENGTH])
+                .With(x => x.FullAddress, addressString[..CautionaryAlertConstants.FULLADDRESSLENGTH])
+                .With(x => x.PropertyReference, defaultString[..CautionaryAlertConstants.PROPERTYREFERENCELENGTH])
+                .With(x => x.UPRN, defaultString[..CautionaryAlertConstants.UPRNLENGTH])
                 .Create();
 
             var personDetails = fixture.Build<PersonDetails>()
-                .With(x => x.Name, defaultString[..CreateCautionaryAlertConstants.PERSONNAMELENGTH])
+                .With(x => x.Name, defaultString[..CautionaryAlertConstants.PERSONNAMELENGTH])
                 .Create();
 
             var cautionaryAlert = fixture.Build<CreateCautionaryAlert>()
                 .With(x => x.Alert, alert)
                 .With(x => x.PersonDetails, personDetails)
                 .With(x => x.AssetDetails, assetDetails)
-                .With(x => x.IncidentDescription, defaultString[..CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH])
+                .With(x => x.IncidentDescription, defaultString[..CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH])
                 .With(x => x.IncidentDate, fixture.Create<DateTime>().AddDays(-1))
-                .With(x => x.AssureReference, defaultString[..CreateCautionaryAlertConstants.ASSUREREFERENCELENGTH])
+                .With(x => x.AssureReference, defaultString[..CautionaryAlertConstants.ASSUREREFERENCELENGTH])
                 .Create();
 
             return cautionaryAlert;
@@ -39,21 +39,21 @@ namespace CautionaryAlertsApi.Tests
         public static CreateCautionaryAlert GenerateValidCreateCautionaryAlertWithoutAssetDetailsFixture(string defaultString, Fixture fixture)
         {
             var alert = fixture.Build<Alert>()
-                .With(x => x.Code, defaultString[..CreateCautionaryAlertConstants.ALERTCODELENGTH])
-                .With(x => x.Description, defaultString[..CreateCautionaryAlertConstants.ALERTDESCRIPTION])
+                .With(x => x.Code, defaultString[..CautionaryAlertConstants.ALERTCODELENGTH])
+                .With(x => x.Description, defaultString[..CautionaryAlertConstants.ALERTDESCRIPTION])
                 .Create();
 
 
             var personDetails = fixture.Build<PersonDetails>()
-                .With(x => x.Name, defaultString[..CreateCautionaryAlertConstants.PERSONNAMELENGTH])
+                .With(x => x.Name, defaultString[..CautionaryAlertConstants.PERSONNAMELENGTH])
                 .Create();
 
             var cautionaryAlert = fixture.Build<CreateCautionaryAlert>()
                 .With(x => x.Alert, alert)
                 .With(x => x.PersonDetails, personDetails)
-                .With(x => x.IncidentDescription, defaultString[..CreateCautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH])
+                .With(x => x.IncidentDescription, defaultString[..CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH])
                 .With(x => x.IncidentDate, fixture.Create<DateTime>().AddDays(-1))
-                .With(x => x.AssureReference, defaultString[..CreateCautionaryAlertConstants.ASSUREREFERENCELENGTH])
+                .With(x => x.AssureReference, defaultString[..CautionaryAlertConstants.ASSUREREFERENCELENGTH])
                 .Without(x => x.AssetDetails)
                 .Create();
 

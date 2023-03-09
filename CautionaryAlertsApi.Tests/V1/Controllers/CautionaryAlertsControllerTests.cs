@@ -26,6 +26,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         private Mock<IGetCautionaryAlertsForProperty> _mockGetAlertsForPropertyUseCase;
         private Mock<IPropertyAlertsNewUseCase> _mockGetPropertyAlertsNewUseCase;
         private Mock<IGetCautionaryAlertsByPersonId> _mockGetCautionaryAlertsByPersonIdUseCase;
+        private Mock<IGetCautionaryAlertByAlertIdUseCase> _mockGetCautionaryAlertByAlertIdUseCase;
         private Mock<IPostNewCautionaryAlertUseCase> _mockPostNewCautionaryAlertUseCase;
         private Mock<ITokenFactory> _mockTokenFactory;
         private Mock<IHttpContextWrapper> _mockContextWrapper;
@@ -39,6 +40,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             _mockGetAlertsForPropertyUseCase = new Mock<IGetCautionaryAlertsForProperty>();
             _mockGetPropertyAlertsNewUseCase = new Mock<IPropertyAlertsNewUseCase>();
             _mockGetCautionaryAlertsByPersonIdUseCase = new Mock<IGetCautionaryAlertsByPersonId>();
+            _mockGetCautionaryAlertByAlertIdUseCase = new Mock<IGetCautionaryAlertByAlertIdUseCase>();
             _mockPostNewCautionaryAlertUseCase = new Mock<IPostNewCautionaryAlertUseCase>();
             _mockTokenFactory = new Mock<ITokenFactory>();
             _mockContextWrapper = new Mock<IHttpContextWrapper>();
@@ -51,6 +53,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
                 _mockGetAlertsForPropertyUseCase.Object,
                 _mockGetPropertyAlertsNewUseCase.Object,
                 _mockGetCautionaryAlertsByPersonIdUseCase.Object,
+                _mockGetCautionaryAlertByAlertIdUseCase.Object,
                 _mockPostNewCautionaryAlertUseCase.Object,
                 _mockTokenFactory.Object,
                 _mockContextWrapper.Object);
@@ -132,6 +135,69 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(200);
             response.Value.Should().BeEquivalentTo(usecaseResponse);
             _mockGetCautionaryAlertsByPersonIdUseCase.Verify(x => x.ExecuteAsync(personId), Times.Once);
+        }
+
+        [Test]
+        public void GetAlertByAlertIdReturnsAlertsFromUseCase()
+        {
+            // Arrange
+            var query = _fixture.Create<AlertQueryObject>();
+
+            var usecaseResponse = _fixture.Create<CautionaryAlert>();
+
+
+            _mockGetCautionaryAlertByAlertIdUseCase
+                .Setup(x => x.ExecuteAsync(query))
+                .Returns(usecaseResponse);
+
+            // Act
+            var response = _classUnderTest.GetAlertByAlertId(query) as OkObjectResult;
+
+            // Assert
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(200);
+            response.Value.Should().BeEquivalentTo(usecaseResponse);
+            _mockGetCautionaryAlertByAlertIdUseCase.Verify(x => x.ExecuteAsync(query), Times.Once);
+        }
+
+        [Test]
+        public void GetAlertByAlertIdReturns404()
+        {
+            // Arrange
+            var query = _fixture.Create<AlertQueryObject>();
+
+
+            _mockGetCautionaryAlertByAlertIdUseCase
+                .Setup(x => x.ExecuteAsync(query))
+                .Returns((CautionaryAlert) null);
+
+            // Act
+            var response = _classUnderTest.GetAlertByAlertId(query) as NotFoundObjectResult;
+
+            // Assert
+            response.StatusCode.Should().Be(404);
+            response.Value.Should().Be(query.AlertId);
+            _mockGetCautionaryAlertByAlertIdUseCase.Verify(x => x.ExecuteAsync(query), Times.Once);
+        }
+
+        [Test]
+        public void GetAlertByAlertIdThrowsException()
+        {
+            // Arrange
+            var query = _fixture.Create<AlertQueryObject>();
+
+            var exception = new ApplicationException("Test exception");
+
+            _mockGetCautionaryAlertByAlertIdUseCase
+                .Setup(x => x.ExecuteAsync(query))
+                .Throws(exception);
+
+            // Act
+            Func<Task<IActionResult>> func = () => (Task<IActionResult>) _classUnderTest.GetAlertByAlertId(query);
+
+            // Assert
+            func.Should().Throw<ApplicationException>().WithMessage(exception.Message);
+
         }
 
         [Test]
