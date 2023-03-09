@@ -8,12 +8,10 @@ using Hackney.Core.JWT;
 using Hackney.Core.Sns;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using CautionaryAlertsApi.V1.Factories;
 using Hackney.Shared.CautionaryAlerts.Factories;
-using System;
 
 namespace CautionaryAlertsApi.Tests.V1.UseCase
 {

@@ -137,10 +137,7 @@ namespace CautionaryAlertsApi.V1.Gateways
         {
             var alerts = _uhContext.PropertyAlertsNew
                         .Where(x => x.MMHID == query.PersonId.ToString())
-                        .Where(x => x.AlertId == query.AlertId.ToString())
-                        .ToList();
-
-            if (alerts.Count() == 0) return null;
+                        .Where(x => x.AlertId == query.AlertId.ToString());
 
             var cautionaryAlert = alerts.Select(x => x.ToCautionaryAlertDomain());
 
@@ -149,7 +146,7 @@ namespace CautionaryAlertsApi.V1.Gateways
                 throw new MoreThanOneAlertException(cautionaryAlert.Count());
 
 
-            return cautionaryAlert.First();
+            return cautionaryAlert.FirstOrDefault();
         }
 
 
