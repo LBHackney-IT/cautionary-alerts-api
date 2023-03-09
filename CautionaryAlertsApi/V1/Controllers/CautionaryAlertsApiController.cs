@@ -182,7 +182,8 @@ namespace CautionaryAlertsApi.V1.Controllers
         {
             var token = _tokenFactory.Create(_contextWrapper.GetContextRequestHeaders(HttpContext));
 
-            await _endCautionaryAlertUseCase.ExecuteAsync(cautionaryAlert, token).ConfigureAwait(false);
+            var result = await _endCautionaryAlertUseCase.ExecuteAsync(cautionaryAlert, token).ConfigureAwait(false);
+            if (result == null) return NotFound();
 
             return NoContent();
         }

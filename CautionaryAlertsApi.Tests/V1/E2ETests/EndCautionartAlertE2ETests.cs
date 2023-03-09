@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.Sheets.v4.Data;
 using System.Net;
+using Hackney.Shared.CautionaryAlerts.Domain;
 
 namespace CautionaryAlertsApi.Tests.V1.E2ETests
 {
@@ -45,10 +46,35 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             var content = new StringContent(JsonConvert.SerializeObject(alert), Encoding.UTF8, "application/json");
 
             var response = await Client.PatchAsync(url, content).ConfigureAwait(false);
-
-
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        }
+
+        [Test]
+
+        public async Task EndCautionaryAlertReturnsNotFoundWhenDoesNotExist()
+        {
+            var personId = Guid.NewGuid();
+            var alertId = Guid.NewGuid();
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
+
+            var alert = CautionaryAlertFixture.GenerateValidEndCautionaryAlertFixture(personId, alertId, defaultString, addressString, _fixture);
+
+            alert.IsActive = false;
+
+            var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}", UriKind.Relative);
+
+            var content = new StringContent(JsonConvert.SerializeObject(alert), Encoding.UTF8, "application/json");
+
+            var response = await Client.PatchAsync(url, content).ConfigureAwait(false);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var deserialize = JsonConvert.DeserializeObject<PropertyAlertDomain>(responseContent);
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+            
         }
     }
 }
