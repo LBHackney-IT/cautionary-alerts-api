@@ -11,6 +11,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Hackney.Core.Sns;
+using System;
+using CautionaryAlertsApi.V1.Domain;
+using Hackney.Core.Testing.Sns;
+using NUnit.Framework;
+using System.Net.Http;
+using Amazon.SimpleNotificationService;
 
 namespace CautionaryAlertsApi.Tests
 {
@@ -18,10 +25,26 @@ namespace CautionaryAlertsApi.Tests
         : WebApplicationFactory<TStartup> where TStartup : class
     {
         private readonly DbConnection _connection;
+        public HttpClient Client { get; private set; }
+
+        public ISnsFixture SnsFixture { get; private set; }
+        //public IAmazonSimpleNotificationService SimpleNotificationService { get; private set; }
+
+
 
         public MockWebApplicationFactory(DbConnection connection)
         {
             _connection = connection;
+            EnsureEnvVarConfigured("Sns_LocalMode", "true");
+            EnsureEnvVarConfigured("Sns_LocalServiceUrl", "http://localhost:8000");
+
+            Client = CreateClient();
+        }
+
+        private static void EnsureEnvVarConfigured(string name, string defaultValue)
+        {
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(name)))
+                Environment.SetEnvironmentVariable(name, defaultValue);
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -37,8 +60,13 @@ namespace CautionaryAlertsApi.Tests
 
                 var serviceProvider = services.BuildServiceProvider();
                 var dbContext = serviceProvider.GetRequiredService<UhContext>();
-
                 dbContext.Database.EnsureCreated();
+             
+                services.ConfigureSns();
+                services.ConfigureSnsFixture();
+
+                SnsFixture = serviceProvider.GetRequiredService<ISnsFixture>();
+                SnsFixture.CreateSnsTopic<CautionaryAlertSns>("cautionaryAlert.fifo", "CAUTIONARY_ALERTS_SNS_ARN");
             });
 
             builder.ConfigureTestServices(services =>
@@ -51,6 +79,7 @@ namespace CautionaryAlertsApi.Tests
                 services.RemoveAll<SheetsService>();
                 services.AddScoped(provider => sheetService);
             });
+            
         }
     }
 }

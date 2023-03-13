@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using System;
 using FluentAssertions;
+using Hackney.Shared.CautionaryAlerts.Domain;
 
 namespace CautionaryAlertsApi.Tests.V1.E2ETests
 {
@@ -39,10 +40,10 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             response.StatusCode.Should().Be(200);
 
             var data = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
-            var returnedAlerts = JsonConvert.DeserializeObject<CautionaryAlertResponse>(data);
+            var returnedAlerts = JsonConvert.DeserializeObject<PropertyAlertDomain>(data);
 
-            returnedAlerts.PersonId.Should().Be(personId);
-            returnedAlerts.AlertId.Should().Be(alertId);
+            returnedAlerts.MMHID.Should().Be(personId.ToString());
+            returnedAlerts.AlertId.Should().Be(alertId.ToString());
         }
 
         [Test]

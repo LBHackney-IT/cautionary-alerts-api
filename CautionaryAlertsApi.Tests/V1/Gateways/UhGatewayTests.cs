@@ -471,7 +471,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(alert.ToCautionaryAlertDomain());
+            result.Should().BeEquivalentTo(alert.ToPropertyAlertDomain());
         }
 
         [Test]
@@ -510,7 +510,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             await TestDataHelper.SavePropertyAlertsToDb(UhContext, alerts).ConfigureAwait(false);
 
             // Act
-            Func<CautionaryAlert> func = () => _classUnderTest.GetCautionaryAlertByAlertId(query);
+            Func<PropertyAlertDomain> func = () => _classUnderTest.GetCautionaryAlertByAlertId(query);
 
             // Assert
             func.Should().Throw<MoreThanOneAlertException>().Where(x => x.AlertCount > 1);
@@ -576,16 +576,17 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             var alertDb = alert.ToDatabase();
 
+            alertDb.Id = _fixture.Create<int>();
+
             await TestDataHelper.SavePropertyAlertToDb(UhContext, alertDb).ConfigureAwait(false);
 
-            alert.IsActive = false;
+            alertDb.IsActive = false;
 
             // Act
-            var response = await _classUnderTest.EndCautionaryAlert(alert).ConfigureAwait(false);
+            var response = await _classUnderTest.EndCautionaryAlert(alertDb).ConfigureAwait(false);
                 
             // Assert
             response.Should().NotBeNull();
-            response.Should().BeOfType<PropertyAlertDomain>();
 
             //Ensures it updates record and doesn't create a new one. 
             var updatedAlert = UhContext.PropertyAlertsNew
@@ -598,23 +599,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             updatedAlert.FirstOrDefault().IsActive.Should().BeFalse();
         }
 
-        [Test]
-        public async Task EndCautionaryAlertReturnsNullIfDoesNotExist()
-        {
-            // Arrange
-            var personId = Guid.NewGuid();
-            var alertId = Guid.NewGuid();
-            var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
-            var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
-
-            var alert = CautionaryAlertFixture.GenerateValidEndCautionaryAlertFixture(personId, alertId, defaultString, addressString, _fixture);
-
-            // Act
-            var response = await _classUnderTest.EndCautionaryAlert(alert).ConfigureAwait(false);
-
-            // Assert
-            response.Should().BeNull();
-            
-        }
+        
     }
 }

@@ -6,6 +6,6 @@ namespace CautionaryAlertsApi.V1.UseCase.Interfaces
 {
     public interface IGetCautionaryAlertByAlertIdUseCase
     {
-        CautionaryAlert ExecuteAsync(AlertQueryObject query);
+        PropertyAlertDomain ExecuteAsync(AlertQueryObject query);
     }
 }

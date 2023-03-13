@@ -18,7 +18,7 @@ namespace CautionaryAlertsApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public CautionaryAlert ExecuteAsync(AlertQueryObject query)
+        public PropertyAlertDomain ExecuteAsync(AlertQueryObject query)
         {
             var result = _gateway.GetCautionaryAlertByAlertId(query);
 

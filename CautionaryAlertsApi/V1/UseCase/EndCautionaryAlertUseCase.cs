@@ -26,7 +26,15 @@ namespace CautionaryAlertsApi.V1.UseCase
         }
         public async Task<PropertyAlertDomain> ExecuteAsync(EndCautionaryAlert cautionaryAlert, Token token)
         {
-             var result = await _gateway.EndCautionaryAlert(cautionaryAlert).ConfigureAwait(false);
+
+            var AlertQueryObject = new AlertQueryObject() { AlertId = cautionaryAlert.AlertId, PersonId = cautionaryAlert.PersonDetails.Id };
+            var existingAlert = _gateway.GetCautionaryAlertByAlertId(AlertQueryObject);
+
+            if (existingAlert == null) return null;
+            var existingAlertDb = existingAlert.ToPropertyAlertDatabase();
+
+            existingAlertDb.IsActive = false;
+            var result = await _gateway.EndCautionaryAlert(existingAlertDb).ConfigureAwait(false);
 
             var cautionaryAlertSnsMessage = _snsFactory.End(result, token);
             var cautionaryAlertTopicArn = Environment.GetEnvironmentVariable("CAUTIONARY_ALERTS_SNS_ARN");

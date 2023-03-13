@@ -14,6 +14,8 @@ using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using PropertyAlert = Hackney.Shared.CautionaryAlerts.Infrastructure.PropertyAlert;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.Tests.V1.Infrastructure;
+using Npgsql;
+using CautionaryAlertsApi.Tests;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {
@@ -133,17 +135,18 @@ namespace CautionaryAlertsApi.V1.Gateways
             return alerts.Select(x => x.ToDomain());
         }
 
-        public CautionaryAlert GetCautionaryAlertByAlertId(AlertQueryObject query)
+        public PropertyAlertDomain GetCautionaryAlertByAlertId(AlertQueryObject query)
         {
-            var alerts = _uhContext.PropertyAlertsNew
+            var alerts = _uhContext.PropertyAlertsNew.AsNoTracking()
                         .Where(x => x.MMHID == query.PersonId.ToString())
                         .Where(x => x.AlertId == query.AlertId.ToString());
 
-            var cautionaryAlert = alerts.Select(x => x.ToCautionaryAlertDomain());
+            var cautionaryAlert = alerts.Select(x => x.ToPropertyAlertDomain());
 
             //We should never expect the count to by more than one as AlertId should be unique but adding this condition as we only return the first alert. 
-            if (cautionaryAlert.Count() > 1)
-                throw new MoreThanOneAlertException(cautionaryAlert.Count());
+            var count = cautionaryAlert.Count();
+            if (count > 1)
+                throw new MoreThanOneAlertException(count);
 
 
             return cautionaryAlert.FirstOrDefault();
@@ -164,44 +167,15 @@ namespace CautionaryAlertsApi.V1.Gateways
         }
 
         [LogCall]
-        public async Task<PropertyAlertDomain> EndCautionaryAlert(EndCautionaryAlert cautionaryAlert)
+        public async Task<PropertyAlertDomain> EndCautionaryAlert(PropertyAlertNew updateAlert)
         {
-            var existingAlert = _uhContext.PropertyAlertsNew
-                                        .Where(x => x.MMHID == cautionaryAlert.PersonDetails.Id.ToString())
-                                        .Where(x => x.AlertId == cautionaryAlert.AlertId.ToString());
-
-            existingAlert.Select(x => x.ToCautionaryAlertDomain());
-
-            if (existingAlert.Count() < 1 ) return null;
-
-            var updateAlert = existingAlert.FirstOrDefault();
-            updateAlert.IsActive = cautionaryAlert.IsActive;
             _logger.LogDebug($"Calling Postgress.SaveAsync");
 
-            _uhContext.PropertyAlertsNew.Update(updateAlert);
+            //_uhContext.PropertyAlertsNew.Update(updateAlert);
+
             await _uhContext.SaveChangesAsync().ConfigureAwait(false);
 
             return updateAlert.ToPropertyAlertDomain();
         }
-
-
-
-
-
-
-
-
-
-        //var alertObjectQuery = new AlertQueryObject() { AlertId = cautionaryAlert.AlertId, PersonId = cautionaryAlert.PersonDetails.Id };
-        //var existingAlert = GetCautionaryAlertByAlertId(alertObjectQuery);
-        //    if (existingAlert == null) return null;
-
-        //    _logger.LogDebug($"Calling Postgress.SaveAsync");
-        //    var alertDbEntity = cautionaryAlert.ToDatabase();
-
-        //_uhContext.PropertyAlertsNew.Update(alertDbEntity);
-        //    await _uhContext.SaveChangesAsync().ConfigureAwait(false);
-
-        //    return alertDbEntity.ToPropertyAlertDomain();
     }
 }

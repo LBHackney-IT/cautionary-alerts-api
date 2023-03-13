@@ -17,6 +17,9 @@ using System.Threading.Tasks;
 using Google.Apis.Sheets.v4.Data;
 using System.Net;
 using Hackney.Shared.CautionaryAlerts.Domain;
+using Amazon.SimpleNotificationService;
+using Hackney.Core.Testing.Sns;
+using Moq;
 
 namespace CautionaryAlertsApi.Tests.V1.E2ETests
 {
@@ -39,13 +42,26 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             await TestDataHelper.SavePropertyAlertToDb(UhContext, alertDb).ConfigureAwait(false);
 
-            alert.IsActive = false;
+            alertDb.IsActive = false;
 
             var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}", UriKind.Relative);
+            var token =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTUwMTgxMTYwOTIwOTg2NzYxMTMiLCJlbWFpbCI6ImUyZS10ZXN0aW5nQGRldmVsb3BtZW50LmNvbSIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdGVyIiwiZ3JvdXBzIjpbImUyZS10ZXN0aW5nIl0sImlhdCI6MTYyMzA1ODIzMn0.SooWAr-NUZLwW8brgiGpi2jZdWjyZBwp4GJikn0PvEw";
 
-            var content = new StringContent(JsonConvert.SerializeObject(alert), Encoding.UTF8, "application/json");
+            var message = new HttpRequestMessage(HttpMethod.Patch, url);
 
-            var response = await Client.PatchAsync(url, content).ConfigureAwait(false);
+            var jsonSettings = new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented,
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
+            var requestJson = JsonConvert.SerializeObject(alert, jsonSettings);
+            message.Content = new StringContent(requestJson, Encoding.UTF8, "application/json");
+            message.Method = HttpMethod.Patch;
+            message.Headers.Add("Authorization", token);
+
+            var response = await Client.SendAsync(message).ConfigureAwait(false);
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }

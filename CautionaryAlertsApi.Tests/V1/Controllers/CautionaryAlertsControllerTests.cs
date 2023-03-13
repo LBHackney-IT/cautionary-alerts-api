@@ -146,7 +146,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             // Arrange
             var query = _fixture.Create<AlertQueryObject>();
 
-            var usecaseResponse = _fixture.Create<CautionaryAlert>();
+            var usecaseResponse = _fixture.Create<PropertyAlertDomain>();
 
 
             _mockGetCautionaryAlertByAlertIdUseCase
@@ -172,7 +172,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
 
             _mockGetCautionaryAlertByAlertIdUseCase
                 .Setup(x => x.ExecuteAsync(query))
-                .Returns((CautionaryAlert) null);
+                .Returns((PropertyAlertDomain) null);
 
             // Act
             var response = _classUnderTest.GetAlertByAlertId(query) as NotFoundObjectResult;
