@@ -12,8 +12,13 @@ services:
       - 3000:3000
     environment:
       - CONNECTION_STRING=Host=dev-database;Port=5432;Database=entitycorex;Username=postgres;Password=mypassword
+      - Localstack_SnsServiceUrl=http://localstack:4566
+      - AWS_REGION=eu-west-2
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
     links:
       - dev-database
+      - localstack
   dev-database:
     environment:
       - POSTGRES_PASSWORD=mypassword
@@ -38,6 +43,9 @@ services:
       - DB_PASSWORD=mypassword
       - DB_DATABASE=testdb
       - Localstack_SnsServiceUrl=http://localstack:4566
+      - AWS_REGION=eu-west-2
+      - AWS_ACCESS_KEY_ID=local
+      - AWS_SECRET_ACCESS_KEY=local
 
     links:
       - test-database
@@ -55,12 +63,12 @@ services:
 
   localstack:
     container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
-    image: localstack/localstack
+    image: localstack/localstack:0.14.1
     hostname: awslocal
     ports:
       - "4566:4566"
     environment:
-      - SERVICES=sns
+      - SERVICES=sns,sqs
       - DEBUG=1
       - DOCKER_HOST=unix:///var/run/docker.sock
       - HOST_TMP_FOLDER=/tmp/localstack

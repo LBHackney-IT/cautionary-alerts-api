@@ -38,7 +38,7 @@ namespace CautionaryAlertsApi.V1.Factories
             {
                 CorrelationId = Guid.NewGuid(),
                 DateTime = DateTime.UtcNow,
-                EntityId = Guid.Parse(alert.MMHID) /*change to alertId*/,
+                EntityId = Guid.Parse(alert.AlertId),
                 Id = Guid.NewGuid(),
                 EventType = Constants.ENDED_EVENTTYPE,
                 Version = Constants.V1_VERSION,

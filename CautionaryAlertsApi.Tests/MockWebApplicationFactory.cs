@@ -15,9 +15,8 @@ using Hackney.Core.Sns;
 using System;
 using CautionaryAlertsApi.V1.Domain;
 using Hackney.Core.Testing.Sns;
-using NUnit.Framework;
 using System.Net.Http;
-using Amazon.SimpleNotificationService;
+using ServiceCollectionExtensions = Hackney.Core.Testing.Sns.ServiceCollectionExtensions;
 
 namespace CautionaryAlertsApi.Tests
 {
@@ -36,9 +35,26 @@ namespace CautionaryAlertsApi.Tests
         {
             _connection = connection;
             EnsureEnvVarConfigured("Sns_LocalMode", "true");
-            EnsureEnvVarConfigured("Sns_LocalServiceUrl", "http://localhost:8000");
+            EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:4566");
 
             Client = CreateClient();
+        }
+
+        private bool _disposed;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && !_disposed)
+            {
+                if (null != SnsFixture)
+                    SnsFixture.Dispose();
+                if (null != Client)
+                    Client.Dispose();
+
+                base.Dispose(true);
+
+                _disposed = true;
+            }
         }
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)
@@ -57,13 +73,13 @@ namespace CautionaryAlertsApi.Tests
                 dbBuilder.UseNpgsql(_connection);
                 var context = new UhContext(dbBuilder.Options);
                 services.AddSingleton(context);
+                
+                services.ConfigureSns();
+                services.ConfigureSnsFixture();
 
                 var serviceProvider = services.BuildServiceProvider();
                 var dbContext = serviceProvider.GetRequiredService<UhContext>();
                 dbContext.Database.EnsureCreated();
-             
-                services.ConfigureSns();
-                services.ConfigureSnsFixture();
 
                 SnsFixture = serviceProvider.GetRequiredService<ISnsFixture>();
                 SnsFixture.CreateSnsTopic<CautionaryAlertSns>("cautionaryAlert.fifo", "CAUTIONARY_ALERTS_SNS_ARN");

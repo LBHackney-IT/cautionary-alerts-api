@@ -31,6 +31,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Hackney.Core.Testing.Sns;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CautionaryAlertsApi
 {
@@ -121,6 +123,8 @@ namespace CautionaryAlertsApi
             });
 
             services.ConfigureSns();
+            services.ConfigureSnsFixture();
+
             services.AddTokenFactory();
             services.AddLogCallAspect();
 
