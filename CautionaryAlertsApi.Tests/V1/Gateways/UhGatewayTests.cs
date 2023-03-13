@@ -572,7 +572,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
             var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
 
-            var alert = CautionaryAlertFixture.GenerateValidEndCautionaryAlertFixture(personId,alertId, defaultString, addressString, _fixture);
+            var alert = CautionaryAlertFixture.GenerateValidEndCautionaryAlertFixture(personId, alertId, defaultString, addressString, _fixture);
 
             var alertDb = alert.ToDatabase();
 
@@ -584,7 +584,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             // Act
             var response = await _classUnderTest.EndCautionaryAlert(alertDb).ConfigureAwait(false);
-                
+
             // Assert
             response.Should().NotBeNull();
 
@@ -599,6 +599,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             updatedAlert.FirstOrDefault().IsActive.Should().BeFalse();
         }
 
-        
+
     }
 }

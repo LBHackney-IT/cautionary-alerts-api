@@ -64,8 +64,8 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
                 .ReturnsAsync(mockExistingAlert);
 
             // Act
-             var result = await _classUnderTest.ExecuteAsync(endCautionaryAlert,
-                                                             token).ConfigureAwait(false);
+            var result = await _classUnderTest.ExecuteAsync(endCautionaryAlert,
+                                                            token).ConfigureAwait(false);
 
             // Assert
             _mockGateway.Verify(x => x.GetCautionaryAlertByAlertId(It.IsAny<AlertQueryObject>()), Times.Once);

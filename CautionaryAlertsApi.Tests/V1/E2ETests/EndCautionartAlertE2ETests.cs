@@ -90,7 +90,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-            
+
         }
     }
 }

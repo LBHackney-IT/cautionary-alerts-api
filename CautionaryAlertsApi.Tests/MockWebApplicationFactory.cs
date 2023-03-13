@@ -72,7 +72,7 @@ namespace CautionaryAlertsApi.Tests
                 dbBuilder.UseNpgsql(_connection);
                 var context = new UhContext(dbBuilder.Options);
                 services.AddSingleton(context);
-                
+
                 services.ConfigureSns();
                 services.ConfigureSnsFixture();
 
@@ -94,7 +94,7 @@ namespace CautionaryAlertsApi.Tests
                 services.RemoveAll<SheetsService>();
                 services.AddScoped(provider => sheetService);
             });
-            
+
         }
     }
 }

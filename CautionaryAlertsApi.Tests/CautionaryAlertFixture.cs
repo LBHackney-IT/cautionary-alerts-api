@@ -78,7 +78,7 @@ namespace CautionaryAlertsApi.Tests
 
             var personDetails = fixture.Build<PersonDetails>()
                 .With(x => x.Name, defaultString[..CautionaryAlertConstants.PERSONNAMELENGTH])
-                .With(x=> x.Id, personId)
+                .With(x => x.Id, personId)
                 .Create();
 
             var cautionaryAlert = fixture.Build<EndCautionaryAlert>()
@@ -88,8 +88,8 @@ namespace CautionaryAlertsApi.Tests
                 .With(x => x.IncidentDescription, defaultString[..CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH])
                 .With(x => x.IncidentDate, fixture.Create<DateTime>().AddDays(-1))
                 .With(x => x.AssureReference, defaultString[..CautionaryAlertConstants.ASSUREREFERENCELENGTH])
-                .With(x=> x.AlertId, alertId)
-                .With(x=> x.IsActive, true)
+                .With(x => x.AlertId, alertId)
+                .With(x => x.IsActive, true)
                 .Create();
 
             return cautionaryAlert;
