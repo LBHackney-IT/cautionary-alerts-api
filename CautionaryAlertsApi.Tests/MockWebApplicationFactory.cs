@@ -37,7 +37,6 @@ namespace CautionaryAlertsApi.Tests
             EnsureEnvVarConfigured("Sns_LocalMode", "true");
             EnsureEnvVarConfigured("Localstack_SnsServiceUrl", "http://localhost:4566");
 
-            Client = CreateClient();
         }
 
         private bool _disposed;
