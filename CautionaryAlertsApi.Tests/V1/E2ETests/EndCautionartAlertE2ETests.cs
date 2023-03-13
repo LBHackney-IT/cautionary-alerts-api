@@ -64,6 +64,8 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             var response = await Client.SendAsync(message).ConfigureAwait(false);
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            //TODO: Check if Sns event was sent - use GetSnsEventVerifier() and VerifySnsEventRaised() from nuget shared
         }
 
         [Test]
