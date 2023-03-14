@@ -1,49 +1,51 @@
 using AutoFixture;
 using CautionaryAlertsApi.Tests.V1.Helper;
 using FluentAssertions;
-using Hackney.Core.JWT;
-using Hackney.Core.Middleware;
+using Hackney.Core.Testing.Sns;
 using Hackney.Shared.CautionaryAlerts.Factories;
 using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
-using System.Net.Http.Headers;
 using System.Net.Http;
-using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
-using Google.Apis.Sheets.v4.Data;
 using System.Net;
+using CautionaryAlertsApi.V1.Domain;
 using Hackney.Shared.CautionaryAlerts.Domain;
-using Amazon.SimpleNotificationService;
-using Hackney.Core.Testing.Sns;
-using Moq;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Constants = CautionaryAlertsApi.V1.Infrastructure.Constants;
 
 namespace CautionaryAlertsApi.Tests.V1.E2ETests
 {
     public class EndCautionartAlertE2ETests : IntegrationTests<Startup>
     {
         private readonly Fixture _fixture = new Fixture();
+        private ISnsFixture _snsFixture;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _snsFixture = Factory.SnsFixture;
+        }
+
 
         [Test]
-
-        public async Task EndCautionaryAlertUpdatesIsActiveToFalse()
+        public async Task EndCautionaryAlertUpdatesIsActiveToFalseAndSendsSns()
         {
             var personId = Guid.NewGuid();
             var alertId = Guid.NewGuid();
             var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
             var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
+            var activeAlert = CautionaryAlertFixture.GenerateValidEndCautionaryAlertFixture(personId, alertId, defaultString, addressString, _fixture);
+            var snsMessage = _fixture.Create<CautionaryAlertSns>();
 
-            var alert = CautionaryAlertFixture.GenerateValidEndCautionaryAlertFixture(personId, alertId, defaultString, addressString, _fixture);
-
-            var alertDb = alert.ToDatabase();
+            var alertDb = activeAlert.ToDatabase();
 
             await TestDataHelper.SavePropertyAlertToDb(UhContext, alertDb).ConfigureAwait(false);
 
-            alertDb.IsActive = false;
-
+            activeAlert.IsActive = alertDb.IsActive = false;
             var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}", UriKind.Relative);
             var token =
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTUwMTgxMTYwOTIwOTg2NzYxMTMiLCJlbWFpbCI6ImUyZS10ZXN0aW5nQGRldmVsb3BtZW50LmNvbSIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdGVyIiwiZ3JvdXBzIjpbImUyZS10ZXN0aW5nIl0sImlhdCI6MTYyMzA1ODIzMn0.SooWAr-NUZLwW8brgiGpi2jZdWjyZBwp4GJikn0PvEw";
@@ -56,20 +58,34 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
                 Formatting = Formatting.Indented,
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
-            var requestJson = JsonConvert.SerializeObject(alert, jsonSettings);
+            var requestJson = JsonConvert.SerializeObject(activeAlert, jsonSettings);
             message.Content = new StringContent(requestJson, Encoding.UTF8, "application/json");
             message.Method = HttpMethod.Patch;
             message.Headers.Add("Authorization", token);
 
+
             var response = await Client.SendAsync(message).ConfigureAwait(false);
+
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            //TODO: Check if Sns event was sent - use GetSnsEventVerifier() and VerifySnsEventRaised() from nuget shared
+            Action<CautionaryAlertSns> verifyFunc = (snsEvent) =>
+            {
+                snsEvent.EntityId.Should().Be(alertId);
+                snsEvent.User.Name.Should().Be("Tester");
+                snsEvent.User.Email.Should().Be("e2e-testing@development.com");
+                System.Text.Json.JsonSerializer.Deserialize<PropertyAlertDomain>(
+                    snsEvent.EventData.NewData.ToString()
+                    ).IsActive.Should().BeFalse();
+            };
+
+            var snsVerifer = _snsFixture.GetSnsEventVerifier<CautionaryAlertSns>();
+            var snsResult = await snsVerifer.VerifySnsEventRaised(verifyFunc);
+            if (!snsResult && snsVerifer.LastException != null)
+                throw snsVerifer.LastException;
         }
 
         [Test]
-
         public async Task EndCautionaryAlertReturnsNotFoundWhenDoesNotExist()
         {
             var personId = Guid.NewGuid();

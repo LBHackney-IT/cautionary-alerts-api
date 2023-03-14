@@ -13,7 +13,7 @@ namespace CautionaryAlertsApi.Tests
         protected HttpClient Client { get; private set; }
         protected UhContext UhContext { get; private set; }
 
-        private MockWebApplicationFactory<TStartup> _factory;
+        public MockWebApplicationFactory<TStartup> Factory;
         private NpgsqlConnection _connection;
         private IDbContextTransaction _transaction;
         private DbContextOptionsBuilder _builder;
@@ -37,9 +37,9 @@ namespace CautionaryAlertsApi.Tests
         [SetUp]
         public void BaseSetup()
         {
-            _factory = new MockWebApplicationFactory<TStartup>(_connection);
+            Factory = new MockWebApplicationFactory<TStartup>(_connection);
 
-            Client = _factory.CreateClient();
+            Client = Factory.CreateClient();
 
             UhContext = new UhContext(_builder.Options);
 
@@ -52,7 +52,7 @@ namespace CautionaryAlertsApi.Tests
         public void BaseTearDown()
         {
             Client.Dispose();
-            _factory.Dispose();
+            Factory.Dispose();
             _transaction.Rollback();
             _transaction.Dispose();
         }

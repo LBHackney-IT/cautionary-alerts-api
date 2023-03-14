@@ -64,15 +64,19 @@ Documentation on how to do this can be found [here](https://docs.microsoft.com/e
 
 ### Run the tests
 
+Run all tests in Docker - requires setting up the environment variables needed for `cautionary-alerts-api-test`
+
 ```sh
 $ make test
 ```
 
-To run database tests locally (e.g. via Visual Studio) the `CONNECTION_STRING` environment variable will need to be populated with:
+### To run database tests locally (e.g. via Visual Studio):
 
-`Host=localhost;Database=entitycore;Username=postgres;Password=mypassword"`
+- the `CONNECTION_STRING` environment variable will need to be populated with: `Host=localhost;Database=entitycore;Username=postgres;Password=mypassword"`
 
 Note: The Host name needs to be the name of the stub database docker-compose service, in order to run tests via Docker.
+
+- Run `make local-test-setup` to run the test database and the test instances of AWS resources used for E2E tests
 
 ### Agreed Testing Approach
 - Use nUnit, FluentAssertions and Moq
