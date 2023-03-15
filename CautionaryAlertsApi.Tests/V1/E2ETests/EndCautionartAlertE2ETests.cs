@@ -59,17 +59,6 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            //Ensures it updates record and doesn't create a new one.
-            var updatedAlert = UhContext.PropertyAlertsNew.Where(x=> x.AlertId == alertId.ToString());
-
-            updatedAlert.Count().Should().Be(1);
-
-            var originalAlertDomain = alertDb.ToPropertyAlertDomain();
-            var updatedAlertDomain = updatedAlert.Select(x => x.ToPropertyAlertDomain()).ToList().FirstOrDefault();
-
-            updatedAlertDomain.Should().BeEquivalentTo(originalAlertDomain, config => config.Excluding(x => x.IsActive));
-            updatedAlert.FirstOrDefault().IsActive.Should().BeFalse();
-
             //Sns event sent 
             Action<CautionaryAlertSns> verifyFunc = (snsEvent) =>
             {

@@ -570,7 +570,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             var createAlert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
 
-            var alertDb = createAlert.ToDatabase(isActive:true, alertId.ToString());
+            var alertDb = createAlert.ToDatabase(isActive: true, alertId.ToString());
 
             alertDb.Id = _fixture.Create<int>();
 
