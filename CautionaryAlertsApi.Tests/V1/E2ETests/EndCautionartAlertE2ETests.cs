@@ -58,8 +58,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
                 Formatting = Formatting.Indented,
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
-            var requestJson = JsonConvert.SerializeObject(activeAlert, jsonSettings);
-            message.Content = new StringContent(requestJson, Encoding.UTF8, "application/json");
+
             message.Method = HttpMethod.Patch;
             message.Headers.Add("Authorization", token);
 
@@ -99,16 +98,21 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}/end-alert", UriKind.Relative);
 
-            var content = new StringContent(JsonConvert.SerializeObject(alert), Encoding.UTF8, "application/json");
+            var message = new HttpRequestMessage(HttpMethod.Patch, url);
 
-            var response = await Client.PatchAsync(url, content).ConfigureAwait(false);
+            // A fake token containing test data:
+            var token =
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTUwMTgxMTYwOTIwOTg2NzYxMTMiLCJlbWFpbCI6ImUyZS10ZXN0aW5nQGRldmVsb3BtZW50LmNvbSIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdGVyIiwiZ3JvdXBzIjpbImUyZS10ZXN0aW5nIl0sImlhdCI6MTYyMzA1ODIzMn0.SooWAr-NUZLwW8brgiGpi2jZdWjyZBwp4GJikn0PvEw";
+
+            message.Headers.Add("Authorization", token);
+
+            var response = await Client.SendAsync(message).ConfigureAwait(false);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var deserialize = JsonConvert.DeserializeObject<PropertyAlertDomain>(responseContent);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-
         }
     }
 }

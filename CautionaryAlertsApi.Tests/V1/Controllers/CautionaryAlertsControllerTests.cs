@@ -227,19 +227,19 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         public async Task EndCautionaryAlertReturnsNoContentIfSuccessful()
         {
             // Arrange
-            var createAlertRequest = _fixture.Create<EndCautionaryAlert>();
+            var alertQuery = _fixture.Create<AlertQueryObject>();
             var createAlertDomain = _fixture.Create<PropertyAlertDomain>();
             _mockEndCautionaryAlertUseCase
-                .Setup(x => x.ExecuteAsync(createAlertRequest, It.IsAny<Token>()))
+                .Setup(x => x.ExecuteAsync(alertQuery, It.IsAny<Token>()))
                 .ReturnsAsync(createAlertDomain);
 
             // Act
-            var response = await _classUnderTest.EndCautionaryAlert(createAlertRequest).ConfigureAwait(false) as NoContentResult;
+            var response = await _classUnderTest.EndCautionaryAlert(alertQuery).ConfigureAwait(false) as NoContentResult;
 
             // Assert
             response.Should().NotBeNull();
             response.StatusCode.Should().Be(StatusCodes.Status204NoContent);
-            _mockEndCautionaryAlertUseCase.Verify(x => x.ExecuteAsync(createAlertRequest, It.IsAny<Token>()), Times.Once);
+            _mockEndCautionaryAlertUseCase.Verify(x => x.ExecuteAsync(alertQuery, It.IsAny<Token>()), Times.Once);
         }
     }
 }

@@ -178,11 +178,11 @@ namespace CautionaryAlertsApi.V1.Controllers
         [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
         [HttpPatch]
         [Route("persons/{personId}/alerts/{alertId}/end-alert")]
-        public async Task<IActionResult> EndCautionaryAlert([FromBody] EndCautionaryAlert cautionaryAlert)
+        public async Task<IActionResult> EndCautionaryAlert([FromRoute] AlertQueryObject query)
         {
             var token = _tokenFactory.Create(_contextWrapper.GetContextRequestHeaders(HttpContext));
 
-            var result = await _endCautionaryAlertUseCase.ExecuteAsync(cautionaryAlert, token).ConfigureAwait(false);
+            var result = await _endCautionaryAlertUseCase.ExecuteAsync(query, token).ConfigureAwait(false);
             if (result == null) return NotFound();
 
             return NoContent();

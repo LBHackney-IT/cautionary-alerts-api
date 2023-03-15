@@ -53,10 +53,9 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
 
             mockExistingAlert.IsActive = false;
 
-            var personDetail = _fixture.Build<PersonDetails>().With(x => x.Id, personId).Create();
-            var endCautionaryAlert = _fixture.Build<EndCautionaryAlert>()
+            var alertQuery = _fixture.Build<AlertQueryObject>()
                                                 .With(x => x.AlertId, alertId)
-                                                .With(x => x.PersonDetails, personDetail)
+                                                .With(x => x.PersonId, personId)
                                                 .Create();
             var token = new Token();
             _mockGateway
@@ -64,7 +63,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
                 .ReturnsAsync(mockExistingAlert);
 
             // Act
-            var result = await _classUnderTest.ExecuteAsync(endCautionaryAlert,
+            var result = await _classUnderTest.ExecuteAsync(alertQuery,
                                                             token).ConfigureAwait(false);
 
             // Assert
@@ -72,7 +71,6 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             _mockGateway.Verify(x => x.EndCautionaryAlert(It.IsAny<PropertyAlertNew>()), Times.Once);
             result.Should().NotBeNull();
             result.Should().BeAssignableTo<PropertyAlertDomain>();
-
         }
     }
 }

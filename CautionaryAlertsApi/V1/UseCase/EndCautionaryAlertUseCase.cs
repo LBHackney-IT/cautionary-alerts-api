@@ -24,11 +24,10 @@ namespace CautionaryAlertsApi.V1.UseCase
             _snsGateway = snsGateway;
             _snsFactory = snsFactory;
         }
-        public async Task<PropertyAlertDomain> ExecuteAsync(EndCautionaryAlert cautionaryAlert, Token token)
+        public async Task<PropertyAlertDomain> ExecuteAsync(AlertQueryObject query, Token token)
         {
 
-            var AlertQueryObject = new AlertQueryObject() { AlertId = cautionaryAlert.AlertId, PersonId = cautionaryAlert.PersonDetails.Id };
-            var existingAlert = _gateway.GetCautionaryAlertByAlertId(AlertQueryObject);
+            var existingAlert = _gateway.GetCautionaryAlertByAlertId(query);
 
             if (existingAlert == null) return null;
             var existingAlertDb = existingAlert.ToPropertyAlertDatabase();
