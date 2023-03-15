@@ -46,7 +46,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             await TestDataHelper.SavePropertyAlertToDb(UhContext, alertDb).ConfigureAwait(false);
 
             activeAlert.IsActive = alertDb.IsActive = false;
-            var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}/end-alert", UriKind.Relative);
             var token =
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTUwMTgxMTYwOTIwOTg2NzYxMTMiLCJlbWFpbCI6ImUyZS10ZXN0aW5nQGRldmVsb3BtZW50LmNvbSIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdGVyIiwiZ3JvdXBzIjpbImUyZS10ZXN0aW5nIl0sImlhdCI6MTYyMzA1ODIzMn0.SooWAr-NUZLwW8brgiGpi2jZdWjyZBwp4GJikn0PvEw";
 
@@ -97,7 +97,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             alert.IsActive = false;
 
-            var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}/end-alert", UriKind.Relative);
 
             var content = new StringContent(JsonConvert.SerializeObject(alert), Encoding.UTF8, "application/json");
 
