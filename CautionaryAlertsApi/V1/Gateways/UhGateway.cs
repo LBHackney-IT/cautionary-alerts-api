@@ -171,7 +171,7 @@ namespace CautionaryAlertsApi.V1.Gateways
         {
             _logger.LogDebug($"Calling Postgress.SaveAsync");
 
-            //_uhContext.PropertyAlertsNew.Update(updateAlert);
+            _uhContext.PropertyAlertsNew.Update(updateAlert);
 
             await _uhContext.SaveChangesAsync().ConfigureAwait(false);
 
