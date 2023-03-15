@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,6 @@ namespace CautionaryAlertsApi.Tests
 
         public MockWebApplicationFactory<TStartup> Factory;
         private NpgsqlConnection _connection;
-        private IDbContextTransaction _transaction;
         private DbContextOptionsBuilder _builder;
 
         [OneTimeSetUp]
@@ -44,8 +44,6 @@ namespace CautionaryAlertsApi.Tests
             UhContext = new UhContext(_builder.Options);
 
             UhContext.Database.EnsureCreated();
-
-            _transaction = UhContext.Database.BeginTransaction();
         }
 
         [TearDown]
@@ -53,8 +51,18 @@ namespace CautionaryAlertsApi.Tests
         {
             Client.Dispose();
             Factory.Dispose();
-            _transaction.Rollback();
-            _transaction.Dispose();
+            ClearDatabaseData(UhContext);
+        }
+
+        public void ClearDatabaseData(UhContext context)
+        {
+            context.PeopleAlerts.RemoveRange(context.PeopleAlerts);
+            context.AlertDescriptionLookups.RemoveRange(context.AlertDescriptionLookups);
+            context.ContactLinks.RemoveRange(context.ContactLinks);
+            context.Addresses.RemoveRange(context.Addresses);
+            context.PropertyAlerts.RemoveRange(context.PropertyAlerts);
+            context.PropertyAlertsNew.RemoveRange(context.PropertyAlertsNew);
+            context.SaveChanges();
         }
     }
 }

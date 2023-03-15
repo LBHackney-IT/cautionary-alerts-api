@@ -32,7 +32,6 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
 
         [Test]
-        [Ignore("Ignoring as the E2E tests db connection is clashing with the client db connection")]
         public async Task EndCautionaryAlertUpdatesIsActiveToFalseAndSendsSns()
         {
             var personId = Guid.NewGuid();
