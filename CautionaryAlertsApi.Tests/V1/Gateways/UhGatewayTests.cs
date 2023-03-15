@@ -458,7 +458,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             var dateOfIncident = "12/12/2020";
             var alert = _fixture.Build<PropertyAlertNew>()
-                .With(x => x.MMHID, query.PersonId.ToString())
                 .With(x => x.AlertId, query.AlertId.ToString())
                 .With(x => x.DateOfIncident, dateOfIncident)
                 .Create();
@@ -481,7 +480,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             var dateOfIncident = "12/12/2020";
             var alert = _fixture.Build<PropertyAlertNew>()
-                .With(x => x.MMHID, query.PersonId.ToString())
                 .With(x => x.AlertId, query.AlertId.ToString())
                 .With(x => x.DateOfIncident, dateOfIncident)
                 .Create();
@@ -501,7 +499,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             var dateOfIncident = "12/12/2020";
             var alerts = _fixture.Build<PropertyAlertNew>()
-                .With(x => x.MMHID, query.PersonId.ToString())
                 .With(x => x.AlertId, query.AlertId.ToString())
                 .With(x => x.DateOfIncident, dateOfIncident)
                 .CreateMany(3);
