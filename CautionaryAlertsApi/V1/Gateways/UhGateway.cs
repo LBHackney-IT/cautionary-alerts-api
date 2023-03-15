@@ -138,7 +138,6 @@ namespace CautionaryAlertsApi.V1.Gateways
         public PropertyAlertDomain GetCautionaryAlertByAlertId(AlertQueryObject query)
         {
             var alerts = _uhContext.PropertyAlertsNew.AsNoTracking()
-                        .Where(x => x.MMHID == query.PersonId.ToString())
                         .Where(x => x.AlertId == query.AlertId.ToString());
 
             var cautionaryAlert = alerts.Select(x => x.ToPropertyAlertDomain());

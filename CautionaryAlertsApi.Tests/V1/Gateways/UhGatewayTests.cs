@@ -459,7 +459,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             var dateOfIncident = "12/12/2020";
             var alert = _fixture.Build<PropertyAlertNew>()
-                .With(x => x.MMHID, query.PersonId.ToString())
                 .With(x => x.AlertId, query.AlertId.ToString())
                 .With(x => x.DateOfIncident, dateOfIncident)
                 .Create();
@@ -482,7 +481,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             var dateOfIncident = "12/12/2020";
             var alert = _fixture.Build<PropertyAlertNew>()
-                .With(x => x.MMHID, query.PersonId.ToString())
                 .With(x => x.AlertId, query.AlertId.ToString())
                 .With(x => x.DateOfIncident, dateOfIncident)
                 .Create();
@@ -502,7 +500,6 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             var dateOfIncident = "12/12/2020";
             var alerts = _fixture.Build<PropertyAlertNew>()
-                .With(x => x.MMHID, query.PersonId.ToString())
                 .With(x => x.AlertId, query.AlertId.ToString())
                 .With(x => x.DateOfIncident, dateOfIncident)
                 .CreateMany(3);
@@ -567,14 +564,13 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         public async Task EndCautionaryAlertReturnsEntityIfSuccessful()
         {
             // Arrange
-            var personId = Guid.NewGuid();
             var alertId = Guid.NewGuid();
             var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
             var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
 
-            var alert = CautionaryAlertFixture.GenerateValidEndCautionaryAlertFixture(personId, alertId, defaultString, addressString, _fixture);
+            var createAlert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
 
-            var alertDb = alert.ToDatabase();
+            var alertDb = createAlert.ToDatabase(isActive:true, alertId.ToString());
 
             alertDb.Id = _fixture.Create<int>();
 
@@ -588,14 +584,15 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             // Assert
             response.Should().NotBeNull();
 
-            //Ensures it updates record and doesn't create a new one. 
+            //Ensures it updates record and doesn't create a new one.
             var updatedAlert = UhContext.PropertyAlertsNew
-                                        .Where(x => x.MMHID == personId.ToString())
                                         .Where(x => x.AlertId == alertId.ToString());
-
             updatedAlert.Count().Should().Be(1);
-            updatedAlert.FirstOrDefault().AlertId.Should().Be(alertId.ToString());
-            updatedAlert.FirstOrDefault().MMHID.Should().Be(personId.ToString());
+
+            var originalAlertDomain = alertDb.ToPropertyAlertDomain();
+            var updatedAlertDomain = updatedAlert.Select(x => x.ToPropertyAlertDomain()).ToList().FirstOrDefault();
+
+            updatedAlertDomain.Should().BeEquivalentTo(originalAlertDomain, config => config.Excluding(x => x.IsActive));
             updatedAlert.FirstOrDefault().IsActive.Should().BeFalse();
         }
 

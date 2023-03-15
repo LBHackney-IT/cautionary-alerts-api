@@ -48,14 +48,13 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
 
 
             _mockGateway
-               .Setup(x => x.GetCautionaryAlertByAlertId(It.Is<AlertQueryObject>(x => x.AlertId == alertId && x.PersonId == personId)))
+               .Setup(x => x.GetCautionaryAlertByAlertId(It.Is<AlertQueryObject>(x => x.AlertId == alertId)))
                .Returns(mockExistingAlert);
 
             mockExistingAlert.IsActive = false;
 
             var alertQuery = _fixture.Build<AlertQueryObject>()
                                                 .With(x => x.AlertId, alertId)
-                                                .With(x => x.PersonId, personId)
                                                 .Create();
             var token = new Token();
             _mockGateway

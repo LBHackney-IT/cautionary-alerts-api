@@ -16,6 +16,7 @@ using CautionaryAlertsApi.V1.Domain;
 using Hackney.Shared.CautionaryAlerts.Domain;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Constants = CautionaryAlertsApi.V1.Infrastructure.Constants;
+using System.Linq;
 
 namespace CautionaryAlertsApi.Tests.V1.E2ETests
 {
@@ -34,40 +35,42 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         [Test]
         public async Task EndCautionaryAlertUpdatesIsActiveToFalseAndSendsSns()
         {
-            var personId = Guid.NewGuid();
             var alertId = Guid.NewGuid();
             var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
             var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
-            var activeAlert = CautionaryAlertFixture.GenerateValidEndCautionaryAlertFixture(personId, alertId, defaultString, addressString, _fixture);
+            var activeAlert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
             var snsMessage = _fixture.Create<CautionaryAlertSns>();
 
-            var alertDb = activeAlert.ToDatabase();
+            var alertDb = activeAlert.ToDatabase(isActive: true, alertId.ToString());
 
             await TestDataHelper.SavePropertyAlertToDb(UhContext, alertDb).ConfigureAwait(false);
 
-            activeAlert.IsActive = alertDb.IsActive = false;
-            var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}/end-alert", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/alert/{alertId}/end-alert", UriKind.Relative);
             var token =
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTUwMTgxMTYwOTIwOTg2NzYxMTMiLCJlbWFpbCI6ImUyZS10ZXN0aW5nQGRldmVsb3BtZW50LmNvbSIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdGVyIiwiZ3JvdXBzIjpbImUyZS10ZXN0aW5nIl0sImlhdCI6MTYyMzA1ODIzMn0.SooWAr-NUZLwW8brgiGpi2jZdWjyZBwp4GJikn0PvEw";
 
             var message = new HttpRequestMessage(HttpMethod.Patch, url);
 
-            var jsonSettings = new JsonSerializerSettings()
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                Formatting = Formatting.Indented,
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
-
             message.Method = HttpMethod.Patch;
             message.Headers.Add("Authorization", token);
-
 
             var response = await Client.SendAsync(message).ConfigureAwait(false);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
+            //Ensures it updates record and doesn't create a new one.
+            var updatedAlert = UhContext.PropertyAlertsNew.Where(x=> x.AlertId == alertId.ToString());
+
+            updatedAlert.Count().Should().Be(1);
+
+            var originalAlertDomain = alertDb.ToPropertyAlertDomain();
+            var updatedAlertDomain = updatedAlert.Select(x => x.ToPropertyAlertDomain()).ToList().FirstOrDefault();
+
+            updatedAlertDomain.Should().BeEquivalentTo(originalAlertDomain, config => config.Excluding(x => x.IsActive));
+            updatedAlert.FirstOrDefault().IsActive.Should().BeFalse();
+
+            //Sns event sent 
             Action<CautionaryAlertSns> verifyFunc = (snsEvent) =>
             {
                 snsEvent.EntityId.Should().Be(alertId);
@@ -87,16 +90,13 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         [Test]
         public async Task EndCautionaryAlertReturnsNotFoundWhenDoesNotExist()
         {
-            var personId = Guid.NewGuid();
             var alertId = Guid.NewGuid();
             var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
             var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
 
-            var alert = CautionaryAlertFixture.GenerateValidEndCautionaryAlertFixture(personId, alertId, defaultString, addressString, _fixture);
+            var alert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
 
-            alert.IsActive = false;
-
-            var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}/end-alert", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/alert/{alertId}/end-alert", UriKind.Relative);
 
             var message = new HttpRequestMessage(HttpMethod.Patch, url);
 
@@ -107,9 +107,6 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             message.Headers.Add("Authorization", token);
 
             var response = await Client.SendAsync(message).ConfigureAwait(false);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var deserialize = JsonConvert.DeserializeObject<PropertyAlertDomain>(responseContent);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);

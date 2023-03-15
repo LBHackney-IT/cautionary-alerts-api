@@ -32,7 +32,6 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             // Arrange
             var query = _fixture.Create<AlertQueryObject>();
             var mockAlert = _fixture.Build<PropertyAlertDomain>()
-                                     .With(x => x.MMHID, query.PersonId.ToString())
                                      .With(x => x.AlertId, query.AlertId.ToString())
                                      .Create();
 
@@ -45,7 +44,6 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
 
             // Assert
             result.Should().NotBeNull();
-            result.MMHID.Should().Be(query.PersonId.ToString());
             result.AlertId.Should().Be(query.AlertId.ToString());
             _mockGateway.Verify(x => x.GetCautionaryAlertByAlertId(query), Times.Once);
         }
