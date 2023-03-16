@@ -155,7 +155,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [LogCall(LogLevel.Information)]
-        [AuthorizeEndpointByGroups("CREATE_CAUTIONARY_ALERT_ALLOWED_GROUPS")]
+        [AuthorizeEndpointByGroups("MANAGE_CAUTIONARY_ALERT_ALLOWED_GROUPS")]
         public async Task<IActionResult> CreateNewCautionaryAlert([FromBody] CreateCautionaryAlert cautionaryAlert)
         {
             try
@@ -178,6 +178,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
         [HttpPatch]
         [Route("alerts/{alertId}/end-alert")]
+        [AuthorizeEndpointByGroups("MANAGE_CAUTIONARY_ALERT_ALLOWED_GROUPS")]
         public async Task<IActionResult> EndCautionaryAlert([FromRoute] AlertQueryObject query)
         {
             var token = _tokenFactory.Create(_contextWrapper.GetContextRequestHeaders(HttpContext));

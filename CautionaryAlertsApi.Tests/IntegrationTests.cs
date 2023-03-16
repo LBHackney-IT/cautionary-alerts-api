@@ -23,6 +23,9 @@ namespace CautionaryAlertsApi.Tests
         {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+            if (Environment.GetEnvironmentVariable("MANAGE_CAUTIONARY_ALERT_ALLOWED_GROUPS") == null)
+                Environment.SetEnvironmentVariable("MANAGE_CAUTIONARY_ALERT_ALLOWED_GROUPS", "e2e-testing");
+
             _connection = new NpgsqlConnection(ConnectionString.TestDatabase());
             _connection.Open();
             var npgsqlCommand = _connection.CreateCommand();

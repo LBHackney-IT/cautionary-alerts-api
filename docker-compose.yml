@@ -16,6 +16,7 @@ services:
       - AWS_REGION=eu-west-2
       - AWS_ACCESS_KEY_ID=local
       - AWS_SECRET_ACCESS_KEY=local
+      - MANAGE_CAUTIONARY_ALERT_ALLOWED_GROUPS=e2e-testing
     links:
       - dev-database
       - localstack
@@ -46,7 +47,7 @@ services:
       - AWS_REGION=eu-west-2
       - AWS_ACCESS_KEY_ID=local
       - AWS_SECRET_ACCESS_KEY=local
-
+      - MANAGE_CAUTIONARY_ALERT_ALLOWED_GROUPS=e2e-testing
     links:
       - test-database
       - localstack
