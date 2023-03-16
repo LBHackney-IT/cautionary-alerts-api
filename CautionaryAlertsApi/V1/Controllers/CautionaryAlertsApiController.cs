@@ -140,7 +140,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         /// </summary>
         [ProducesResponseType(typeof(CautionaryAlertResponse), StatusCodes.Status200OK)]
         [HttpGet]
-        [Route("persons/{personId}/alerts/{alertId}")]
+        [Route("alert/{alertId}")]
         public IActionResult GetAlertByAlertId([FromRoute] AlertQueryObject query)
         {
             var result = _getCautionaryAlertByAlertId.ExecuteAsync(query);

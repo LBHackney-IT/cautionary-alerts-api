@@ -45,6 +45,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             // Assert
             result.Should().NotBeNull();
             result.AlertId.Should().Be(query.AlertId.ToString());
+
             _mockGateway.Verify(x => x.GetCautionaryAlertByAlertId(query), Times.Once);
         }
     }

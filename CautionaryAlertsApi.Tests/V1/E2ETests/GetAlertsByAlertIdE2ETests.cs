@@ -32,7 +32,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             await TestDataHelper.SavePropertyAlertToDb(UhContext, alerts).ConfigureAwait(false);
 
-            var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/alert/{alertId}", UriKind.Relative);
             // Act
             var response = await Client.GetAsync(url).ConfigureAwait(true);
 
@@ -50,10 +50,9 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         public async Task ReturnsNotFoundWhenAlertDoesNotExist()
         {
             // Arrange
-            var personId = Guid.NewGuid();
             var alertId = Guid.NewGuid();
 
-            var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/alert/{alertId}", UriKind.Relative);
             // Act
             var response = await Client.GetAsync(url).ConfigureAwait(true);
 
@@ -65,19 +64,17 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
         public async Task Returns500WhenMoreThanOneAlertRetrievedFromDb()
         {
             // Arrange
-            var personId = Guid.NewGuid();
             var alertId = Guid.NewGuid();
             var dateOfIncident = "12/12/2020";
 
             var alerts = _fixture.Build<PropertyAlertNew>()
-                .With(x => x.MMHID, personId.ToString())
                 .With(x => x.AlertId, alertId.ToString())
                 .With(x => x.DateOfIncident, dateOfIncident)
                 .CreateMany();
 
             await TestDataHelper.SavePropertyAlertsToDb(UhContext, alerts).ConfigureAwait(false);
 
-            var url = new Uri($"/api/v1/cautionary-alerts/persons/{personId}/alerts/{alertId}", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/alert/{alertId}", UriKind.Relative);
             // Act
             var response = await Client.GetAsync(url).ConfigureAwait(true);
 
