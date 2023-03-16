@@ -32,7 +32,6 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             // Arrange
             var query = _fixture.Create<AlertQueryObject>();
             var mockAlert = _fixture.Build<CautionaryAlert>()
-                                     .With(x => x.PersonId, query.PersonId)
                                      .With(x => x.AlertId, query.AlertId)
                                      .Create();
 
@@ -45,7 +44,6 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
 
             // Assert
             result.Should().NotBeNull();
-            result.PersonId.Should().Be(query.PersonId);
             result.AlertId.Should().Be(query.AlertId);
             _mockGateway.Verify(x => x.GetCautionaryAlertByAlertId(query), Times.Once);
         }
