@@ -45,7 +45,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             await TestDataHelper.SavePropertyAlertToDb(UhContext, alertDb).ConfigureAwait(false);
 
-            var url = new Uri($"/api/v1/cautionary-alerts/alert/{alertId}/end-alert", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/alerts/{alertId}/end-alert", UriKind.Relative);
             var token =
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMTUwMTgxMTYwOTIwOTg2NzYxMTMiLCJlbWFpbCI6ImUyZS10ZXN0aW5nQGRldmVsb3BtZW50LmNvbSIsImlzcyI6IkhhY2tuZXkiLCJuYW1lIjoiVGVzdGVyIiwiZ3JvdXBzIjpbImUyZS10ZXN0aW5nIl0sImlhdCI6MTYyMzA1ODIzMn0.SooWAr-NUZLwW8brgiGpi2jZdWjyZBwp4GJikn0PvEw";
 
@@ -85,7 +85,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             var alert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
 
-            var url = new Uri($"/api/v1/cautionary-alerts/alert/{alertId}/end-alert", UriKind.Relative);
+            var url = new Uri($"/api/v1/cautionary-alerts/alerts/{alertId}/end-alert", UriKind.Relative);
 
             var message = new HttpRequestMessage(HttpMethod.Patch, url);
 

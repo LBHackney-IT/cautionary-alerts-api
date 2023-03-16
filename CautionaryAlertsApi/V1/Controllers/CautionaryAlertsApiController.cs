@@ -177,7 +177,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         /// <response code="204">Alert updated to inactive</response>
         [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
         [HttpPatch]
-        [Route("alert/{alertId}/end-alert")]
+        [Route("alerts/{alertId}/end-alert")]
         public async Task<IActionResult> EndCautionaryAlert([FromRoute] AlertQueryObject query)
         {
             var token = _tokenFactory.Create(_contextWrapper.GetContextRequestHeaders(HttpContext));
