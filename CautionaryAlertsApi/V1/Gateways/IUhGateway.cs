@@ -22,6 +22,6 @@ namespace CautionaryAlertsApi.V1.Gateways
         PropertyAlertDomain GetCautionaryAlertByAlertId(AlertQueryObject query);
         Task<PropertyAlertDomain> PostNewCautionaryAlert(CreateCautionaryAlert cautionaryAlert);
 
-        Task<PropertyAlertDomain> EndCautionaryAlert(PropertyAlertNew updateAlert);
+        Task<PropertyAlertDomain> EndCautionaryAlert(EndCautionaryAlert updateAlert);
     }
 }

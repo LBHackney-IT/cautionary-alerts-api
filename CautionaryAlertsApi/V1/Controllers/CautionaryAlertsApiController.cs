@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
+using CautionaryAlertsApi.V1.Factories;
 
 namespace CautionaryAlertsApi.V1.Controllers
 {
@@ -179,11 +180,12 @@ namespace CautionaryAlertsApi.V1.Controllers
         [HttpPatch]
         [Route("alerts/{alertId}/end-alert")]
         [AuthorizeEndpointByGroups("MANAGE_CAUTIONARY_ALERT_ALLOWED_GROUPS")]
-        public async Task<IActionResult> EndCautionaryAlert([FromRoute] AlertQueryObject query)
+        public async Task<IActionResult> EndCautionaryAlert([FromRoute] AlertQueryObject presentationQuery)
         {
             var token = _tokenFactory.Create(_contextWrapper.GetContextRequestHeaders(HttpContext));
+            var endAlertData = presentationQuery.ToDomain();
 
-            var result = await _endCautionaryAlertUseCase.ExecuteAsync(query, token).ConfigureAwait(false);
+            var result = await _endCautionaryAlertUseCase.ExecuteAsync(endAlertData, token).ConfigureAwait(false);
             if (result == null) return NotFound();
 
             return NoContent();

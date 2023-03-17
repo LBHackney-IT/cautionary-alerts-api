@@ -1,14 +1,12 @@
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
-using Hackney.Shared.CautionaryAlerts.Boundary.Response;
 using System.Threading.Tasks;
 using System;
-using Hackney.Shared.CautionaryAlerts.Boundary.Request;
 using CautionaryAlertsApi.V1.Factories;
 using Hackney.Core.JWT;
 using Hackney.Core.Sns;
-using Hackney.Shared.CautionaryAlerts.Factories;
 using Hackney.Shared.CautionaryAlerts.Domain;
+using CautionaryAlertsApi.V1.Domain;
 
 namespace CautionaryAlertsApi.V1.UseCase
 {
@@ -24,24 +22,19 @@ namespace CautionaryAlertsApi.V1.UseCase
             _snsGateway = snsGateway;
             _snsFactory = snsFactory;
         }
-        public async Task<PropertyAlertDomain> ExecuteAsync(AlertQueryObject query, Token token)
+        public async Task<PropertyAlertDomain> ExecuteAsync(EndCautionaryAlert query, Token token)
         {
+            var updatedAlert = await _gateway.EndCautionaryAlert(query).ConfigureAwait(false);
 
-            var existingAlert = _gateway.GetCautionaryAlertByAlertId(query);
+            if (updatedAlert is null)
+                return null;
 
-            if (existingAlert == null) return null;
-            var existingAlertDb = existingAlert.ToPropertyAlertDatabase();
-
-            existingAlertDb.IsActive = false;
-            var result = await _gateway.EndCautionaryAlert(existingAlertDb).ConfigureAwait(false);
-
-            var cautionaryAlertSnsMessage = _snsFactory.End(result, token);
+            var cautionaryAlertSnsMessage = _snsFactory.End(updatedAlert, token);
             var cautionaryAlertTopicArn = Environment.GetEnvironmentVariable("CAUTIONARY_ALERTS_SNS_ARN");
 
             await _snsGateway.Publish(cautionaryAlertSnsMessage, cautionaryAlertTopicArn).ConfigureAwait(false);
 
-            return result;
-
+            return updatedAlert;
         }
     }
 }

@@ -15,10 +15,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
-using Google.Apis.Util;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using CautionaryAlertsApi.Tests.V1.Infrastructure;
+using CautionaryAlertsApi.V1.Domain;
 
 namespace CautionaryAlertsApi.Tests.V1.Gateways
 {
@@ -576,10 +574,10 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             await TestDataHelper.SavePropertyAlertToDb(UhContext, alertDb).ConfigureAwait(false);
 
-            alertDb.IsActive = false;
+            var endCautionaryAlertData = new EndCautionaryAlert(alertId);
 
             // Act
-            var response = await _classUnderTest.EndCautionaryAlert(alertDb).ConfigureAwait(false);
+            var response = await _classUnderTest.EndCautionaryAlert(endCautionaryAlertData).ConfigureAwait(false);
 
             // Assert
             response.Should().NotBeNull();
@@ -595,7 +593,5 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             updatedAlertDomain.Should().BeEquivalentTo(originalAlertDomain, config => config.Excluding(x => x.IsActive));
             updatedAlert.FirstOrDefault().IsActive.Should().BeFalse();
         }
-
-
     }
 }

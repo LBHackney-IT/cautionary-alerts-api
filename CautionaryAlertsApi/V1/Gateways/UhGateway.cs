@@ -166,15 +166,23 @@ namespace CautionaryAlertsApi.V1.Gateways
         }
 
         [LogCall]
-        public async Task<PropertyAlertDomain> EndCautionaryAlert(PropertyAlertNew updateAlert)
+        public async Task<PropertyAlertDomain> EndCautionaryAlert(EndCautionaryAlert queryData)
         {
-            _logger.LogDebug($"Calling Postgress.SaveAsync");
+            var alertToBeUpdated = await _uhContext
+                .PropertyAlertsNew
+                .FirstOrDefaultAsync(x => x.AlertId == queryData.AlertId.ToString())
+                .ConfigureAwait(false);
 
-            _uhContext.PropertyAlertsNew.Update(updateAlert);
+            if (alertToBeUpdated is null)
+                return null;
+
+            alertToBeUpdated.IsActive = false;
+
+            _logger.LogDebug($"Calling Postgress.SaveAsync");
 
             await _uhContext.SaveChangesAsync().ConfigureAwait(false);
 
-            return updateAlert.ToPropertyAlertDomain();
+            return alertToBeUpdated.ToPropertyAlertDomain();
         }
     }
 }
