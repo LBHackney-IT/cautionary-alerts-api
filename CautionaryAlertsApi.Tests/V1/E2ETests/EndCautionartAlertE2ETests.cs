@@ -52,6 +52,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             message.Method = HttpMethod.Patch;
             message.Headers.Add("Authorization", token);
 
+            // Act
             var response = await Client.SendAsync(message).ConfigureAwait(false);
 
             // Assert
@@ -72,6 +73,9 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             var snsResult = await snsVerifer.VerifySnsEventRaised(verifyFunc);
             if (!snsResult && snsVerifer.LastException != null)
                 throw snsVerifer.LastException;
+
+            var alertInTheDatabase = UhContext.PropertyAlertsNew.FirstOrDefault(a => a.AlertId == alertId.ToString());
+            alertInTheDatabase.IsActive.Should().BeFalse();
         }
 
         [Test]
