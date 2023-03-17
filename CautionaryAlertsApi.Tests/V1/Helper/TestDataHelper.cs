@@ -44,19 +44,25 @@ namespace CautionaryAlertsApi.Tests.V1.Helper
         {
             context.PropertyAlertsNew.AddRange(results);
 
-            await context.SaveChangesAsync().ConfigureAwait(false);
+            await SaveTestDataChanges(context).ConfigureAwait(false);
         }
 
         public static async Task SavePropertyAlertToDb(UhContext context, PropertyAlertNew alert)
         {
             context.PropertyAlertsNew.Add(alert);
 
-            await context.SaveChangesAsync().ConfigureAwait(false);
+            await SaveTestDataChanges(context).ConfigureAwait(false);
         }
 
         public static int SetStringLength(int initialLength, int dbConstraint)
         {
             return initialLength < dbConstraint ? initialLength : dbConstraint;
+        }
+
+        public static async Task SaveTestDataChanges(UhContext context)
+        {
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            context.ChangeTracker.Clear();
         }
     }
 }
