@@ -31,6 +31,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Hackney.Core.Testing.Sns;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CautionaryAlertsApi
 {
@@ -121,6 +123,8 @@ namespace CautionaryAlertsApi
             });
 
             services.ConfigureSns();
+            services.ConfigureSnsFixture();
+
             services.AddTokenFactory();
             services.AddLogCallAspect();
 
@@ -181,6 +185,7 @@ namespace CautionaryAlertsApi
             services.AddScoped<IGetCautionaryAlertsByPersonId, GetCautionaryAlertsByPersonIdUseCase>();
             services.AddScoped<IGetCautionaryAlertByAlertIdUseCase, GetCautionaryAlertByAlertIdUseCase>();
             services.AddScoped<IPostNewCautionaryAlertUseCase, PostNewCautionaryAlertUseCase>();
+            services.AddScoped<IEndCautionaryAlertUseCase, EndCautionaryAlertUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

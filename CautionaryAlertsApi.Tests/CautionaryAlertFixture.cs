@@ -1,11 +1,13 @@
 using AutoFixture;
 using Hackney.Shared.CautionaryAlerts.Boundary.Request;
+using Hackney.Shared.CautionaryAlerts.Domain;
 using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace CautionaryAlertsApi.Tests
 {
-    public static class CreateCautionaryAlertFixture
+    public static class CautionaryAlertFixture
     {
         public static CreateCautionaryAlert GenerateValidCreateCautionaryAlertFixture(string defaultString, Fixture fixture, string addressString)
         {

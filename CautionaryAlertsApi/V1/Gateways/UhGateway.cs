@@ -14,6 +14,10 @@ using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using PropertyAlert = Hackney.Shared.CautionaryAlerts.Infrastructure.PropertyAlert;
 using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.Tests.V1.Infrastructure;
+using Npgsql;
+using CautionaryAlertsApi.Tests;
+using CautionaryAlertsApi.V1.Boundary.Request;
+using AlertQueryObject = CautionaryAlertsApi.V1.Boundary.Request.AlertQueryObject;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {
@@ -133,16 +137,17 @@ namespace CautionaryAlertsApi.V1.Gateways
             return alerts.Select(x => x.ToDomain());
         }
 
-        public CautionaryAlert GetCautionaryAlertByAlertId(AlertQueryObject query)
+        public PropertyAlertDomain GetCautionaryAlertByAlertId(AlertQueryObject query)
         {
-            var alerts = _uhContext.PropertyAlertsNew
+            var alerts = _uhContext.PropertyAlertsNew.AsNoTracking()
                         .Where(x => x.AlertId == query.AlertId.ToString());
 
-            var cautionaryAlert = alerts.Select(x => x.ToCautionaryAlertDomain());
+            var cautionaryAlert = alerts.Select(x => x.ToPropertyAlertDomain());
 
             //We should never expect the count to by more than one as AlertId should be unique but adding this condition as we only return the first alert. 
-            if (cautionaryAlert.Count() > 1)
-                throw new MoreThanOneAlertException(cautionaryAlert.Count());
+            var count = cautionaryAlert.Count();
+            if (count > 1)
+                throw new MoreThanOneAlertException(count);
 
 
             return cautionaryAlert.FirstOrDefault();
@@ -160,6 +165,27 @@ namespace CautionaryAlertsApi.V1.Gateways
             await _uhContext.SaveChangesAsync().ConfigureAwait(false);
 
             return alertDbEntity.ToPropertyAlertDomain();
+        }
+
+        [LogCall]
+        public async Task<PropertyAlertDomain> EndCautionaryAlert(AlertQueryObject queryData, EndCautionaryAlertRequest endCautionaryAlertRequest)
+        {
+            var alertToBeUpdated = await _uhContext
+                .PropertyAlertsNew
+                .FirstOrDefaultAsync(x => x.AlertId == queryData.AlertId.ToString())
+                .ConfigureAwait(false);
+
+            if (alertToBeUpdated is null)
+                return null;
+
+            alertToBeUpdated.IsActive = false;
+            alertToBeUpdated.EndDate = endCautionaryAlertRequest.EndDate;
+
+            _logger.LogDebug($"Calling Postgress.SaveAsync");
+
+            await _uhContext.SaveChangesAsync().ConfigureAwait(false);
+
+            return alertToBeUpdated.ToPropertyAlertDomain();
         }
     }
 }

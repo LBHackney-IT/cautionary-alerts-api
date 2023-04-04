@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Hackney.Shared.CautionaryAlerts.Boundary.Request;
 using Hackney.Shared.CautionaryAlerts.Boundary.Response;
 using Hackney.Shared.CautionaryAlerts.Domain;
 using CautionaryAlertsApi.V1.UseCase;
@@ -15,6 +14,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
+using CautionaryAlertsApi.V1.Factories;
+using Hackney.Shared.CautionaryAlerts.Boundary.Request;
+using CautionaryAlertsApi.V1.Boundary.Request;
+using AlertQueryObject = CautionaryAlertsApi.V1.Boundary.Request.AlertQueryObject;
 
 namespace CautionaryAlertsApi.V1.Controllers
 {
@@ -30,6 +33,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         private readonly IGetCautionaryAlertsByPersonId _getCautionaryAlertsByPersonId;
         private readonly IGetCautionaryAlertByAlertIdUseCase _getCautionaryAlertByAlertId;
         private readonly IPostNewCautionaryAlertUseCase _postNewCautionaryAlertUseCase;
+        private readonly IEndCautionaryAlertUseCase _endCautionaryAlertUseCase;
         private readonly ITokenFactory _tokenFactory;
         private readonly IHttpContextWrapper _contextWrapper;
 
@@ -39,6 +43,7 @@ namespace CautionaryAlertsApi.V1.Controllers
                                              IGetCautionaryAlertsByPersonId getCautionaryAlertsByPersonId,
                                              IGetCautionaryAlertByAlertIdUseCase getCautionaryAlertByAlertId,
                                              IPostNewCautionaryAlertUseCase postNewCautionaryAlertUseCase,
+                                             IEndCautionaryAlertUseCase endCautionaryAlertUseCase,
                                              ITokenFactory tokenFactory,
                                              IHttpContextWrapper contextWrapper)
         {
@@ -48,6 +53,7 @@ namespace CautionaryAlertsApi.V1.Controllers
             _getCautionaryAlertsByPersonId = getCautionaryAlertsByPersonId;
             _getCautionaryAlertByAlertId = getCautionaryAlertByAlertId;
             _postNewCautionaryAlertUseCase = postNewCautionaryAlertUseCase;
+            _endCautionaryAlertUseCase = endCautionaryAlertUseCase;
             _contextWrapper = contextWrapper;
             _tokenFactory = tokenFactory;
         }
@@ -152,7 +158,7 @@ namespace CautionaryAlertsApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
         [LogCall(LogLevel.Information)]
-        [AuthorizeEndpointByGroups("CREATE_CAUTIONARY_ALERT_ALLOWED_GROUPS")]
+        [AuthorizeEndpointByGroups("MANAGE_CAUTIONARY_ALERT_ALLOWED_GROUPS")]
         public async Task<IActionResult> CreateNewCautionaryAlert([FromBody] CreateCautionaryAlert cautionaryAlert)
         {
             try
@@ -166,6 +172,24 @@ namespace CautionaryAlertsApi.V1.Controllers
             {
                 return BadRequest("Cautionary alert cannot be created");
             }
+        }
+
+        /// <summary>
+        /// Update alert to be inactive
+        /// </summary>
+        /// <response code="204">Alert updated to inactive</response>
+        [ProducesResponseType(typeof(CautionaryAlertsPropertyResponse), StatusCodes.Status200OK)]
+        [HttpPatch]
+        [Route("alerts/{alertId}/end-alert")]
+        [AuthorizeEndpointByGroups("MANAGE_CAUTIONARY_ALERT_ALLOWED_GROUPS")]
+        public async Task<IActionResult> EndCautionaryAlert([FromRoute] AlertQueryObject query, [FromBody] EndCautionaryAlertRequest endCautionaryAlertRequest)
+        {
+            var token = _tokenFactory.Create(_contextWrapper.GetContextRequestHeaders(HttpContext));
+
+            var result = await _endCautionaryAlertUseCase.ExecuteAsync(query, endCautionaryAlertRequest, token).ConfigureAwait(false);
+            if (result == null) return NotFound();
+
+            return NoContent();
         }
     }
 }

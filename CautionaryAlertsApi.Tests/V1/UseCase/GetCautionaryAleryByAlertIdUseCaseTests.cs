@@ -10,6 +10,7 @@ using System;
 using FluentAssertions;
 using Hackney.Shared.CautionaryAlerts.Domain;
 using Hackney.Shared.CautionaryAlerts.Boundary.Request;
+using CautionaryAlertsApi.V1.Boundary.Request;
 
 namespace CautionaryAlertsApi.Tests.V1.UseCase
 {
@@ -31,8 +32,8 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
         {
             // Arrange
             var query = _fixture.Create<AlertQueryObject>();
-            var mockAlert = _fixture.Build<CautionaryAlert>()
-                                     .With(x => x.AlertId, query.AlertId)
+            var mockAlert = _fixture.Build<PropertyAlertDomain>()
+                                     .With(x => x.AlertId, query.AlertId.ToString())
                                      .Create();
 
             _mockGateway
@@ -44,7 +45,8 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
 
             // Assert
             result.Should().NotBeNull();
-            result.AlertId.Should().Be(query.AlertId);
+            result.AlertId.Should().Be(query.AlertId.ToString());
+
             _mockGateway.Verify(x => x.GetCautionaryAlertByAlertId(query), Times.Once);
         }
     }

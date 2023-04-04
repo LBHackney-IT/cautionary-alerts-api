@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using Hackney.Core.Http;
 using Hackney.Core.JWT;
+using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.V1.Boundary.Request;
 
 namespace CautionaryAlertsApi.Tests.V1.Controllers
 {
@@ -28,6 +30,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         private Mock<IGetCautionaryAlertsByPersonId> _mockGetCautionaryAlertsByPersonIdUseCase;
         private Mock<IGetCautionaryAlertByAlertIdUseCase> _mockGetCautionaryAlertByAlertIdUseCase;
         private Mock<IPostNewCautionaryAlertUseCase> _mockPostNewCautionaryAlertUseCase;
+        private Mock<IEndCautionaryAlertUseCase> _mockEndCautionaryAlertUseCase;
         private Mock<ITokenFactory> _mockTokenFactory;
         private Mock<IHttpContextWrapper> _mockContextWrapper;
         private Mock<HttpRequest> _mockHttpRequest;
@@ -42,6 +45,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             _mockGetCautionaryAlertsByPersonIdUseCase = new Mock<IGetCautionaryAlertsByPersonId>();
             _mockGetCautionaryAlertByAlertIdUseCase = new Mock<IGetCautionaryAlertByAlertIdUseCase>();
             _mockPostNewCautionaryAlertUseCase = new Mock<IPostNewCautionaryAlertUseCase>();
+            _mockEndCautionaryAlertUseCase = new Mock<IEndCautionaryAlertUseCase>();
             _mockTokenFactory = new Mock<ITokenFactory>();
             _mockContextWrapper = new Mock<IHttpContextWrapper>();
             _mockHttpRequest = new Mock<HttpRequest>();
@@ -55,6 +59,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
                 _mockGetCautionaryAlertsByPersonIdUseCase.Object,
                 _mockGetCautionaryAlertByAlertIdUseCase.Object,
                 _mockPostNewCautionaryAlertUseCase.Object,
+                _mockEndCautionaryAlertUseCase.Object,
                 _mockTokenFactory.Object,
                 _mockContextWrapper.Object);
 
@@ -143,7 +148,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             // Arrange
             var query = _fixture.Create<AlertQueryObject>();
 
-            var usecaseResponse = _fixture.Create<CautionaryAlert>();
+            var usecaseResponse = _fixture.Create<PropertyAlertDomain>();
 
 
             _mockGetCautionaryAlertByAlertIdUseCase
@@ -169,7 +174,7 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
 
             _mockGetCautionaryAlertByAlertIdUseCase
                 .Setup(x => x.ExecuteAsync(query))
-                .Returns((CautionaryAlert) null);
+                .Returns((PropertyAlertDomain) null);
 
             // Act
             var response = _classUnderTest.GetAlertByAlertId(query) as NotFoundObjectResult;
@@ -218,6 +223,33 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
             response.StatusCode.Should().Be(StatusCodes.Status200OK);
             response.Value.Should().BeEquivalentTo(createAlertResponse);
             _mockPostNewCautionaryAlertUseCase.Verify(x => x.ExecuteAsync(createAlertRequest, It.IsAny<Token>()), Times.Once);
+        }
+
+        [Test]
+        public async Task EndCautionaryAlertReturnsNoContentIfSuccessful()
+        {
+            // Arrange
+            var alertQueryObj = _fixture.Create<AlertQueryObject>();
+            var endAlertRequest = _fixture.Build<EndCautionaryAlertRequest>()
+                                          .With(x => x.EndDate, DateTime.UtcNow.AddYears(-1))
+                                          .Create();
+            var createAlertDomain = _fixture.Create<PropertyAlertDomain>();
+
+            _mockEndCautionaryAlertUseCase
+                .Setup(x => x.ExecuteAsync(It.IsAny<AlertQueryObject>(), It.IsAny<EndCautionaryAlertRequest>(), It.IsAny<Token>()))
+                .ReturnsAsync(createAlertDomain);
+
+            // Act
+            var response = await _classUnderTest.EndCautionaryAlert(alertQueryObj, endAlertRequest).ConfigureAwait(false) as NoContentResult;
+
+            // Assert
+            _mockEndCautionaryAlertUseCase.Verify(
+                x => x.ExecuteAsync(It.Is<AlertQueryObject>(e => e.AlertId == alertQueryObj.AlertId), It.Is<EndCautionaryAlertRequest>(endAlertRequest => endAlertRequest.EndDate == endAlertRequest.EndDate), It.IsAny<Token>()),
+                Times.Once
+            );
+
+            response.Should().NotBeNull();
+            response.StatusCode.Should().Be(StatusCodes.Status204NoContent);
         }
     }
 }

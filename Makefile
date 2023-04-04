@@ -14,9 +14,15 @@ serve:
 shell:
 	docker-compose run cautionary-alerts-api bash
 
+# cautionary-alerts-api-test requires further setup of environment variables
 .PHONY: test
 test:
-	docker-compose up test-database & docker-compose build cautionary-alerts-api-test && docker-compose up cautionary-alerts-api-test
+	docker-compose up test-database & docker-compose up localstack & docker-compose build cautionary-alerts-api-test && docker-compose up cautionary-alerts-api-test
+
+# Run these in order to run tests in the IDE
+.PHONY: local-test-setup
+local-test-setup:
+	docker-compose up test-database & docker-compose up localstack
 
 .PHONY: lint
 lint:

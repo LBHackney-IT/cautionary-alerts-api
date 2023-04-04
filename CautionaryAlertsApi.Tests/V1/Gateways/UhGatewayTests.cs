@@ -15,10 +15,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
-using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
-using Google.Apis.Util;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using CautionaryAlertsApi.Tests.V1.Infrastructure;
+using CautionaryAlertsApi.V1.Boundary.Request;
 
 namespace CautionaryAlertsApi.Tests.V1.Gateways
 {
@@ -31,6 +29,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         private readonly Random _random = new Random();
         private readonly Faker _faker = new Faker();
         private Mock<ILogger<UhGateway>> _mockedLogger;
+
 
         [SetUp]
         public void Setup()
@@ -460,6 +459,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var alert = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.AlertId, query.AlertId.ToString())
                 .With(x => x.DateOfIncident, dateOfIncident)
+                .Without(x => x.EndDate)
                 .Create();
 
             await TestDataHelper.SavePropertyAlertToDb(UhContext, alert).ConfigureAwait(false);
@@ -469,7 +469,9 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(alert.ToCautionaryAlertDomain());
+            result.Should().BeEquivalentTo(alert.ToPropertyAlertDomain(), config => config.Excluding(x => x.EndDate));
+            // The end date should be null as isActive is true. 
+            result.EndDate.Should().BeNull();
         }
 
         [Test]
@@ -506,7 +508,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             await TestDataHelper.SavePropertyAlertsToDb(UhContext, alerts).ConfigureAwait(false);
 
             // Act
-            Func<CautionaryAlert> func = () => _classUnderTest.GetCautionaryAlertByAlertId(query);
+            Func<PropertyAlertDomain> func = () => _classUnderTest.GetCautionaryAlertByAlertId(query);
 
             // Assert
             func.Should().Throw<MoreThanOneAlertException>().Where(x => x.AlertCount > 1);
@@ -519,7 +521,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             // Arrange
             var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
             var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
-            var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
+            var cautionaryAlert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
 
             // Act
             var response = await _classUnderTest.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false);
@@ -537,7 +539,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
         {
             // Arrange
             var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
-            var cautionaryAlert = CreateCautionaryAlertFixture.GenerateValidCreateCautionaryAlertWithoutAssetDetailsFixture(defaultString, _fixture);
+            var cautionaryAlert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertWithoutAssetDetailsFixture(defaultString, _fixture);
 
             // Act
             var response = await _classUnderTest.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false);
@@ -557,6 +559,45 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             // Act & Assert
             Assert.ThrowsAsync<DbUpdateException>(async () => await _classUnderTest.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false));
+        }
+
+        [Test]
+        public async Task EndCautionaryAlertReturnsEntityIfSuccessful()
+        {
+            // Arrange
+            var alertId = Guid.NewGuid();
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
+
+            var createAlert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
+
+            var alertDb = createAlert.ToDatabase(isActive: true, alertId.ToString());
+
+            alertDb.Id = _fixture.Create<int>();
+
+            await TestDataHelper.SavePropertyAlertToDb(UhContext, alertDb).ConfigureAwait(false);
+
+            var endCautionaryAlertData = _fixture.Build<AlertQueryObject>().With(x => x.AlertId, alertId).Create();
+            var endCautionaryAlertRequest = _fixture.Build<EndCautionaryAlertRequest>()
+                                                    .With(x => x.EndDate, DateTime.UtcNow.AddYears(-1))
+                                                    .Create();
+
+            // Act
+            var response = await _classUnderTest.EndCautionaryAlert(endCautionaryAlertData, endCautionaryAlertRequest).ConfigureAwait(false);
+
+            // Assert
+            response.Should().NotBeNull();
+
+            //Ensures it updates record and doesn't create a new one.
+            var updatedAlert = UhContext.PropertyAlertsNew
+                                        .Where(x => x.AlertId == alertId.ToString());
+            updatedAlert.Count().Should().Be(1);
+
+            var originalAlertDomain = alertDb.ToPropertyAlertDomain();
+            var updatedAlertDomain = updatedAlert.Select(x => x.ToPropertyAlertDomain()).ToList().FirstOrDefault();
+
+            updatedAlertDomain.Should().BeEquivalentTo(originalAlertDomain, config => config.Excluding(x => x.IsActive).Excluding(y => y.EndDate));
+            updatedAlert.FirstOrDefault().IsActive.Should().BeFalse();
         }
     }
 }
