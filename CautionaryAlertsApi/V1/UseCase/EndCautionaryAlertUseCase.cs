@@ -6,7 +6,7 @@ using CautionaryAlertsApi.V1.Factories;
 using Hackney.Core.JWT;
 using Hackney.Core.Sns;
 using Hackney.Shared.CautionaryAlerts.Domain;
-using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.V1.Boundary.Request;
 
 namespace CautionaryAlertsApi.V1.UseCase
 {
@@ -22,9 +22,9 @@ namespace CautionaryAlertsApi.V1.UseCase
             _snsGateway = snsGateway;
             _snsFactory = snsFactory;
         }
-        public async Task<PropertyAlertDomain> ExecuteAsync(EndCautionaryAlert query, Token token)
+        public async Task<PropertyAlertDomain> ExecuteAsync(AlertQueryObject query, EndCautionaryAlertRequest endCautionaryAlertRequest, Token token)
         {
-            var updatedAlert = await _gateway.EndCautionaryAlert(query).ConfigureAwait(false);
+            var updatedAlert = await _gateway.EndCautionaryAlert(query, endCautionaryAlertRequest).ConfigureAwait(false);
 
             if (updatedAlert is null)
                 return null;

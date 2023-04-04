@@ -16,6 +16,8 @@ using CautionaryAlertsApi.V1.Domain;
 using CautionaryAlertsApi.Tests.V1.Infrastructure;
 using Npgsql;
 using CautionaryAlertsApi.Tests;
+using CautionaryAlertsApi.V1.Boundary.Request;
+using AlertQueryObject = CautionaryAlertsApi.V1.Boundary.Request.AlertQueryObject;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {
@@ -166,7 +168,7 @@ namespace CautionaryAlertsApi.V1.Gateways
         }
 
         [LogCall]
-        public async Task<PropertyAlertDomain> EndCautionaryAlert(EndCautionaryAlert queryData)
+        public async Task<PropertyAlertDomain> EndCautionaryAlert(AlertQueryObject queryData, EndCautionaryAlertRequest endCautionaryAlertRequest)
         {
             var alertToBeUpdated = await _uhContext
                 .PropertyAlertsNew
@@ -177,6 +179,7 @@ namespace CautionaryAlertsApi.V1.Gateways
                 return null;
 
             alertToBeUpdated.IsActive = false;
+            alertToBeUpdated.EndDate = endCautionaryAlertRequest.EndDate;
 
             _logger.LogDebug($"Calling Postgress.SaveAsync");
 

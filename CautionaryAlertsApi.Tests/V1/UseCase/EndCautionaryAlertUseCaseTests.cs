@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Hackney.Shared.CautionaryAlerts.Domain;
 using System;
-using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.V1.Boundary.Request;
 
 namespace CautionaryAlertsApi.Tests.V1.UseCase
 {
@@ -43,18 +43,21 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
                 .With(a => a.AlertId, alertId.ToString())
                 .Create();
 
-            var endAlertData = _fixture.Create<EndCautionaryAlert>();
+            var endAlertData = _fixture.Create<AlertQueryObject>();
+            var endAlertRequest = _fixture.Build<EndCautionaryAlertRequest>()
+                                          .With(x => x.EndDate, DateTime.UtcNow.AddYears(-1))
+                                          .Create();
 
             _mockGateway
-                .Setup(x => x.EndCautionaryAlert(It.IsAny<EndCautionaryAlert>()))
+                .Setup(x => x.EndCautionaryAlert(It.IsAny<AlertQueryObject>(), It.IsAny<EndCautionaryAlertRequest>()))
                 .ReturnsAsync(mockExistingAlert);
 
             // Act
-            var result = await _classUnderTest.ExecuteAsync(endAlertData, token).ConfigureAwait(false);
+            var result = await _classUnderTest.ExecuteAsync(endAlertData, endAlertRequest, token).ConfigureAwait(false);
 
             // Assert
             _mockGateway.Verify(
-                x => x.EndCautionaryAlert(It.IsAny<EndCautionaryAlert>()),
+                x => x.EndCautionaryAlert(It.IsAny<AlertQueryObject>(), It.IsAny<EndCautionaryAlertRequest>()),
                 Times.Once
             );
 

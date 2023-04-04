@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NUnit.Framework;
 using CautionaryAlertsApi.Tests.V1.Infrastructure;
-using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.V1.Boundary.Request;
 
 namespace CautionaryAlertsApi.Tests.V1.Gateways
 {
@@ -459,6 +459,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var alert = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.AlertId, query.AlertId.ToString())
                 .With(x => x.DateOfIncident, dateOfIncident)
+                .Without(x => x.EndDate)
                 .Create();
 
             await TestDataHelper.SavePropertyAlertToDb(UhContext, alert).ConfigureAwait(false);
@@ -468,7 +469,9 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             // Assert
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(alert.ToPropertyAlertDomain());
+            result.Should().BeEquivalentTo(alert.ToPropertyAlertDomain(), config => config.Excluding(x => x.EndDate));
+            // The end date should be null as isActive is true. 
+            result.EndDate.Should().BeNull();
         }
 
         [Test]
@@ -574,10 +577,13 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             await TestDataHelper.SavePropertyAlertToDb(UhContext, alertDb).ConfigureAwait(false);
 
-            var endCautionaryAlertData = new EndCautionaryAlert(alertId);
+            var endCautionaryAlertData = _fixture.Build<AlertQueryObject>().With(x => x.AlertId, alertId).Create();
+            var endCautionaryAlertRequest = _fixture.Build<EndCautionaryAlertRequest>()
+                                                    .With(x => x.EndDate, DateTime.UtcNow.AddYears(-1))
+                                                    .Create();
 
             // Act
-            var response = await _classUnderTest.EndCautionaryAlert(endCautionaryAlertData).ConfigureAwait(false);
+            var response = await _classUnderTest.EndCautionaryAlert(endCautionaryAlertData, endCautionaryAlertRequest).ConfigureAwait(false);
 
             // Assert
             response.Should().NotBeNull();
@@ -590,7 +596,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             var originalAlertDomain = alertDb.ToPropertyAlertDomain();
             var updatedAlertDomain = updatedAlert.Select(x => x.ToPropertyAlertDomain()).ToList().FirstOrDefault();
 
-            updatedAlertDomain.Should().BeEquivalentTo(originalAlertDomain, config => config.Excluding(x => x.IsActive));
+            updatedAlertDomain.Should().BeEquivalentTo(originalAlertDomain, config => config.Excluding(x => x.IsActive).Excluding(y => y.EndDate));
             updatedAlert.FirstOrDefault().IsActive.Should().BeFalse();
         }
     }

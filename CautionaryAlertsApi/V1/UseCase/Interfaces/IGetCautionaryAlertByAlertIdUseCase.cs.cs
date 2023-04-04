@@ -1,6 +1,5 @@
-using Hackney.Shared.CautionaryAlerts.Boundary.Response;
+using CautionaryAlertsApi.V1.Boundary.Request;
 using Hackney.Shared.CautionaryAlerts.Domain;
-using Hackney.Shared.CautionaryAlerts.Boundary.Request;
 
 namespace CautionaryAlertsApi.V1.UseCase.Interfaces
 {

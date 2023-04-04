@@ -17,6 +17,7 @@ using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
 using Hackney.Core.Http;
 using Hackney.Core.JWT;
 using CautionaryAlertsApi.V1.Domain;
+using CautionaryAlertsApi.V1.Boundary.Request;
 
 namespace CautionaryAlertsApi.Tests.V1.Controllers
 {
@@ -229,18 +230,21 @@ namespace CautionaryAlertsApi.Tests.V1.Controllers
         {
             // Arrange
             var alertQueryObj = _fixture.Create<AlertQueryObject>();
+            var endAlertRequest = _fixture.Build<EndCautionaryAlertRequest>()
+                                          .With(x => x.EndDate, DateTime.UtcNow.AddYears(-1))
+                                          .Create();
             var createAlertDomain = _fixture.Create<PropertyAlertDomain>();
 
             _mockEndCautionaryAlertUseCase
-                .Setup(x => x.ExecuteAsync(It.IsAny<EndCautionaryAlert>(), It.IsAny<Token>()))
+                .Setup(x => x.ExecuteAsync(It.IsAny<AlertQueryObject>(), It.IsAny<EndCautionaryAlertRequest>(), It.IsAny<Token>()))
                 .ReturnsAsync(createAlertDomain);
 
             // Act
-            var response = await _classUnderTest.EndCautionaryAlert(alertQueryObj).ConfigureAwait(false) as NoContentResult;
+            var response = await _classUnderTest.EndCautionaryAlert(alertQueryObj, endAlertRequest).ConfigureAwait(false) as NoContentResult;
 
             // Assert
             _mockEndCautionaryAlertUseCase.Verify(
-                x => x.ExecuteAsync(It.Is<EndCautionaryAlert>(e => e.AlertId == alertQueryObj.AlertId), It.IsAny<Token>()),
+                x => x.ExecuteAsync(It.Is<AlertQueryObject>(e => e.AlertId == alertQueryObj.AlertId), It.Is<EndCautionaryAlertRequest>(endAlertRequest => endAlertRequest.EndDate == endAlertRequest.EndDate), It.IsAny<Token>()),
                 Times.Once
             );
 

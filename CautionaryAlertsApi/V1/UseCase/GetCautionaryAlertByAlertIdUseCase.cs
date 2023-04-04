@@ -1,11 +1,7 @@
 using CautionaryAlertsApi.V1.Gateways;
-using Hackney.Shared.CautionaryAlerts.Boundary.Response;
-using System.Threading.Tasks;
-using System;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
-using Hackney.Shared.CautionaryAlerts.Factories;
 using Hackney.Shared.CautionaryAlerts.Domain;
-using Hackney.Shared.CautionaryAlerts.Boundary.Request;
+using CautionaryAlertsApi.V1.Boundary.Request;
 
 namespace CautionaryAlertsApi.V1.UseCase
 {
