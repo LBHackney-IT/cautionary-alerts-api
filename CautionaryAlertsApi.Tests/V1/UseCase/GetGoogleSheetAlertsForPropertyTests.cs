@@ -34,6 +34,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
 
             var cautionaryAlert = _fixture.Build<CautionaryAlertListItem>()
                                           .With(x => x.PersonId, Guid.NewGuid().ToString())
+                                          .With(x => x.AlertId, Guid.NewGuid().ToString())
                                           .Create();
 
             cautionaryAlertList.Add(cautionaryAlert);
