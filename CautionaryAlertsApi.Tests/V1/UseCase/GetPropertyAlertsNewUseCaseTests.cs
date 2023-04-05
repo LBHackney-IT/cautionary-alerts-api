@@ -55,6 +55,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
 
             var alerts = _fixture.Build<CautionaryAlertListItem>()
                                  .With(x => x.PersonId, personId.ToString())
+                                 .With(x => x.AlertId, Guid.NewGuid().ToString())
                                  .CreateMany(numberOfResults);
 
             _mockGateway
