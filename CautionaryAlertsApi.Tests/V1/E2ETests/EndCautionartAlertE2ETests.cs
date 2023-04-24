@@ -68,7 +68,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
             //Sns event sent 
             Action<CautionaryAlertSns> verifyFunc = (snsEvent) =>
             {
-                snsEvent.EntityId.Should().Be(alertId);
+                snsEvent.EntityId.Should().Be(activeAlert.PersonDetails.Id);
                 snsEvent.User.Name.Should().Be("Tester");
                 snsEvent.User.Email.Should().Be("e2e-testing@development.com");
                 System.Text.Json.JsonSerializer.Deserialize<PropertyAlertDomain>(
