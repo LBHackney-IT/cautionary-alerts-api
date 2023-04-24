@@ -37,10 +37,12 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             //Arrange 
             var token = new Token();
             var alertId = Guid.NewGuid();
+            var personid = Guid.NewGuid();
 
             var mockExistingAlert = _fixture
                 .Build<PropertyAlertDomain>()
                 .With(a => a.AlertId, alertId.ToString())
+                .With(p => p.MMHID, personid.ToString())
                 .Create();
 
             var endAlertData = _fixture.Create<AlertQueryObject>();
