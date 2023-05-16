@@ -24,7 +24,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             var results = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.PropertyReference, propertyReference)
-                .With(x=> x.IsActive, true)
+                .With(x => x.IsActive, true)
                 .CreateMany(numberOfResults);
 
             await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
@@ -97,7 +97,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             var results = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.PropertyReference, propertyReference)
-                .With(x=> x.IsActive, true)
+                .With(x => x.IsActive, true)
                 .Without(x => x.MMHID)
                 .CreateMany(numberOfResults);
 
