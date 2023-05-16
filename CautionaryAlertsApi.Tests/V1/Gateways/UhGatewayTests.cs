@@ -397,6 +397,7 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
 
             var results = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.PropertyReference, propertyReference)
+                .With(x => x.IsActive, true)
                 .CreateMany(numberOfResults);
 
             await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
@@ -407,6 +408,28 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             // Assert
             result.Should().NotBeNull();
             result.Should().HaveCount(numberOfResults);
+        }
+
+        [Test]
+        public async Task GetPropertyAlertsReturnsEmptyWhenAllInActive()
+        {
+            // Arrange
+            var propertyReference = "00001234";
+            var numberOfResults = _random.Next(2, 5);
+
+            var results = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.PropertyReference, propertyReference)
+                .With(x => x.IsActive, false)
+                .CreateMany(numberOfResults);
+
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
+
+            // Act
+            var result = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
         }
 
         [Test]
