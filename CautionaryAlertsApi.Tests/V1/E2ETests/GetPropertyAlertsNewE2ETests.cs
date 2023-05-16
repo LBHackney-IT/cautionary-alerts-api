@@ -24,6 +24,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             var results = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.PropertyReference, propertyReference)
+                .With(x=> x.IsActive, true)
                 .CreateMany(numberOfResults);
 
             await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
@@ -39,6 +40,33 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             returnedAlerts.PropertyReference.Should().Be(propertyReference);
             returnedAlerts.Alerts.Should().HaveCount(numberOfResults);
+        }
+
+        [Test]
+        public async Task GetPropertyAlertsNewReturnsEmptyWhenInActiveAlerts()
+        {
+            // Arrange
+            var propertyReference = "00001234";
+            var numberOfResults = 10;
+
+            var results = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.PropertyReference, propertyReference)
+                .With(x => x.IsActive, false)
+                .CreateMany(numberOfResults);
+
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
+
+            // Act
+            var response = await GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
+
+            // Assert
+            response.StatusCode.Should().Be(200);
+
+            var data = await response.Content.ReadAsStringAsync().ConfigureAwait(true);
+            var returnedAlerts = JsonConvert.DeserializeObject<CautionaryAlertsPropertyResponse>(data);
+
+            returnedAlerts.Alerts.Should().NotBeNull();
+            returnedAlerts.Alerts.Should().BeEmpty();
         }
 
         [Test]
@@ -69,6 +97,7 @@ namespace CautionaryAlertsApi.Tests.V1.E2ETests
 
             var results = _fixture.Build<PropertyAlertNew>()
                 .With(x => x.PropertyReference, propertyReference)
+                .With(x=> x.IsActive, true)
                 .Without(x => x.MMHID)
                 .CreateMany(numberOfResults);
 
