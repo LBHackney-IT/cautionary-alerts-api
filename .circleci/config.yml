@@ -21,6 +21,11 @@ references:
       at: *workspace_root
 
 commands:
+  checkout-api:
+    steps:
+      - run:
+          name: Checkout
+          command: git clone https://github.com/LBHackney-IT/cautionary-alerts-api.git /root/project
   assume-role-and-persist-workspace:
     description: "Assumes deployment role and persists credentials across jobs"
     parameters:
@@ -88,9 +93,7 @@ jobs:
   check-code-formatting:
     executor: docker-dotnet
     steps:
-      - run:
-          name: Checkout
-          command: git clone https://github.com/LBHackney-IT/cautionary-alerts-api.git /root/project
+      - checkout-api
       - run:
           name: Install dotnet format
           command: dotnet tool install dotnet-format --tool-path ./dotnet-format-local/
@@ -100,7 +103,7 @@ jobs:
   build-and-test:
     executor: docker-python
     steps:
-      - checkout
+      - checkout-api
       - setup_remote_docker
       - run:
           name: build
