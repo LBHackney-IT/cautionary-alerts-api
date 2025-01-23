@@ -159,14 +159,18 @@ workflows:
           context: api-nuget-token-context
           filters:
             branches:
-              ignore: master|release|dotnet-8
+              ignore:
+                - development
+                - master
       - build-and-test:
           context:
             - api-nuget-token-context
             - SonarCloud
           filters:
             branches:
-              ignore: master|release
+              ignore:
+                - development
+                - master
 
   check-and-deploy-development:
     jobs:
@@ -174,33 +178,24 @@ workflows:
           context: api-nuget-token-context
           filters:
             branches:
-              only: master
+              only: development
       - build-and-test:
           context:
             - api-nuget-token-context
             - SonarCloud
           filters:
             branches:
-              only: master
+              only: development
       - assume-role-development:
           context: api-assume-role-development-context
           requires:
             - build-and-test
-          filters:
-            branches:
-              only: development
       - terraform-init-and-apply-to-development:
           requires:
             - assume-role-development
-          filters:
-            branches:
-              only: development
       - deploy-to-development:
           requires:
             - assume-role-development
-          filters:
-            branches:
-              only: development
   check-and-deploy-staging-and-production:
     jobs:
       - build-and-test:
