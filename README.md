@@ -74,7 +74,7 @@ $ make test
 
 - the `CONNECTION_STRING` environment variable will need to be populated with: `Host=localhost;Database=entitycore;Username=postgres;Password=mypassword"`
 
-Note: The Host name needs to be the name of the stub database docker-compose service, in order to run tests via Docker.
+Note: The Host name needs to be the name of the stub database docker compose service, in order to run tests via Docker.
 
 - Run `make local-test-setup` to run the test database and the test instances of AWS resources used for E2E tests
 
