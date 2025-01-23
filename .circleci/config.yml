@@ -89,8 +89,8 @@ jobs:
     executor: docker-dotnet
     steps:
       - run:
-          name: checkout
-          command: git clone https://github.com/LBHackney-IT/cautionary-alerts-api.git
+          name: Checkout
+          command: git clone https://github.com/LBHackney-IT/cautionary-alerts-api.git /root/project
       - run:
           name: Install dotnet format
           command: dotnet tool install dotnet-format --tool-path ./dotnet-format-local/
