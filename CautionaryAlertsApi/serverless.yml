@@ -41,8 +41,7 @@ functions:
               - x-correlation-id
               - X-Hackney-User
             allowCredentials: false
-          private: true
-          apiKeyRequired: false
+          private: false
 resources:
   Resources:
     lambdaExecutionRole:
