@@ -29,6 +29,9 @@ functions:
           authorizer:
             arn: ${self:custom.authorizerArns.${opt:stage}}
             type: request
+            resultTtlInSeconds: 0
+            identitySource: method.request.header.Authorization
+            managedExternally: true
           cors:
             origin: '*'
             headers:
