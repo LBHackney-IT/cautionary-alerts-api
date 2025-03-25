@@ -42,6 +42,7 @@ functions:
               - X-Hackney-User
             allowCredentials: false
           private: true
+          apiKeyRequired: false
 resources:
   Resources:
     lambdaExecutionRole:
