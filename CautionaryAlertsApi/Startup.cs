@@ -3,14 +3,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using CautionaryAlertsApi.V1.Factories;
 using CautionaryAlertsApi.V1.Gateways;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using CautionaryAlertsApi.V1.UseCase;
 using CautionaryAlertsApi.V1.UseCase.Interfaces;
 using CautionaryAlertsApi.Versioning;
+using FluentValidation.AspNetCore;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
+using Hackney.Core.Http;
+using Hackney.Core.JWT;
+using Hackney.Core.Logging;
+using Hackney.Core.Middleware.Exception;
+using Hackney.Core.Middleware.Logging;
+using Hackney.Core.Sns;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +28,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using Hackney.Core.Testing.Sns;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CautionaryAlertsApi
 {
@@ -39,9 +50,12 @@ namespace CautionaryAlertsApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public static void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services
                 .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+
+
             services.AddApiVersioning(o =>
             {
                 o.DefaultApiVersion = new ApiVersion(1, 0);
@@ -108,11 +122,32 @@ namespace CautionaryAlertsApi
                     c.IncludeXmlComments(xmlPath);
             });
 
+            services.ConfigureSns();
+            services.ConfigureSnsFixture();
+
+            services.AddTokenFactory();
+            services.AddLogCallAspect();
+
             ConfigureDbContext(services);
             ConfigureGoogleSheetsService(services);
+
             RegisterGateways(services);
             RegisterUseCases(services);
+
+            services.AddScoped<ISnsFactory, CautionaryAlertsSnsFactory>();
+
+            ConfigureHackneyCoreDI(services);
+
+
         }
+
+        private static void ConfigureHackneyCoreDI(IServiceCollection services)
+        {
+            services.AddSnsGateway()
+                .AddTokenFactory()
+                .AddHttpContextWrapper();
+        }
+
 
         private static void ConfigureDbContext(IServiceCollection services)
         {
@@ -137,6 +172,7 @@ namespace CautionaryAlertsApi
         {
             services.AddScoped<IUhGateway, UhGateway>();
             services.AddScoped<IGoogleSheetGateway, GoogleSheetGateway>();
+            services.AddScoped<ISnsGateway, SnsGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -145,20 +181,36 @@ namespace CautionaryAlertsApi
             services.AddScoped<IGetCautionaryAlertsForProperty, GetCautionaryAlertsForProperty>();
             services.AddScoped<IGetGoogleSheetAlertsForProperty, GetGoogleSheetAlertsForProperty>();
             services.AddScoped<IGetGoogleSheetAlertsForPerson, GetGoogleSheetAlertsForPerson>();
+            services.AddScoped<IPropertyAlertsNewUseCase, GetPropertyAlertsNewUseCase>();
+            services.AddScoped<IGetCautionaryAlertsByPersonId, GetCautionaryAlertsByPersonIdUseCase>();
+            services.AddScoped<IGetCautionaryAlertByAlertIdUseCase, GetCautionaryAlertByAlertIdUseCase>();
+            services.AddScoped<IPostNewCautionaryAlertUseCase, PostNewCautionaryAlertUseCase>();
+            services.AddScoped<IEndCautionaryAlertUseCase, EndCautionaryAlertUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
             else
             {
                 app.UseHsts();
             }
 
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .WithExposedHeaders("x-correlation-id"));
+
+            app.UseLoggingScope();
+            app.UseCustomExceptionHandler(logger);
+            app.UseLogCall();
             //Get All ApiVersions,
             var api = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
             _apiVersions = api.ApiVersionDescriptions.ToList();
@@ -173,13 +225,17 @@ namespace CautionaryAlertsApi
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
-            app.UseSwagger();
+
             app.UseRouting();
+            app.UseCustomExceptionHandler(logger);
             app.UseEndpoints(endpoints =>
             {
                 // SwaggerGen won't find controllers that are routed via this technique.
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         }
     }
 }

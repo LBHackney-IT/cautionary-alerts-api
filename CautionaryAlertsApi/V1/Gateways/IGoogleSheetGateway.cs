@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CautionaryAlertListItem = Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets.CautionaryAlertListItem;
 
 namespace CautionaryAlertsApi.V1.Gateways
 {

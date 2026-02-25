@@ -1,15 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoFixture;
 using Bogus;
 using CautionaryAlertsApi.Tests.V1.Helper;
-using CautionaryAlertsApi.V1.Domain;
-using CautionaryAlertsApi.V1.Factories;
+using Hackney.Shared.CautionaryAlerts.Boundary.Request;
+using Hackney.Shared.CautionaryAlerts.Domain;
+using Hackney.Shared.CautionaryAlerts.Factories;
 using CautionaryAlertsApi.V1.Gateways;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 using NUnit.Framework;
+using CautionaryAlertsApi.Tests.V1.Infrastructure;
+using CautionaryAlertsApi.V1.Boundary.Request;
 
 namespace CautionaryAlertsApi.Tests.V1.Gateways
 {
@@ -17,13 +24,19 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
     public class UhGatewayTests : DatabaseTests
     {
         private UhGateway _classUnderTest;
+
         private Fixture _fixture;
+        private readonly Random _random = new Random();
         private readonly Faker _faker = new Faker();
+        private Mock<ILogger<UhGateway>> _mockedLogger;
+
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new UhGateway(UhContext);
+            new LogCallAspectFixture().RunBeforeTests();
+            _mockedLogger = new Mock<ILogger<UhGateway>>();
+            _classUnderTest = new UhGateway(UhContext, _mockedLogger.Object);
             _fixture = new Fixture();
         }
 
@@ -359,6 +372,255 @@ namespace CautionaryAlertsApi.Tests.V1.Gateways
             response.Alerts.First().EndDate.Should().BeNull();
             response.Alerts.First().ModifiedBy.Should().BeEquivalentTo(alert.ModifiedBy);
             response.Alerts.First().AlertCode.Should().BeEquivalentTo(alert.AlertCode);
+        }
+
+        [Test]
+        public async Task GetPropertyAlertsWhenNoneExistReturnsEmptyList()
+        {
+            // Arrange
+            var propertyReference = "00001234";
+
+            // Act
+            var result = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task GetPropertyAlertsWhenCalledReturnsMany()
+        {
+            // Arrange
+            var propertyReference = "00001234";
+            var numberOfResults = _random.Next(2, 5);
+
+            var results = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.PropertyReference, propertyReference)
+                .With(x => x.IsActive, true)
+                .CreateMany(numberOfResults);
+
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
+
+            // Act
+            var result = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().HaveCount(numberOfResults);
+        }
+
+        [Test]
+        public async Task GetPropertyAlertsReturnsEmptyWhenAllInActive()
+        {
+            // Arrange
+            var propertyReference = "00001234";
+            var numberOfResults = _random.Next(2, 5);
+
+            var results = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.PropertyReference, propertyReference)
+                .With(x => x.IsActive, false)
+                .CreateMany(numberOfResults);
+
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
+
+            // Act
+            var result = await _classUnderTest.GetPropertyAlertsNew(propertyReference).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task GetCautionaryAlertsByPersonIdReturnsEmptyList()
+        {
+            // Arrange
+            var personId = Guid.NewGuid();
+            var results = _fixture.Build<PropertyAlertNew>()
+                                  .With(x => x.MMHID, personId.ToString())
+                                  .Create();
+
+
+            // Act
+            var result = await _classUnderTest.GetCautionaryAlertsByMMHPersonId(personId).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEmpty();
+        }
+
+        [Test]
+        public async Task GetCautionaryAlertsByPersonIdReturnsMany()
+        {
+            // Arrange
+            var personId = Guid.NewGuid();
+            var results = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.MMHID, personId.ToString())
+                .With(x => x.IsActive, true)
+                .CreateMany(3);
+
+            results.First().IsActive = false;
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, results).ConfigureAwait(false);
+
+            // Act
+            var result = await _classUnderTest.GetCautionaryAlertsByMMHPersonId(personId).ConfigureAwait(false);
+
+            // Assert
+            result.Should().NotBeNull();
+            var activAlerts = result.Select(x => x.IsActive == true);
+            activAlerts.Should().HaveCount(2);
+        }
+
+        [Test]
+        public async Task GetCautionaryAlertsByAlertIdReturnsAlert()
+        {
+            // Arrange
+            var query = _fixture.Create<AlertQueryObject>();
+
+            var dateOfIncident = "12/12/2020";
+            var alert = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.AlertId, query.AlertId.ToString())
+                .With(x => x.DateOfIncident, dateOfIncident)
+                .Without(x => x.EndDate)
+                .Create();
+
+            await TestDataHelper.SavePropertyAlertToDb(UhContext, alert).ConfigureAwait(false);
+
+            // Act
+            var result = _classUnderTest.GetCautionaryAlertByAlertId(query);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(alert.ToPropertyAlertDomain(), config => config.Excluding(x => x.EndDate));
+            // The end date should be null as isActive is true. 
+            result.EndDate.Should().BeNull();
+        }
+
+        [Test]
+        public void GetCautionaryAlertsByAlertIdReturnsNull()
+        {
+            // Arrange
+            var query = _fixture.Create<AlertQueryObject>();
+
+            var dateOfIncident = "12/12/2020";
+            var alert = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.AlertId, query.AlertId.ToString())
+                .With(x => x.DateOfIncident, dateOfIncident)
+                .Create();
+
+            // Act
+            var result = _classUnderTest.GetCautionaryAlertByAlertId(query);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Test]
+        public async Task GetCautionaryAlertsByAlertIdThrowsException()
+        {
+            // Arrange
+            var query = _fixture.Create<AlertQueryObject>();
+
+            var dateOfIncident = "12/12/2020";
+            var alerts = _fixture.Build<PropertyAlertNew>()
+                .With(x => x.AlertId, query.AlertId.ToString())
+                .With(x => x.DateOfIncident, dateOfIncident)
+                .CreateMany(3);
+
+            await TestDataHelper.SavePropertyAlertsToDb(UhContext, alerts).ConfigureAwait(false);
+
+            // Act
+            Func<PropertyAlertDomain> func = () => _classUnderTest.GetCautionaryAlertByAlertId(query);
+
+            // Assert
+            func.Should().Throw<MoreThanOneAlertException>().Where(x => x.AlertCount > 1);
+
+        }
+
+        [Test]
+        public async Task PostNewCautionaryAlertReturnsEntityIfSuccessful()
+        {
+            // Arrange
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
+            var cautionaryAlert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
+
+            // Act
+            var response = await _classUnderTest.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false);
+
+            // Assert
+            response.Should().NotBeNull();
+            response.Should().BeOfType<PropertyAlertDomain>();
+            response.Reason.Should().BeSameAs(cautionaryAlert.IncidentDescription);
+            response.Code.Should().BeSameAs(cautionaryAlert.Alert.Code);
+            response.PropertyReference.Should().BeSameAs(cautionaryAlert.AssetDetails.PropertyReference);
+        }
+
+        [Test]
+        public async Task PostNewCautionaryAlertWithoutAssetDetailsReturnsEntityIfSuccessful()
+        {
+            // Arrange
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var cautionaryAlert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertWithoutAssetDetailsFixture(defaultString, _fixture);
+
+            // Act
+            var response = await _classUnderTest.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false);
+
+            // Assert
+            response.Should().NotBeNull();
+            response.Should().BeOfType<PropertyAlertDomain>();
+            response.Reason.Should().BeSameAs(cautionaryAlert.IncidentDescription);
+            response.Code.Should().BeSameAs(cautionaryAlert.Alert.Code);
+        }
+
+        [Test]
+        public void PostNewCautionaryAlertThrowsIfNotSuccessful()
+        {
+            // Arrange
+            var cautionaryAlert = _fixture.Create<CreateCautionaryAlert>();
+
+            // Act & Assert
+            Assert.ThrowsAsync<DbUpdateException>(async () => await _classUnderTest.PostNewCautionaryAlert(cautionaryAlert).ConfigureAwait(false));
+        }
+
+        [Test]
+        public async Task EndCautionaryAlertReturnsEntityIfSuccessful()
+        {
+            // Arrange
+            var alertId = Guid.NewGuid();
+            var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
+            var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
+
+            var createAlert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
+
+            var alertDb = createAlert.ToDatabase(isActive: true, alertId.ToString());
+
+            alertDb.Id = _fixture.Create<int>();
+
+            await TestDataHelper.SavePropertyAlertToDb(UhContext, alertDb).ConfigureAwait(false);
+
+            var endCautionaryAlertData = _fixture.Build<AlertQueryObject>().With(x => x.AlertId, alertId).Create();
+            var endCautionaryAlertRequest = _fixture.Build<EndCautionaryAlertRequest>()
+                                                    .With(x => x.EndDate, DateTime.UtcNow.AddYears(-1))
+                                                    .Create();
+
+            // Act
+            var response = await _classUnderTest.EndCautionaryAlert(endCautionaryAlertData, endCautionaryAlertRequest).ConfigureAwait(false);
+
+            // Assert
+            response.Should().NotBeNull();
+
+            //Ensures it updates record and doesn't create a new one.
+            var updatedAlert = UhContext.PropertyAlertsNew
+                                        .Where(x => x.AlertId == alertId.ToString());
+            updatedAlert.Count().Should().Be(1);
+
+            var originalAlertDomain = alertDb.ToPropertyAlertDomain();
+            var updatedAlertDomain = updatedAlert.Select(x => x.ToPropertyAlertDomain()).ToList().FirstOrDefault();
+
+            updatedAlertDomain.Should().BeEquivalentTo(originalAlertDomain, config => config.Excluding(x => x.IsActive).Excluding(y => y.EndDate));
+            updatedAlert.FirstOrDefault().IsActive.Should().BeFalse();
         }
     }
 }

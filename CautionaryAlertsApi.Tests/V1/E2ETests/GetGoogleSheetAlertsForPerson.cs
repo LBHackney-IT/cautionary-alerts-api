@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CautionaryAlertsApi.V1.Boundary.Response;
+using Hackney.Shared.CautionaryAlerts.Boundary.Response;
 using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;

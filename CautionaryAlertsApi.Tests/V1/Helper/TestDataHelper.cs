@@ -1,8 +1,7 @@
 using AutoFixture;
-using CautionaryAlertsApi.V1.Infrastructure;
+using Hackney.Shared.CautionaryAlerts.Infrastructure;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CautionaryAlertsApi.Tests.V1.Helper
@@ -39,6 +38,31 @@ namespace CautionaryAlertsApi.Tests.V1.Helper
             context.AlertDescriptionLookups.Add(desc);
             context.SaveChanges();
             return desc;
+        }
+
+        public static async Task SavePropertyAlertsToDb(UhContext context, IEnumerable<PropertyAlertNew> results)
+        {
+            context.PropertyAlertsNew.AddRange(results);
+
+            await SaveTestDataChanges(context).ConfigureAwait(false);
+        }
+
+        public static async Task SavePropertyAlertToDb(UhContext context, PropertyAlertNew alert)
+        {
+            context.PropertyAlertsNew.Add(alert);
+
+            await SaveTestDataChanges(context).ConfigureAwait(false);
+        }
+
+        public static int SetStringLength(int initialLength, int dbConstraint)
+        {
+            return initialLength < dbConstraint ? initialLength : dbConstraint;
+        }
+
+        public static async Task SaveTestDataChanges(UhContext context)
+        {
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            context.ChangeTracker.Clear();
         }
     }
 }

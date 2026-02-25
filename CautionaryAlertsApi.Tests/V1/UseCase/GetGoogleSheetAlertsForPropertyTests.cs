@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoFixture;
+using Hackney.Shared.CautionaryAlerts.Factories;
 using CautionaryAlertsApi.V1.Gateways;
 using CautionaryAlertsApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using Hackney.Shared.CautionaryAlerts.Infrastructure.GoogleSheets;
+using System;
 
 namespace CautionaryAlertsApi.Tests.V1.UseCase
 {
@@ -27,18 +30,27 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
         public void WillCallGatewayAndRetrieveCautionaryAlertListItem()
         {
             // Arrange
-            var expectedResponse = new List<CautionaryAlertListItem> { _fixture.Create<CautionaryAlertListItem>() };
-            var propertyReference = expectedResponse.First().PropertyReference;
+            var cautionaryAlertList = new List<CautionaryAlertListItem>();
+
+            var cautionaryAlert = _fixture.Build<CautionaryAlertListItem>()
+                                          .With(x => x.PersonId, Guid.NewGuid().ToString())
+                                          .With(x => x.AlertId, Guid.NewGuid().ToString())
+                                          .Create();
+
+            cautionaryAlertList.Add(cautionaryAlert);
+
+            var propertyReference = cautionaryAlertList.First().PropertyReference;
+
             _gateway
                 .Setup(g => g.GetPropertyAlerts(propertyReference))
-                .Returns(expectedResponse);
+                .Returns(cautionaryAlertList);
 
             // Act
             var result = _classUnderTest.Execute(propertyReference);
 
             // Assert
             _gateway.Verify(g => g.GetPropertyAlerts(propertyReference), Times.Once);
-            result.Alerts.Should().BeEquivalentTo(expectedResponse.Select(l => l.ToResponse()));
+            result.Alerts.Should().BeEquivalentTo(cautionaryAlertList.Select(l => l.ToResponse()));
         }
     }
 }
