@@ -102,6 +102,28 @@ commands:
           command: |
             cd ./CautionaryAlertsApi/
             sls deploy --stage <<parameters.stage>> --conceal
+  remove-lambda:
+    description: "Removes API via Serverless"
+    parameters:
+      stage:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Install Node.js
+          command: |
+            curl -sL https://deb.nodesource.com/setup_18.x | bash -
+            apt-get update && apt-get install -y nodejs
+      - run:
+          name: Install serverless CLI
+          command: npm i -g serverless
+      - run:
+          name: Remove lambda
+          command: |
+            cd ./CautionaryAlertsApi/
+            sls remove --stage <<parameters.stage>>
 
 jobs:
   assume-role-disaster-recovery:
@@ -119,6 +141,11 @@ jobs:
     steps:
       - terraform-init-then-destroy:
           environment: "production"
+  remove-lambda-disaster-recovery:
+    executor: docker-dotnet
+    steps:
+      - remove-lambda:
+          stage: "production"
 
 workflows:
   check-and-destroy-disaster-recovery:
@@ -142,6 +169,15 @@ workflows:
             branches:
               only: disaster-recovery-test
       - terraform-init-and-destroy-disaster-recovery:
+          requires:
+            - approve-destruction
+          filters:
+            branches:
+              only: disaster-recovery-test
+      - remove-lambda-disaster-recovery:
+          context:
+            - api-nuget-token-context
+            - "Serverless Framework"
           requires:
             - approve-destruction
           filters:
