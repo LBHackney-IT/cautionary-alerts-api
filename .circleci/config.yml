@@ -36,8 +36,8 @@ commands:
           root: *workspace_root
           paths:
             - .aws
-  terraform-init-then-apply:
-    description: "Initializes and applies terraform configuration"
+  terraform-init-then-destroy:
+    description: "Initializes and destroys terraform configuration"
     parameters:
       environment:
         type: string
@@ -51,10 +51,29 @@ commands:
             terraform init
           name: get and init
       - run:
-          name: apply
+          name: destroy
           command: |
             cd ./terraform/<<parameters.environment>>/
-            terraform apply -auto-approve
+            terraform destroy -auto-approve
+  terraform-plan-destroy:
+    description: "Initializes and plans terraform destruction"
+    parameters:
+      environment:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform get -update=true
+            terraform init
+          name: get and init
+      - run:
+          name: plan destroy
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform plan -destroy
   deploy-lambda:
     description: "Deploys API via Serverless"
     parameters:
@@ -90,37 +109,41 @@ jobs:
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_DISASTER_RECOVERY
-  terraform-init-and-apply-to-disaster-recovery:
+  terraform-plan-destroy-disaster-recovery:
     executor: docker-terraform
     steps:
-      - terraform-init-then-apply:
+      - terraform-plan-destroy:
           environment: "production"
-  deploy-to-disaster-recovery:
-    executor: docker-dotnet
+  terraform-init-and-destroy-disaster-recovery:
+    executor: docker-terraform
     steps:
-      - deploy-lambda:
-          stage: "production"
+      - terraform-init-then-destroy:
+          environment: "production"
 
 workflows:
-  check-and-deploy-disaster-recovery:
+  check-and-destroy-disaster-recovery:
     jobs:
       - assume-role-disaster-recovery:
           context: api-assume-role-disaster-recovery-context
           filters:
             branches:
               only: disaster-recovery-test
-      - terraform-init-and-apply-to-disaster-recovery:
+      - terraform-plan-destroy-disaster-recovery:
           requires:
             - assume-role-disaster-recovery
           filters:
             branches:
               only: disaster-recovery-test
-      - deploy-to-disaster-recovery:
-          context:
-            - api-nuget-token-context
-            - "Serverless Framework"
+      - approve-destruction:
+          type: approval
           requires:
-            - terraform-init-and-apply-to-disaster-recovery
+            - terraform-plan-destroy-disaster-recovery
+          filters:
+            branches:
+              only: disaster-recovery-test
+      - terraform-init-and-destroy-disaster-recovery:
+          requires:
+            - approve-destruction
           filters:
             branches:
               only: disaster-recovery-test
