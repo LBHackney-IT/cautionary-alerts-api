@@ -36,6 +36,25 @@ commands:
           root: *workspace_root
           paths:
             - .aws
+  terraform-preview:
+    description: "Initializes and applies terraform configuration"
+    parameters:
+      environment:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform get -update=true
+            terraform init
+          name: get and init
+      - run:
+          name: plan
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform plan
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
     parameters:
@@ -136,6 +155,11 @@ jobs:
     steps:
       - terraform-init-then-apply:
           environment: "production"
+  preview-development-terraform:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "development"
   deploy-to-development:
     executor: docker-dotnet
     steps:
@@ -153,7 +177,7 @@ jobs:
           stage: "production"
 
 workflows:
-  check:
+  feature:
     jobs:
       - check-code-formatting:
           context: api-nuget-token-context
@@ -171,6 +195,11 @@ workflows:
               ignore:
                 - development
                 - master
+      - assume-role-development:
+          context: api-assume-role-development-context
+      - preview-development-terraform:
+          requires:
+            - assume-role-development
 
   check-and-deploy-development:
     jobs:
@@ -239,4 +268,3 @@ workflows:
           requires:
             - permit-production-release
             - terraform-init-and-apply-to-production
-
