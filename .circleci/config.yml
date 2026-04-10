@@ -224,9 +224,9 @@ workflows:
               ignore:
                 - development
                 - master
-      - preview-development-terraform:
+      - preview-staging-terraform:
           requires:
-            - assume-role-development
+            - assume-role-staging
 
       - assume-role-production:
           context: api-assume-role-production-context
@@ -235,9 +235,9 @@ workflows:
               ignore:
                 - development
                 - master
-      - preview-development-terraform:
+      - preview-production-terraform:
           requires:
-            - assume-role-development
+            - assume-role-production
 
   check-and-deploy-development:
     jobs:
