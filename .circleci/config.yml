@@ -207,6 +207,33 @@ workflows:
                 - master
       - assume-role-development:
           context: api-assume-role-development-context
+          filters:
+            branches:
+              ignore:
+                - development
+                - master
+      - preview-development-terraform:
+          requires:
+            - assume-role-development
+
+      - assume-role-staging:
+          context: api-assume-role-staging-context
+          filters:
+            branches:
+              ignore:
+                - development
+                - master
+      - preview-development-terraform:
+          requires:
+            - assume-role-development
+
+      - assume-role-production:
+          context: api-assume-role-production-context
+          filters:
+            branches:
+              ignore:
+                - development
+                - master
       - preview-development-terraform:
           requires:
             - assume-role-development
