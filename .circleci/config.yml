@@ -127,178 +127,30 @@ jobs:
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_DEVELOPMENT
-  assume-role-staging:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_STAGING
-  assume-role-production:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_PRODUCTION
   terraform-init-and-apply-to-development:
     executor: docker-terraform
     steps:
       - terraform-init-then-apply:
           environment: "development"
-  terraform-init-and-apply-to-staging:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "staging"
-  terraform-init-and-apply-to-production:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "production"
   preview-development-terraform:
     executor: docker-terraform
     steps:
       - terraform-preview:
           environment: "development"
-  preview-staging-terraform:
-    executor: docker-terraform
-    steps:
-      - terraform-preview:
-          environment: "staging"
-  preview-production-terraform:
-    executor: docker-terraform
-    steps:
-      - terraform-preview:
-          environment: "production"
   deploy-to-development:
     executor: docker-dotnet
     steps:
       - deploy-lambda:
           stage: "development"
-  deploy-to-staging:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
-          stage: "staging"
-  deploy-to-production:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
-          stage: "production"
 
 workflows:
-  feature:
-    jobs:
-      - check-code-formatting:
-          context: api-nuget-token-context
-          filters:
-            branches:
-              ignore:
-                - development
-                - master
-      - build-and-test:
-          context:
-            - api-nuget-token-context
-            - SonarCloud
-          filters:
-            branches:
-              ignore:
-                - development
-                - master
-      - assume-role-development:
-          context: api-assume-role-development-context
-          filters:
-            branches:
-              ignore:
-                - development
-                - master
-      - preview-development-terraform:
-          requires:
-            - assume-role-development
-
-      - assume-role-staging:
-          context: api-assume-role-staging-context
-          filters:
-            branches:
-              ignore:
-                - development
-                - master
-      - preview-staging-terraform:
-          requires:
-            - assume-role-staging
-
-      - assume-role-production:
-          context: api-assume-role-production-context
-          filters:
-            branches:
-              ignore:
-                - development
-                - master
-      - preview-production-terraform:
-          requires:
-            - assume-role-production
-
   check-and-deploy-development:
     jobs:
-      - check-code-formatting:
-          context: api-nuget-token-context
-          filters:
-            branches:
-              only: development
-      - build-and-test:
-          context:
-            - api-nuget-token-context
-            - SonarCloud
-          filters:
-            branches:
-              only: development
       - assume-role-development:
           context: api-assume-role-development-context
-          requires:
-            - build-and-test
-      - terraform-init-and-apply-to-development:
-          requires:
-            - assume-role-development
       - deploy-to-development:
           context:
             - api-nuget-token-context
             - "Serverless Framework"
           requires:
             - assume-role-development
-  check-and-deploy-staging-and-production:
-    jobs:
-      - build-and-test:
-          context:
-            - api-nuget-token-context
-            - SonarCloud
-          filters:
-            branches:
-              only: master
-      - assume-role-staging:
-          context: api-assume-role-staging-context
-          requires:
-            - build-and-test
-      - terraform-init-and-apply-to-staging:
-          requires:
-            - assume-role-staging
-      - deploy-to-staging:
-          context:
-            - api-nuget-token-context
-            - "Serverless Framework"
-          requires:
-            - terraform-init-and-apply-to-staging
-      - permit-production-release:
-          type: approval
-          requires:
-            - deploy-to-staging
-      - assume-role-production:
-          context: api-assume-role-production-context
-          requires:
-            - permit-production-release
-      - terraform-init-and-apply-to-production:
-          requires:
-            - assume-role-production
-      - deploy-to-production:
-          context:
-            - api-nuget-token-context
-            - "Serverless Framework"
-          requires:
-            - permit-production-release
-            - terraform-init-and-apply-to-production
