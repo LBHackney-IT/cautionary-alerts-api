@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
+  node: circleci/node@6.3.0
 
 executors:
   docker-python:
@@ -36,6 +37,25 @@ commands:
           root: *workspace_root
           paths:
             - .aws
+  terraform-preview:
+    description: "Initializes and applies terraform configuration"
+    parameters:
+      environment:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform get -update=true
+            terraform init
+          name: get and init
+      - run:
+          name: plan
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform plan
   terraform-init-then-apply:
     description: "Initializes and applies terraform configuration"
     parameters:
@@ -64,11 +84,7 @@ commands:
       - *attach_workspace
       - checkout
       - setup_remote_docker
-      - run:
-          name: Install Node.js
-          command: |
-            curl -sL https://deb.nodesource.com/setup_18.x | bash -
-            apt-get update && apt-get install -y nodejs
+      - node/install
       - run:
           name: Install serverless CLI
           command: npm i -g serverless
@@ -136,6 +152,21 @@ jobs:
     steps:
       - terraform-init-then-apply:
           environment: "production"
+  preview-development-terraform:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "development"
+  preview-staging-terraform:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "staging"
+  preview-production-terraform:
+    executor: docker-terraform
+    steps:
+      - terraform-preview:
+          environment: "production"
   deploy-to-development:
     executor: docker-dotnet
     steps:
@@ -153,7 +184,7 @@ jobs:
           stage: "production"
 
 workflows:
-  check:
+  feature:
     jobs:
       - check-code-formatting:
           context: api-nuget-token-context
@@ -171,6 +202,38 @@ workflows:
               ignore:
                 - development
                 - master
+      - assume-role-development:
+          context: api-assume-role-development-context
+          filters:
+            branches:
+              ignore:
+                - development
+                - master
+      - preview-development-terraform:
+          requires:
+            - assume-role-development
+
+      - assume-role-staging:
+          context: api-assume-role-staging-context
+          filters:
+            branches:
+              ignore:
+                - development
+                - master
+      - preview-staging-terraform:
+          requires:
+            - assume-role-staging
+
+      - assume-role-production:
+          context: api-assume-role-production-context
+          filters:
+            branches:
+              ignore:
+                - development
+                - master
+      - preview-production-terraform:
+          requires:
+            - assume-role-production
 
   check-and-deploy-development:
     jobs:
@@ -239,4 +302,3 @@ workflows:
           requires:
             - permit-production-release
             - terraform-init-and-apply-to-production
-
