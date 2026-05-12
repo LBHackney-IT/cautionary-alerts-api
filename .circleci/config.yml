@@ -36,8 +36,8 @@ commands:
           root: *workspace_root
           paths:
             - .aws
-  terraform-init-then-apply:
-    description: "Initializes and applies terraform configuration"
+  terraform-init-then-destroy:
+    description: "Initializes and destroys terraform configuration"
     parameters:
       environment:
         type: string
@@ -51,10 +51,29 @@ commands:
             terraform init
           name: get and init
       - run:
-          name: apply
+          name: destroy
           command: |
             cd ./terraform/<<parameters.environment>>/
-            terraform apply -auto-approve
+            terraform destroy -auto-approve
+  terraform-plan-destroy:
+    description: "Initializes and plans terraform destruction"
+    parameters:
+      environment:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform get -update=true
+            terraform init
+          name: get and init
+      - run:
+          name: plan destroy
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform plan -destroy
   deploy-lambda:
     description: "Deploys API via Serverless"
     parameters:
@@ -83,160 +102,85 @@ commands:
           command: |
             cd ./CautionaryAlertsApi/
             sls deploy --stage <<parameters.stage>> --conceal
-
-jobs:
-  check-code-formatting:
-    executor: docker-dotnet
+  remove-lambda:
+    description: "Removes API via Serverless"
+    parameters:
+      stage:
+        type: string
     steps:
-      - checkout
-      - run:
-          name: Install dotnet format
-          command: dotnet tool install dotnet-format --tool-path ./dotnet-format-local/
-      - run:
-          name: Run formatter check
-          command: ./dotnet-format-local/dotnet-format --check
-  build-and-test:
-    executor: docker-python
-    steps:
+      - *attach_workspace
       - checkout
       - setup_remote_docker
       - run:
-          name: build
-          command: docker compose build cautionary-alerts-api-test
+          name: Install Node.js
+          command: |
+            curl -sL https://deb.nodesource.com/setup_18.x | bash -
+            apt-get update && apt-get install -y nodejs
       - run:
-          name: Run tests
-          command: docker compose run cautionary-alerts-api-test
-  assume-role-development:
+          name: Install serverless CLI
+          command: npm i -g serverless
+      - run:
+          name: Remove lambda
+          command: |
+            cd ./CautionaryAlertsApi/
+            sls remove --stage <<parameters.stage>>
+
+jobs:
+  assume-role-disaster-recovery:
     executor: docker-python
     steps:
       - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_DEVELOPMENT
-  assume-role-staging:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_STAGING
-  assume-role-production:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_PRODUCTION
-  terraform-init-and-apply-to-development:
+          aws-account: $AWS_ACCOUNT_DISASTER_RECOVERY
+  terraform-plan-destroy-disaster-recovery:
     executor: docker-terraform
     steps:
-      - terraform-init-then-apply:
-          environment: "development"
-  terraform-init-and-apply-to-staging:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "staging"
-  terraform-init-and-apply-to-production:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
+      - terraform-plan-destroy:
           environment: "production"
-  deploy-to-development:
+  terraform-init-and-destroy-disaster-recovery:
+    executor: docker-terraform
+    steps:
+      - terraform-init-then-destroy:
+          environment: "production"
+  remove-lambda-disaster-recovery:
     executor: docker-dotnet
     steps:
-      - deploy-lambda:
-          stage: "development"
-  deploy-to-staging:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
-          stage: "staging"
-  deploy-to-production:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
+      - remove-lambda:
           stage: "production"
 
 workflows:
-  check:
+  check-and-destroy-disaster-recovery:
     jobs:
-      - check-code-formatting:
-          context: api-nuget-token-context
+      - assume-role-disaster-recovery:
+          context: api-assume-role-disaster-recovery-context
           filters:
             branches:
-              ignore:
-                - development
-                - master
-      - build-and-test:
-          context:
-            - api-nuget-token-context
-            - SonarCloud
+              only: disaster-recovery-test
+      - terraform-plan-destroy-disaster-recovery:
+          requires:
+            - assume-role-disaster-recovery
           filters:
             branches:
-              ignore:
-                - development
-                - master
-
-  check-and-deploy-development:
-    jobs:
-      - check-code-formatting:
-          context: api-nuget-token-context
-          filters:
-            branches:
-              only: development
-      - build-and-test:
-          context:
-            - api-nuget-token-context
-            - SonarCloud
-          filters:
-            branches:
-              only: development
-      - assume-role-development:
-          context: api-assume-role-development-context
-          requires:
-            - build-and-test
-      - terraform-init-and-apply-to-development:
-          requires:
-            - assume-role-development
-      - deploy-to-development:
-          context:
-            - api-nuget-token-context
-            - "Serverless Framework"
-          requires:
-            - assume-role-development
-  check-and-deploy-staging-and-production:
-    jobs:
-      - build-and-test:
-          context:
-            - api-nuget-token-context
-            - SonarCloud
-          filters:
-            branches:
-              only: master
-      - assume-role-staging:
-          context: api-assume-role-staging-context
-          requires:
-            - build-and-test
-      - terraform-init-and-apply-to-staging:
-          requires:
-            - assume-role-staging
-      - deploy-to-staging:
-          context:
-            - api-nuget-token-context
-            - "Serverless Framework"
-          requires:
-            - terraform-init-and-apply-to-staging
-      - permit-production-release:
+              only: disaster-recovery-test
+      - approve-destruction:
           type: approval
           requires:
-            - deploy-to-staging
-      - assume-role-production:
-          context: api-assume-role-production-context
+            - terraform-plan-destroy-disaster-recovery
+          filters:
+            branches:
+              only: disaster-recovery-test
+      - terraform-init-and-destroy-disaster-recovery:
           requires:
-            - permit-production-release
-      - terraform-init-and-apply-to-production:
-          requires:
-            - assume-role-production
-      - deploy-to-production:
+            - approve-destruction
+          filters:
+            branches:
+              only: disaster-recovery-test
+      - remove-lambda-disaster-recovery:
           context:
             - api-nuget-token-context
             - "Serverless Framework"
           requires:
-            - permit-production-release
-            - terraform-init-and-apply-to-production
+            - approve-destruction
+          filters:
+            branches:
+              only: disaster-recovery-test
 
