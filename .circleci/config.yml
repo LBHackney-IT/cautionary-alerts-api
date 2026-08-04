@@ -51,6 +51,9 @@ commands:
             terraform init
           name: get and init
       - run:
+          name: install jq
+          command: apk add --no-cache jq
+      - run:
           name: check for potential dupe conf
           command: |
             echo "checking whether there's a need to set up a rule"
