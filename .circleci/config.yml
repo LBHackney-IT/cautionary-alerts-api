@@ -53,7 +53,7 @@ commands:
       - run:
           name: check for potential dupe conf
           command: |
-            
+            echo "test"
       - run:
           name: plan
           command: |
