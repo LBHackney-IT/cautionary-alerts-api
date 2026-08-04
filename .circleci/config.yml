@@ -1,8 +1,8 @@
 version: 2.1
 
 orbs:
-  aws_assume_role: lbh-hackit/aws_assume_role@0.1.0
-  node: circleci/node@6.3.0
+  aws_assume_role: lbh-hackit/aws_assume_role@0.1.1
+  aws-cli: circleci/aws-cli@5.1.0
 
 executors:
   docker-python:
@@ -11,9 +11,7 @@ executors:
   docker-terraform:
     docker:
       - image: "hashicorp/terraform:0.12.29"
-  docker-dotnet:
-    docker:
-      - image: mcr.microsoft.com/dotnet/sdk:8.0
+
 
 references:
   workspace_root: &workspace_root "~"
@@ -43,6 +41,7 @@ commands:
       environment:
         type: string
     steps:
+      - aws-cli/install
       - *attach_workspace
       - checkout
       - run:
@@ -51,254 +50,58 @@ commands:
             terraform get -update=true
             terraform init
           name: get and init
+      - run:
+          name: check for potential dupe conf
+          command: |
+            
       - run:
           name: plan
           command: |
             cd ./terraform/<<parameters.environment>>/
             terraform plan
-  terraform-init-then-apply:
-    description: "Initializes and applies terraform configuration"
-    parameters:
-      environment:
-        type: string
-    steps:
-      - *attach_workspace
-      - checkout
-      - run:
-          command: |
-            cd ./terraform/<<parameters.environment>>/
-            terraform get -update=true
-            terraform init
-          name: get and init
-      - run:
-          name: apply
-          command: |
-            cd ./terraform/<<parameters.environment>>/
-            terraform apply -auto-approve
-  deploy-lambda:
-    description: "Deploys API via Serverless"
-    parameters:
-      stage:
-        type: string
-    steps:
-      - *attach_workspace
-      - checkout
-      - setup_remote_docker
-      - node/install
-      - run:
-          name: Install serverless CLI
-          command: npm i -g serverless
-      - run:
-          name: Build lambda
-          command: |
-            cd ./CautionaryAlertsApi/
-            chmod +x ./build.sh
-            ./build.sh
-      - run:
-          name: Deploy lambda
-          command: |
-            cd ./CautionaryAlertsApi/
-            sls deploy --stage <<parameters.stage>> --conceal
+
 
 jobs:
-  check-code-formatting:
-    executor: docker-dotnet
-    steps:
-      - checkout
-      - run:
-          name: Install dotnet format
-          command: dotnet tool install dotnet-format --tool-path ./dotnet-format-local/
-      - run:
-          name: Run formatter check
-          command: ./dotnet-format-local/dotnet-format --check
-  build-and-test:
-    executor: docker-python
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: build
-          command: docker compose build cautionary-alerts-api-test
-      - run:
-          name: Run tests
-          command: docker compose run cautionary-alerts-api-test
   assume-role-development:
     executor: docker-python
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_DEVELOPMENT
-  assume-role-staging:
-    executor: docker-python
-    steps:
-      - assume-role-and-persist-workspace:
-          aws-account: $AWS_ACCOUNT_STAGING
   assume-role-production:
     executor: docker-python
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_PRODUCTION
-  terraform-init-and-apply-to-development:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "development"
-  terraform-init-and-apply-to-staging:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "staging"
-  terraform-init-and-apply-to-production:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "production"
   preview-development-terraform:
     executor: docker-terraform
     steps:
       - terraform-preview:
           environment: "development"
-  preview-staging-terraform:
-    executor: docker-terraform
-    steps:
-      - terraform-preview:
-          environment: "staging"
   preview-production-terraform:
     executor: docker-terraform
     steps:
       - terraform-preview:
           environment: "production"
-  deploy-to-development:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
-          stage: "development"
-  deploy-to-staging:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
-          stage: "staging"
-  deploy-to-production:
-    executor: docker-dotnet
-    steps:
-      - deploy-lambda:
-          stage: "production"
 
 workflows:
   feature:
     jobs:
-      - check-code-formatting:
-          context: api-nuget-token-context
-          filters:
-            branches:
-              ignore:
-                - development
-                - master
-      - build-and-test:
-          context:
-            - api-nuget-token-context
-            - SonarCloud
-          filters:
-            branches:
-              ignore:
-                - development
-                - master
       - assume-role-development:
           context: api-assume-role-development-context
           filters:
             branches:
-              ignore:
-                - development
-                - master
+              only:
+                - test-test
       - preview-development-terraform:
           requires:
             - assume-role-development
 
-      - assume-role-staging:
-          context: api-assume-role-staging-context
-          filters:
-            branches:
-              ignore:
-                - development
-                - master
-      - preview-staging-terraform:
-          requires:
-            - assume-role-staging
-
       - assume-role-production:
           context: api-assume-role-production-context
           filters:
             branches:
-              ignore:
-                - development
-                - master
+              only:
+                - test-test
       - preview-production-terraform:
           requires:
             - assume-role-production
-
-  check-and-deploy-development:
-    jobs:
-      - check-code-formatting:
-          context: api-nuget-token-context
-          filters:
-            branches:
-              only: development
-      - build-and-test:
-          context:
-            - api-nuget-token-context
-            - SonarCloud
-          filters:
-            branches:
-              only: development
-      - assume-role-development:
-          context: api-assume-role-development-context
-          requires:
-            - build-and-test
-      - terraform-init-and-apply-to-development:
-          requires:
-            - assume-role-development
-      - deploy-to-development:
-          context:
-            - api-nuget-token-context
-            - "Serverless Framework"
-          requires:
-            - assume-role-development
-  check-and-deploy-staging-and-production:
-    jobs:
-      - build-and-test:
-          context:
-            - api-nuget-token-context
-            - SonarCloud
-          filters:
-            branches:
-              only: master
-      - assume-role-staging:
-          context: api-assume-role-staging-context
-          requires:
-            - build-and-test
-      - terraform-init-and-apply-to-staging:
-          requires:
-            - assume-role-staging
-      - deploy-to-staging:
-          context:
-            - api-nuget-token-context
-            - "Serverless Framework"
-          requires:
-            - terraform-init-and-apply-to-staging
-      - permit-production-release:
-          type: approval
-          requires:
-            - deploy-to-staging
-      - assume-role-production:
-          context: api-assume-role-production-context
-          requires:
-            - permit-production-release
-      - terraform-init-and-apply-to-production:
-          requires:
-            - assume-role-production
-      - deploy-to-production:
-          context:
-            - api-nuget-token-context
-            - "Serverless Framework"
-          requires:
-            - permit-production-release
-            - terraform-init-and-apply-to-production
