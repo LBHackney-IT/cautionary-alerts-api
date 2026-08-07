@@ -56,20 +56,8 @@ commands:
       - run:
           name: check for potential dupe conf
           command: |
-            echo "checking whether there's a need to set up a rule"
-            REGION="us-east-1"
-
-            # Get all rules
-            RULES_JSON=$(aws events list-rules --region "$REGION" --output json)
-
-            echo "$RULES_JSON" | jq -r '
-              .Rules[] | 
-              "Rule Name: \(.Name)\n" +
-              "State:     \(.State)\n" +
-              "Schedule:  \(.ScheduleExpression // "N/A (Event Driven)")\n" +
-              "Description: \(.Description // "No description")\n" +
-              "---"
-            '
+            echo "another test"
+            aws sts get-caller-identity
       - run:
           name: plan
           command: |
