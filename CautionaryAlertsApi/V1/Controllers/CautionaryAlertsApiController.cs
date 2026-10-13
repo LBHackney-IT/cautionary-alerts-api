@@ -19,6 +19,9 @@ using Hackney.Shared.CautionaryAlerts.Boundary.Request;
 using CautionaryAlertsApi.V1.Boundary.Request;
 using AlertQueryObject = CautionaryAlertsApi.V1.Boundary.Request.AlertQueryObject;
 
+// Will be addressed with the release of Cognito M2M auth
+#pragma warning disable HACKNEY_DEPRECATED_TOKEN_CREATE
+
 namespace CautionaryAlertsApi.V1.Controllers
 {
     [ApiController]

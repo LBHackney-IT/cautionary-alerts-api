@@ -38,7 +38,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
             var defaultString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.INCIDENTDESCRIPTIONLENGTH));
             var addressString = string.Join("", _fixture.CreateMany<char>(CautionaryAlertConstants.FULLADDRESSLENGTH));
             var cautionaryAlert = CautionaryAlertFixture.GenerateValidCreateCautionaryAlertFixture(defaultString, _fixture, addressString);
-            var token = new Token();
+            var token = _fixture.Create<Token>();
             var alertId = _fixture.Create<Guid>().ToString();
             var cautionaryAlertDb = cautionaryAlert.ToDatabase(isActive: true, alertId);
 
