@@ -35,7 +35,7 @@ namespace CautionaryAlertsApi.Tests.V1.UseCase
         public async Task ReturnsTheSameEntityThatIsGivenByTheGateway()
         {
             //Arrange 
-            var token = new Token();
+            var token = _fixture.Create<Token>();
             var alertId = Guid.NewGuid();
             var personid = Guid.NewGuid();
 
