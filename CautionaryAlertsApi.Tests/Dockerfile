@@ -23,4 +23,4 @@ COPY . .
 
 RUN dotnet build -c debug -o out CautionaryAlertsApi.Tests/CautionaryAlertsApi.Tests.csproj
 
-CMD dotnet test CautionaryAlertsApi.Tests/CautionaryAlertsApi.Tests.csproj --no-build --logger "console;verbosity=normal"
+CMD dotnet test CautionaryAlertsApi.Tests/CautionaryAlertsApi.Tests.csproj --logger "console;verbosity=normal"
