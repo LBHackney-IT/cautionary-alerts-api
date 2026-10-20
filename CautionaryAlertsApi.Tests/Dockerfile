@@ -18,9 +18,7 @@ COPY /NuGet.Config /root/.nuget/NuGet/NuGet.Config
 
 RUN dotnet restore ./CautionaryAlertsApi.Tests/CautionaryAlertsApi.Tests.csproj
 
-# Copy everything else and build
+# Copy everything else; dotnet test handles the build step at runtime
 COPY . .
-
-RUN dotnet build -c debug -o out CautionaryAlertsApi.Tests/CautionaryAlertsApi.Tests.csproj
 
 CMD dotnet test CautionaryAlertsApi.Tests/CautionaryAlertsApi.Tests.csproj --logger "console;verbosity=normal"
