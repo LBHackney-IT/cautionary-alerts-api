@@ -23,4 +23,4 @@ COPY . .
 
 RUN dotnet build -c debug -o out CautionaryAlertsApi.Tests/CautionaryAlertsApi.Tests.csproj
 
-CMD dotnet test
+CMD dotnet test --no-build
