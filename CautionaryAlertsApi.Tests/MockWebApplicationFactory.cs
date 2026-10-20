@@ -16,6 +16,8 @@ using System;
 using CautionaryAlertsApi.V1.Domain;
 using Hackney.Core.Testing.Sns;
 using System.Net.Http;
+using Amazon.SQS;
+using Amazon.Runtime;
 using ServiceCollectionExtensions = Hackney.Core.Testing.Sns.ServiceCollectionExtensions;
 
 namespace CautionaryAlertsApi.Tests
@@ -78,6 +80,14 @@ namespace CautionaryAlertsApi.Tests
 
                 services.ConfigureSns();
                 services.ConfigureSnsFixture();
+
+                // Register IAmazonSQS required by SnsEventVerifier.
+                // Microsoft.AspNetCore.Mvc.Testing 10.0.0 enables ValidateOnBuild by default,
+                // so missing registrations that were silently deferred in 6.0.0 now fail at host startup.
+                var localstackUrl = Environment.GetEnvironmentVariable("Localstack_SnsServiceUrl") ?? "http://localhost:4566";
+                services.AddSingleton<IAmazonSQS>(new AmazonSQSClient(
+                    new BasicAWSCredentials("local", "local"),
+                    new AmazonSQSConfig { ServiceURL = localstackUrl }));
 
                 var serviceProvider = services.BuildServiceProvider();
                 var dbContext = serviceProvider.GetRequiredService<UhContext>();
