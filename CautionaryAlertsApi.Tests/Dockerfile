@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0
+FROM mcr.microsoft.com/dotnet/sdk:10.0
 
 # disable microsoft telematry
 ENV DOTNET_CLI_TELEMETRY_OPTOUT='true'
@@ -18,9 +18,7 @@ COPY /NuGet.Config /root/.nuget/NuGet/NuGet.Config
 
 RUN dotnet restore ./CautionaryAlertsApi.Tests/CautionaryAlertsApi.Tests.csproj
 
-# Copy everything else and build
+# Copy everything else; dotnet test handles the build step at runtime
 COPY . .
 
-RUN dotnet build -c debug -o out CautionaryAlertsApi.Tests/CautionaryAlertsApi.Tests.csproj
-
-CMD dotnet test
+CMD dotnet test CautionaryAlertsApi.Tests/CautionaryAlertsApi.Tests.csproj --logger "console;verbosity=normal"
