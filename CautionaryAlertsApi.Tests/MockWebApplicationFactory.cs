@@ -79,6 +79,12 @@ namespace CautionaryAlertsApi.Tests
                 services.ConfigureSns();
                 services.ConfigureSnsFixture();
 
+                // ConfigureSnsFixture registers SnsEventVerifier directly, but its topic ARN
+                // constructor argument is only known when SnsFixture creates a topic.
+                // SnsFixture constructs and stores the verifier itself, so this descriptor
+                // is unnecessary and cannot pass .NET 10's eager DI validation.
+                services.RemoveAll<ISnsEventVerifier>();
+
                 var serviceProvider = services.BuildServiceProvider();
                 var dbContext = serviceProvider.GetRequiredService<UhContext>();
                 dbContext.Database.EnsureCreated();
